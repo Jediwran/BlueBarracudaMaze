@@ -1,4 +1,4 @@
-package com.maze;
+package maze;
 
 import java.awt.*;
 import java.awt.event.*;

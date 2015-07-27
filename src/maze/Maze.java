@@ -1,4 +1,4 @@
-package com.maze;
+package maze;
 
 import javax.swing.*;
 

@@ -1,4 +1,4 @@
-package com.maze;
+package maze;
 
 import java.awt.*;
 import java.io.*;
@@ -8,8 +8,11 @@ import javax.swing.ImageIcon;
 public class Map {
 	
 	private Scanner m;
-	private String Map[] = new String[14];
+	private int arraySize = 14;
+	private String Map[] = new String[arraySize];
 	private Image grass, wall, start, finish;
+	private String mapName = "Map.txt";
+	
 	
 	public Map() {
 		ImageIcon img = new ImageIcon("src/resources/grass.png");
@@ -49,8 +52,8 @@ public class Map {
 	
 	public int getStartX() {
 		int startX = 0;
-		for(int y = 0; y < 14; y++) {
-			for(int x = 0; x < 14; x++) {
+		for(int y = 0; y < arraySize; y++) {
+			for(int x = 0; x < arraySize; x++) {
 				if(getMap(x, y).equals("s")){
 					startX = x;
 					return startX;
@@ -62,8 +65,8 @@ public class Map {
 	
 	public int getStartY() {
 		int startY = 0;
-		for(int y = 0; y < 14; y++) {
-			for(int x = 0; x < 14; x++) {
+		for(int y = 0; y < arraySize; y++) {
+			for(int x = 0; x < arraySize; x++) {
 				if(getMap(x, y).equals("s")){
 					startY = y;
 					return startY;
@@ -75,7 +78,7 @@ public class Map {
 	
 	public void openFile() {
 		try{
-			m = new Scanner(new File("src/resources/Map.txt"));
+			m = new Scanner(new File("src/resources/" + mapName));
 		} catch(Exception e){
 			System.out.println("Error loading map");
 		}
@@ -83,7 +86,7 @@ public class Map {
 	
 	public void readFile() {
 		while(m.hasNext()) {
-			for(int i = 0; i < 14; i++) {
+			for(int i = 0; i < arraySize; i++) {
 				Map[i] = m.next();
 			}
 		}
@@ -91,5 +94,21 @@ public class Map {
 	
 	public void closeFile() {
 		m.close();
+	}
+	
+	public String getMapName(){
+		return mapName;
+	}
+	
+	public StringBuilder printMap(){
+		StringBuilder allText = new StringBuilder();
+		allText.append(this.getMapName()
+				+ "\n==============");
+		
+		for (int i = 0; i < arraySize; i++){
+			allText.append(Map[i] + "\n");
+		}
+		
+		return allText;
 	}
 }
