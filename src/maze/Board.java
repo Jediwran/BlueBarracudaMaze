@@ -6,11 +6,10 @@ import javax.swing.*;
 
 public class Board extends JPanel implements ActionListener {
 	
+	private static final long serialVersionUID = 1L;
 	private Timer timer;
 	private Map m;
 	private Player p;
-	int startX = 0;
-	int startY = 0;
 	
 	public Board() {
 		m = new Map();
@@ -43,8 +42,6 @@ public class Board extends JPanel implements ActionListener {
 				}
 				if(m.getMap(x, y).equals("s")){
 					g.drawImage(m.getStart(), x * 32, y * 32, null);
-					startX = x;
-					startY = y;
 				}
 			}
 		}

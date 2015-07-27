@@ -9,9 +9,11 @@ public class Map {
 	
 	private Scanner m;
 	private int arraySize = 14;
+	private int startX = 0;
+	private int startY = 0;
 	private String Map[] = new String[arraySize];
 	private Image grass, wall, start, finish;
-	private String mapName = "Map2.txt";
+	private String mapName = "Map.txt";
 	
 	
 	public Map() {
@@ -27,6 +29,8 @@ public class Map {
 		openFile();
 		readFile();
 		closeFile();
+		
+		setStartLocation();
 	}
 	
 	public Image getGrass() {
@@ -50,29 +54,22 @@ public class Map {
 		return index;
 	}
 	
-	public int getStartX() {
-		int startX = 0;
+	public void setStartLocation() {
 		for(int y = 0; y < arraySize; y++) {
 			for(int x = 0; x < arraySize; x++) {
 				if(getMap(x, y).equals("s")){
 					startX = x;
-					return startX;
+					startY = y;
 				}
 			}
 		}
+	}
+	
+	public int getStartX() {
 		return startX;
 	}
 	
 	public int getStartY() {
-		int startY = 0;
-		for(int y = 0; y < arraySize; y++) {
-			for(int x = 0; x < arraySize; x++) {
-				if(getMap(x, y).equals("s")){
-					startY = y;
-					return startY;
-				}
-			}
-		}
 		return startY;
 	}
 	
