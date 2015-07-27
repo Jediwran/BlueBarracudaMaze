@@ -11,7 +11,7 @@ public class Map {
 	private int arraySize = 14;
 	private String Map[] = new String[arraySize];
 	private Image grass, wall, start, finish;
-	private String mapName = "Map.txt";
+	private String mapName = "Map2.txt";
 	
 	
 	public Map() {

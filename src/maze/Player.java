@@ -7,9 +7,10 @@ public class Player {
 
 	private int x, y, tileX, tileY;
 	private Image player;
+	private String playerFile = "src/resources/player.png";
 	
 	public Player() {
-		ImageIcon img = new ImageIcon("src/resources/player.png");
+		ImageIcon img = new ImageIcon(playerFile);
 		player = img.getImage();
 	}
 	
@@ -17,8 +18,13 @@ public class Player {
 		tileX = tX;
 		tileY = tY;
 		
-		x = 0 -752;
-		y = tY + 32 -784;
+		//Normal 32x32 character
+		//x = tX * 32;
+		//y = tY * 32;
+		
+		//Character with black around him
+		x = tX * 32 - 783;
+		y = tY * 32 - 784;
 	}
 	
 	public Image getPlayer() {
