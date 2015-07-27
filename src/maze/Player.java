@@ -7,7 +7,7 @@ public class Player {
 
 	private int x, y, tileX, tileY;
 	private Image player;
-	private String playerFile = "src/resources/player.png";
+	private String playerFile = "src/resources/player_w_black.png";
 	
 	public Player() {
 		ImageIcon img = new ImageIcon(playerFile);
