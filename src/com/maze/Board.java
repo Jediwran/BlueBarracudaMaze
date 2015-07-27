@@ -1,0 +1,90 @@
+package com.maze;
+
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+
+public class Board extends JPanel implements ActionListener {
+	
+	private Timer timer;
+	private Map m;
+	private Player p;
+	int startX = 0;
+	int startY = 0;
+	
+	public Board() {
+		m = new Map();
+		p = new Player();
+		p.setPlayerStart(m.getStartX(), m.getStartY());
+		addKeyListener(new Al());
+		setFocusable(true);
+		
+		timer = new Timer(25, this);
+		timer.start();
+	}
+	
+	public void actionPerformed(ActionEvent e) {
+		repaint();
+	}
+	
+	public void paint(Graphics g) {
+		super.paint(g);
+		
+		for(int y = 0; y < 14; y++) {
+			for(int x = 0; x < 14; x++) {
+				if(m.getMap(x, y).equals("g")){
+					g.drawImage(m.getGrass(), x * 32, y *32, null);
+				}
+				if(m.getMap(x, y).equals("w")){
+					g.drawImage(m.getWall(), x * 32, y *32, null);
+				}
+				if(m.getMap(x, y).equals("f")){
+					g.drawImage(m.getFinish(), x * 32, y * 32, null);
+				}
+				if(m.getMap(x, y).equals("s")){
+					g.drawImage(m.getStart(), x * 32, y * 32, null);
+					startX = x;
+					startY = y;
+				}
+			}
+		}
+		g.drawImage(p.getPlayer(), p.getX(), p.getY(), null);
+	}
+	
+	public class Al extends KeyAdapter {
+		public void keyPressed(KeyEvent e) {
+			int keycode = e.getKeyCode();
+			if(keycode == KeyEvent.VK_W || keycode == KeyEvent.VK_UP){
+				if(!m.getMap(p.getTileX(), p.getTileY() - 1).equals("w")) {
+					p.move(0, -32, 0, -1);
+				}
+			}
+			if(keycode == KeyEvent.VK_S || keycode == KeyEvent.VK_DOWN){
+				if(!m.getMap(p.getTileX(), p.getTileY() + 1).equals("w")) {
+					p.move(0, 32, 0, 1);
+				}
+			}
+			if(keycode == KeyEvent.VK_A || keycode == KeyEvent.VK_LEFT){
+				if(!m.getMap(p.getTileX() - 1, p.getTileY()).equals("w")) {
+					p.move(-32, 0, -1, 0);
+				}
+			}
+			if(keycode == KeyEvent.VK_D || keycode == KeyEvent.VK_RIGHT){
+				if(!m.getMap(p.getTileX() + 1, p.getTileY()).equals("w")) {
+					p.move(32, 0, 1, 0);
+				}
+			}
+		}
+		
+		public void keyReleased(KeyEvent e) {
+			if(m.getMap(p.getTileX(), p.getTileY()).equals("f")) {
+				JOptionPane.showMessageDialog(new JFrame(), "You have won!");
+				System.exit(0);
+			}
+		}
+		
+		public void keyTyped(KeyEvent e) {
+			
+		}
+	}
+}
