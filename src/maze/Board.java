@@ -89,6 +89,8 @@ public class Board extends JPanel implements ActionListener {
 				JOptionPane.showMessageDialog(new JFrame(), "You have won!");
 				System.exit(0);
 			}
+			
+			f.reFog(p.getTileX(), p.getTileY());
 		}
 		
 		public void keyTyped(KeyEvent e) {

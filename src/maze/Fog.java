@@ -9,12 +9,23 @@ public class Fog {
 	public Fog(){
 	}
 		
-	public void unFog(int x, int y) {
-		
-	}
-	
 	public void reFog(int x, int y) {
-		
+		for(int i = 0; i < fogMapA; i++) {
+			for (int j = 0; j < fogMapB; j++){
+				if(i == x && j == y) {
+					fogMap[i][j] = 0;
+				} else if(i == x && j == (y - 1)){
+					fogMap[i][j] = 0;
+				} else if(i == x && j == (y + 1)){
+					fogMap[i][j] = 0;
+				} else if(i == x + 1 && j == y){
+					fogMap[i][j] = 0;
+				} else if(i == x - 1 && j == y){
+					fogMap[i][j] = 0;
+				}
+				else fogMap[i][j] = 1;
+			}
+		}
 	}
 	
 	public void createFog(int x, int y) {
@@ -22,11 +33,18 @@ public class Fog {
 			for (int j = 0; j < fogMapB; j++){
 				if(i == x && j == y) {
 					fogMap[i][j] = 0;
+				} else if(i == x && j == (y - 1)){
+					fogMap[i][j] = 0;
+				} else if(i == x && j == (y + 1)){
+					fogMap[i][j] = 0;
+				} else if(i == x + 1 && j == y){
+					fogMap[i][j] = 0;
+				} else if(i == x - 1 && j == y){
+					fogMap[i][j] = 0;
 				}
 				else fogMap[i][j] = 1;
 			}
 		}
-		
 	}
 	
 	public int[][] getFogMap() {
