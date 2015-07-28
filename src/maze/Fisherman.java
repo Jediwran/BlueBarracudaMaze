@@ -12,5 +12,6 @@ public class Fisherman {
 	
 	public Fisherman() {
 		ImageIcon img = new ImageIcon(fishermanFile);
+		fisherman = img.getImage();
 	}
 }

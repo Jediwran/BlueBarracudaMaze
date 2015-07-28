@@ -2,9 +2,8 @@ package maze;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.time.LocalTime;
-import java.time.temporal.ChronoUnit;
-import java.util.Date;
+//import java.time.LocalTime;
+//import java.time.temporal.ChronoUnit;
 
 import javax.swing.*;
 
