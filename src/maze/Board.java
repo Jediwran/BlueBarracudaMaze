@@ -2,8 +2,7 @@ package maze;
 
 import java.awt.*;
 import java.awt.event.*;
-//import java.time.LocalTime;
-//import java.time.temporal.ChronoUnit;
+import java.util.Random;
 
 import javax.swing.*;
 
@@ -15,6 +14,7 @@ public class Board extends JPanel implements ActionListener {
 	private long sTime, eTime;
 	private Map m;
 	private Player p;
+	private Fisherman fisherMan;
 	private Fog f;
 	private int stepCount;
 	
@@ -22,8 +22,11 @@ public class Board extends JPanel implements ActionListener {
 		stepCount = 0;
 		m = new Map();
 		p = new Player();
+		fisherMan = new Fisherman();
 		f = new Fog();
 		p.setPlayerStart(m.getStartX(), m.getStartY());
+		randomMoveFisherman();
+		
 		f.createFog(p.getTileX(), p.getTileY());
 		addKeyListener(new Al());
 		setFocusable(true);
@@ -58,17 +61,35 @@ public class Board extends JPanel implements ActionListener {
 			}
 		}
 		g.drawImage(p.getPlayer(), p.getX(), p.getY(), null);
+		g.drawImage(fisherMan.getFisherman(), fisherMan.getFishermanX(), fisherMan.getFishermanY(), null);
 		int[][] fog = f.getFogMap();
 		for(int i = 0; i < 14; i++){
 			for(int j = 0; j < 14; j++){
 				if(fog[i][j] == 1){
-					g.drawImage(f.getFog(),i * 32, j * 32, null);
+					//g.drawImage(f.getFog(),i * 32, j * 32, null);
 				}
 				else if(fog[i][j] == 2){
 					g.drawImage(f.getFogOpaque(), i * 32, j * 32, null);
 				}
 			}
 		}
+	}
+	
+	public void randomMoveFisherman() {
+		Random rand = new Random();
+		int randX = rand.nextInt(13);
+		int randY = rand.nextInt(13);
+		while(!m.getMap(randX, randY).equals("w")){
+			randX = rand.nextInt(13);
+			randY = rand.nextInt(13);
+			if(m.getMap(randX, randY).equals("w")) {
+				fisherMan.setFishermanLocation(randX, randY);
+			}
+		}
+	}
+	
+	public void moveFishToStart(){
+		p.setPlayerStart(m.getStartX(), m.getStartY());
 	}
 	
 	public class Al extends KeyAdapter {
