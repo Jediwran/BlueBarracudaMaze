@@ -12,7 +12,8 @@ public class Board extends JPanel implements ActionListener {
 	
 	private static final long serialVersionUID = 1L;
 	private Timer timer;
-	private LocalTime sTime, eTime;
+	//private LocalTime sTime, eTime;
+	private long sTime, eTime;
 	private Map m;
 	private Player p;
 	private Fog f;
@@ -28,7 +29,8 @@ public class Board extends JPanel implements ActionListener {
 		addKeyListener(new Al());
 		setFocusable(true);
 		
-		sTime = LocalTime.now();
+		//sTime = LocalTime.now();
+		sTime = System.currentTimeMillis();
 		timer = new Timer(25, this);
 		timer.start();
 	}
@@ -102,8 +104,10 @@ public class Board extends JPanel implements ActionListener {
 		public void keyReleased(KeyEvent e) {
 			if(m.getMap(p.getTileX(), p.getTileY()).equals("f")) {
 				timer.stop();
-				eTime = LocalTime.now();
- 		        long seconds = ChronoUnit.SECONDS.between(sTime, eTime);
+				//eTime = LocalTime.now();
+				eTime = System.currentTimeMillis();
+				long seconds = (eTime - sTime) / 1000;
+ 		        //long seconds = ChronoUnit.SECONDS.between(sTime, eTime);
  		        long minutes = seconds / 60;
 			    long secondsRemaining = seconds % 60;
 			    String time = minutes + "m : " + secondsRemaining + "s";
