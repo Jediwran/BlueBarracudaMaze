@@ -55,6 +55,9 @@ public class Board extends JPanel implements ActionListener {
 				if(fog[i][j] == 1){
 					g.drawImage(f.getFog(),i * 32, j * 32, null);
 				}
+				else if(fog[i][j] == 2){
+					g.drawImage(f.getFogOpaque(), i * 32, j * 32, null);
+				}
 			}
 		}
 	}
