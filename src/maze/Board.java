@@ -2,17 +2,24 @@ package maze;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
+
 import javax.swing.*;
 
 public class Board extends JPanel implements ActionListener {
 	
 	private static final long serialVersionUID = 1L;
 	private Timer timer;
+	private LocalTime sTime, eTime;
 	private Map m;
 	private Player p;
 	private Fog f;
+	private int stepCount;
 	
 	public Board() {
+		stepCount = 0;
 		m = new Map();
 		p = new Player();
 		f = new Fog();
@@ -21,6 +28,7 @@ public class Board extends JPanel implements ActionListener {
 		addKeyListener(new Al());
 		setFocusable(true);
 		
+		sTime = LocalTime.now();
 		timer = new Timer(25, this);
 		timer.start();
 	}
@@ -68,28 +76,38 @@ public class Board extends JPanel implements ActionListener {
 			if(keycode == KeyEvent.VK_W || keycode == KeyEvent.VK_UP){
 				if(!m.getMap(p.getTileX(), p.getTileY() - 1).equals("w")) {
 					p.move(0, -32, 0, -1);
+					stepCount++;
 				}
 			}
 			if(keycode == KeyEvent.VK_S || keycode == KeyEvent.VK_DOWN){
 				if(!m.getMap(p.getTileX(), p.getTileY() + 1).equals("w")) {
 					p.move(0, 32, 0, 1);
+					stepCount++;
 				}
 			}
 			if(keycode == KeyEvent.VK_A || keycode == KeyEvent.VK_LEFT){
 				if(!m.getMap(p.getTileX() - 1, p.getTileY()).equals("w")) {
 					p.move(-32, 0, -1, 0);
+					stepCount++;
 				}
 			}
 			if(keycode == KeyEvent.VK_D || keycode == KeyEvent.VK_RIGHT){
 				if(!m.getMap(p.getTileX() + 1, p.getTileY()).equals("w")) {
 					p.move(32, 0, 1, 0);
+					stepCount++;
 				}
 			}
 		}
 		
 		public void keyReleased(KeyEvent e) {
 			if(m.getMap(p.getTileX(), p.getTileY()).equals("f")) {
-				JOptionPane.showMessageDialog(new JFrame(), "You have won!");
+				timer.stop();
+				eTime = LocalTime.now();
+ 		        long seconds = ChronoUnit.SECONDS.between(sTime, eTime);
+ 		        long minutes = seconds / 60;
+			    long secondsRemaining = seconds % 60;
+			    String time = minutes + "m : " + secondsRemaining + "s";
+				JOptionPane.showMessageDialog(new JFrame(), "You have won! \n Your Time: " + time + " \nSteps Taken: " + stepCount);
 				System.exit(0);
 			}
 			
