@@ -12,13 +12,13 @@ public class Map {
 	private int startX = 0;
 	private int startY = 0;
 	private String Map[] = new String[arraySize];
-	private Image grass, wall, start, finish, fog;
+	private Image ground, wall, start, finish, fog;
 	private String mapName = "Map.txt";
 	
 	
 	public Map() {
-		ImageIcon img = new ImageIcon("src/resources/grass.png");
-		grass = img.getImage();
+		ImageIcon img = new ImageIcon("src/resources/water.png");
+		ground = img.getImage();
 		img = new ImageIcon("src/resources/wall.png");
 		wall = img.getImage();
 		img = new ImageIcon("src/resources/start.png");
@@ -35,8 +35,8 @@ public class Map {
 		setStartLocation();
 	}
 	
-	public Image getGrass() {
-		return grass;
+	public Image getGround() {
+		return ground;
 	}
 	
 	public Image getWall() {

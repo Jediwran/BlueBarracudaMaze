@@ -35,7 +35,7 @@ public class Board extends JPanel implements ActionListener {
 		for(int y = 0; y < 14; y++) {
 			for(int x = 0; x < 14; x++) {
 				if(m.getMap(x, y).equals("g")){
-					g.drawImage(m.getGrass(), x * 32, y *32, null);
+					g.drawImage(m.getGround(), x * 32, y *32, null);
 				}
 				if(m.getMap(x, y).equals("w")){
 					g.drawImage(m.getWall(), x * 32, y *32, null);
