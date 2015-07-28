@@ -10,11 +10,14 @@ public class Board extends JPanel implements ActionListener {
 	private Timer timer;
 	private Map m;
 	private Player p;
+	private Fog f;
 	
 	public Board() {
 		m = new Map();
 		p = new Player();
+		f = new Fog();
 		p.setPlayerStart(m.getStartX(), m.getStartY());
+		f.createFog(p.getTileX(), p.getTileY());
 		addKeyListener(new Al());
 		setFocusable(true);
 		
@@ -46,6 +49,14 @@ public class Board extends JPanel implements ActionListener {
 			}
 		}
 		g.drawImage(p.getPlayer(), p.getX(), p.getY(), null);
+		int[][] fog = f.getFogMap();
+		for(int i = 0; i < 14; i++){
+			for(int j = 0; j < 14; j++){
+				if(fog[i][j] == 1){
+					g.drawImage(m.getFog(),i * 32, j * 32, null);
+				}
+			}
+		}
 	}
 	
 	public class Al extends KeyAdapter {
