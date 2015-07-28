@@ -12,7 +12,7 @@ public class Map {
 	private int startX = 0;
 	private int startY = 0;
 	private String Map[] = new String[arraySize];
-	private Image ground, wall, start, finish, fog;
+	private Image ground, wall, start, finish;
 	private String mapName = "Map.txt";
 	
 	
@@ -24,9 +24,7 @@ public class Map {
 		img = new ImageIcon("src/resources/start.png");
 		start = img.getImage();
 		img = new ImageIcon("src/resources/finish.png");
-		finish = img.getImage();
-		img = new ImageIcon("src/resources/fog.png");
-		fog = img.getImage();
+		finish = img.getImage();		
 		
 		openFile();
 		readFile();
@@ -49,10 +47,6 @@ public class Map {
 	
 	public Image getStart() {
 		return start;
-	}
-	
-	public Image getFog() {
-		return fog;
 	}
 	
 	public String getMap(int x, int y) {

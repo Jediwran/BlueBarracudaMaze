@@ -53,7 +53,7 @@ public class Board extends JPanel implements ActionListener {
 		for(int i = 0; i < 14; i++){
 			for(int j = 0; j < 14; j++){
 				if(fog[i][j] == 1){
-					g.drawImage(m.getFog(),i * 32, j * 32, null);
+					g.drawImage(f.getFog(),i * 32, j * 32, null);
 				}
 			}
 		}
