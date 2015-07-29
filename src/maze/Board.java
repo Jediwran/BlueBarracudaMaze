@@ -99,24 +99,28 @@ public class Board extends JPanel implements ActionListener {
 				if(!m.getMap(p.getTileX(), p.getTileY() - 1).equals("w")) {
 					p.move(0, -32, 0, -1);
 					stepCount++;
+					f.reFog(p.getTileX(), p.getTileY(), "U");
 				}
 			}
 			if(keycode == KeyEvent.VK_S || keycode == KeyEvent.VK_DOWN){
 				if(!m.getMap(p.getTileX(), p.getTileY() + 1).equals("w")) {
 					p.move(0, 32, 0, 1);
 					stepCount++;
+					f.reFog(p.getTileX(), p.getTileY(), "D");
 				}
 			}
 			if(keycode == KeyEvent.VK_A || keycode == KeyEvent.VK_LEFT){
 				if(!m.getMap(p.getTileX() - 1, p.getTileY()).equals("w")) {
 					p.move(-32, 0, -1, 0);
 					stepCount++;
+					f.reFog(p.getTileX(), p.getTileY(), "L");
 				}
 			}
 			if(keycode == KeyEvent.VK_D || keycode == KeyEvent.VK_RIGHT){
 				if(!m.getMap(p.getTileX() + 1, p.getTileY()).equals("w")) {
 					p.move(32, 0, 1, 0);
 					stepCount++;
+					f.reFog(p.getTileX(), p.getTileY(), "R");
 				}
 			}
 		}
@@ -135,7 +139,7 @@ public class Board extends JPanel implements ActionListener {
 				System.exit(0);
 			}
 			
-			f.reFog(p.getTileX(), p.getTileY());
+			
 		}
 		
 		public void keyTyped(KeyEvent e) {
