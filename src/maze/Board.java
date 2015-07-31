@@ -16,20 +16,21 @@ public class Board extends JPanel implements ActionListener {
 	private Player p;
 	private Fisherman fisherMan;
 	private Fog f;
-	private int stepCount, caughtCounter, direction;
+	private int stepCount, caughtCounter, level, direction;
 	private boolean fogEnabled = true;
 	private boolean caught = false;
 	
 	public Board() {
 		stepCount = 0;
 		caughtCounter = 0;
+		level = 1;
 		m = new Map();
 		p = new Player();
 		fisherMan = new Fisherman();
 		f = new Fog();
 		direction = 3;
 		p.setPlayerStart(m.getStartX(), m.getStartY());
-		randomStartFisherman();
+		randomStartFisherman(fisherMan);
 		
 		System.out.println("FM: (" + fisherMan.getFishermanTileX() + ", " + fisherMan.getFishermanTileY() + ") F: (" + p.getTileX() + ", " + p.getTileY() + ")");
 		
@@ -90,7 +91,6 @@ public class Board extends JPanel implements ActionListener {
 			}
 		}
 		g.drawImage(drawPlayer(), p.getX(), p.getY(), null);
-		g.drawImage(fisherMan.getFisherman(), fisherMan.getFishermanX(), fisherMan.getFishermanY(), null);
 		int[][] fog = f.getFogMap();
 		if(fogEnabled){
 			for(int i = 0; i < 14; i++){
@@ -104,9 +104,12 @@ public class Board extends JPanel implements ActionListener {
 				}
 			}
 		}
+		if(fog[fisherMan.getFishermanTileX()][fisherMan.getFishermanTileY()] == 0){
+			g.drawImage(fisherMan.getFisherman(), fisherMan.getFishermanX(), fisherMan.getFishermanY(), null);
+		}
 	}
 	
-	public void randomStartFisherman() {
+	public void randomStartFisherman(Fisherman f) {
 		Random rand = new Random();
 		int randX = rand.nextInt(13);
 		int randY = rand.nextInt(13);
@@ -115,7 +118,7 @@ public class Board extends JPanel implements ActionListener {
 			randY = rand.nextInt(13);
 		}
 		if(m.getMap(randX, randY).equals("w")) {
-			fisherMan.setFishermanStartLocation(randX, randY);
+			f.setFishermanStartLocation(randX, randY);
 		}
 	}
 	
@@ -218,7 +221,7 @@ public class Board extends JPanel implements ActionListener {
 	public void fishermanCaughtFish() {
 		JOptionPane.showMessageDialog(new JFrame(), "You have been caught! \nFisherman released you back into the water.");
 		caught = false;
-		randomStartFisherman();	
+		randomStartFisherman(fisherMan);	
 		moveFishToStart();
 		caughtCounter++;
 	}
