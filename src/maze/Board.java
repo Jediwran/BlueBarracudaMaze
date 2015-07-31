@@ -237,7 +237,9 @@ public class Board extends JPanel implements ActionListener {
 	}
 	
 	public void moveFishToStart(){
+		f.reFog(p.getTileX(), p.getTileY(), "C");
 		p.setPlayerStart(m.getStartX(), m.getStartY());
+		f.iAmHereFog(m.getStartX(), m.getStartY());
 	}
 	
 	public void isFishermanNear() {

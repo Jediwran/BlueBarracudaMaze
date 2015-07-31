@@ -16,9 +16,8 @@ public class Fog {
 		img = new ImageIcon("src/resources/fog-opaque.png");
 		fogOpaque = img.getImage();
 	}
-		
-	public void reFog(int x, int y,String direction) {
-		//Sets the current occupied space to visible
+	
+	public void iAmHereFog(int x, int y){
 		fogMap[x][y] = 0;
 		fogMap[x-1][y] = 0;
 		fogMap[x-1][y+1] = 0;
@@ -28,31 +27,55 @@ public class Fog {
 		fogMap[x+1][y-1] = 0;
 		fogMap[x][y+1] = 0;
 		fogMap[x][y-1] = 0;
+	}
+	
+	
+	public void reFog(int x, int y,String direction) {
+		//Sets the current occupied space to visible
 		
 		switch(direction){
 			case "U":{
 				fogMap[x-1][y+2] = 2;
 				fogMap[x][y+2] = 2;
 				fogMap[x+1][y+2] = 2;
+				iAmHereFog(x,y);
 				break;
 			}
 			case "D":{
 				fogMap[x-1][y-2] = 2;
 				fogMap[x][y-2] = 2;
 				fogMap[x+1][y-2] = 2;
+				iAmHereFog(x,y);
 				break;
 			}
 			case "L":{
 				fogMap[x+2][y-1] = 2;
 				fogMap[x+2][y] = 2;
 				fogMap[x+2][y+1] = 2;
+				iAmHereFog(x,y);
 				break;
 			}
 			case "R":{
 				fogMap[x-2][y-1] = 2;
 				fogMap[x-2][y] = 2;
 				fogMap[x-2][y+1] = 2;
+				iAmHereFog(x,y);
 				break;
+			}
+			//reset fish to starting position when caught
+			case "C":{
+				fogMap[x][y] = 2;
+				fogMap[x-1][y] = 2;
+				fogMap[x-1][y+1] = 2;
+				fogMap[x-1][y-1] = 2;
+				fogMap[x+1][y] = 2;
+				fogMap[x+1][y+1] = 2;
+				fogMap[x+1][y-1] = 2;
+				fogMap[x][y+1] = 2;
+				fogMap[x][y-1] = 2;
+			}
+			default:{
+				//code for bad argument here
 			}
 		}
 		
