@@ -6,13 +6,22 @@ import javax.swing.ImageIcon;
 public class Player {
 
 	private int x, y, tileX, tileY;
-	private Image player;
+	private Image player, playerDown, playerRight, playerUp;
 	//private String playerFile = "src/resources/player.png";
 	private String playerFile = "src/resources/fish.png";
+	private String playerDownFile = "src/resources/fish_down.png";
+	private String playerRightFile = "src/resources/fish_right.png";
+	private String playerUpFile = "src/resources/fish_up.png";
 	
 	public Player() {
 		ImageIcon img = new ImageIcon(playerFile);
 		player = img.getImage();
+		img = new ImageIcon(playerDownFile);
+		playerDown = img.getImage();
+		img = new ImageIcon(playerRightFile);
+		playerRight = img.getImage();
+		img = new ImageIcon(playerUpFile);
+		playerUp = img.getImage();
 	}
 	
 	public void setPlayerStart(int tX, int tY) {
@@ -30,6 +39,18 @@ public class Player {
 	
 	public Image getPlayer() {
 		return player;
+	}
+	
+	public Image getPlayerDown(){
+		return playerDown;
+	}
+	
+	public Image getPlayerRight(){
+		return playerRight;
+	}
+	
+	public Image getPlayerUp(){
+		return playerUp;
 	}
 	
 	public int getX() {

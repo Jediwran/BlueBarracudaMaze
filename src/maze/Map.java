@@ -49,6 +49,10 @@ public class Map {
 		return start;
 	}
 	
+	public int getMapSize() {
+		return Map.length;
+	}
+	
 	public String getMap(int x, int y) {
 		String index = Map[y].substring(x, x + 1);
 		return index;

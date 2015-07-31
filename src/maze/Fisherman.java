@@ -8,10 +8,12 @@ import javax.swing.ImageIcon;
 public class Fisherman {
 	
 	private Image fisherman;
-	private int x, y, tileX, tileY;
+	private int x, y, tileX, tileY, direction;
 	private String fishermanFile = "src/resources/player.png";
+	private Map m;
 	
 	public Fisherman() {
+		m = new Map();
 		ImageIcon img = new ImageIcon(fishermanFile);
 		fisherman = img.getImage();
 	}
@@ -36,7 +38,7 @@ public class Fisherman {
 		return tileY;
 	}
 	
-	public void setFishermanLocation(int dx, int dy) {
+	public void setFishermanStartLocation(int dx, int dy) {
 		x = dx * 32;
 		y = dy * 32;
 		
@@ -44,7 +46,11 @@ public class Fisherman {
 		tileY = dy;
 	}
 	
-	public void moveFisherman() {
+	public void move(int dx, int dy, int tx, int ty){
+		x += tx * 32;
+		y += ty * 32;
 		
+		tileX += tx;
+		tileY += ty;
 	}
 }
