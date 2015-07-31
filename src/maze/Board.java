@@ -17,12 +17,15 @@ public class Board extends JPanel implements ActionListener {
 	private Fisherman[] fisherMen;
 	private Fog f;
 	private int stepCount, caughtCounter,direction;
-	int level = 0;
+	private int mapSize = 14;
+	private int level = 0;
 	private boolean fogEnabled = true;
 	private boolean caught = false;
 	
 	public Board() {
 		m = new Map();
+		m.setSize(mapSize);
+		m.setupMap();
 		p = new Player();
 		f = new Fog();
 		addKeyListener(new Al());
@@ -79,14 +82,13 @@ public class Board extends JPanel implements ActionListener {
 	
 	public void paint(Graphics g) {
 		super.paint(g);
-		
-		for(int y = 0; y < 14; y++) {
-			for(int x = 0; x < 14; x++) {
+		for(int y = 0; y < m.getMapSize(); y++) {
+			for(int x = 0; x < m.getMapSize(); x++) {
 				if(m.getMap(x, y).equals("g")){
-					g.drawImage(m.getGround(), x * 32, y *32, null);
+					g.drawImage(m.getGround(), x * 32, y * 32, null);
 				}
 				if(m.getMap(x, y).equals("w")){
-					g.drawImage(m.getWall(), x * 32, y *32, null);
+					g.drawImage(m.getWall(), x * 32, y * 32, null);
 				}
 				if(m.getMap(x, y).equals("f")){
 					g.drawImage(m.getFinish(), x * 32, y * 32, null);
@@ -120,6 +122,9 @@ public class Board extends JPanel implements ActionListener {
 		if(fog[fisherman.getFishermanTileX()][fisherman.getFishermanTileY()] == 0){
 			g.drawImage(fisherman.getFisherman(), fisherman.getFishermanX(), fisherman.getFishermanY(), null);
 		}
+		g.setColor(new Color(255,255,255));
+		g.setFont(new Font("default", Font.BOLD, 16));
+		g.drawString("Level: " + level, 16, 24);
 	}
 	
 	public void randomStartFisherman(Fisherman f) {
@@ -135,94 +140,43 @@ public class Board extends JPanel implements ActionListener {
 		}
 	}
 	
-	/*public void moveFishermanCloser() {
-		boolean fishermanMoved = false;
-		int fishermanX = fisherMan.getFishermanTileX();
-		int fishermanY = fisherMan.getFishermanTileY();
-		while (!fishermanMoved){
-			int direction = new Random().nextInt(4);
-			switch(direction){
-				case 0 : {				
-					if(!(fishermanY - 1 < 0) && m.getMap(fishermanX, fishermanY - 1).equals("w")) {
-						//fisherMan.setFishermanLocation(fishermanX, fishermanY - 1);
-						fisherMan.move(0, -32, 0, -1);
-						fishermanMoved = true;
-					} else{
-						moveFisherman();
-					}
-					break;
-				}
-				case 1 : {
-					if(!(fishermanX + 1 > m.getMapSize() - 1) && m.getMap(fishermanX + 1, fishermanY).equals("w")) {
-						//fisherMan.setFishermanLocation(fishermanX + 1, fishermanY);
-						fisherMan.move(32, 0, 1, 0);
-						fishermanMoved = true;
-					} else{
-						moveFisherman();
-					}
-					break;
-				}
-				case 2 : {
-					if(!(fishermanY + 1 > m.getMapSize() - 1) && m.getMap(fishermanX, fishermanY + 1).equals("w")) {
-						//fisherMan.setFishermanLocation(fishermanX, fishermanY + 1);
-						fisherMan.move(0, 32, 0, 1);
-						fishermanMoved = true;
-					} else{
-						moveFisherman();
-					}
-					break;
-				}
-				case 3 : {
-					if(!(fishermanX - 1 < 0) && m.getMap(fishermanX - 1, fishermanY).equals("w")) {
-						//fisherMan.setFishermanLocation(fishermanX - 1, fishermanY);
-						fisherMan.move(-32, 0, -1, 0);
-						fishermanMoved = true;
-					} else{
-						moveFisherman();
-					}
-					break;
-				}
-			}
-		}
-	}*/
-	
 	public void moveFisherman() {
-		for(int i = 0; i < fisherMen.length; i++){
+		for(Fisherman fm : fisherMen){
 			boolean fishermanMoved = false;
 			while (!fishermanMoved){
 				int direction = new Random().nextInt(4);
 				switch(direction){
 					case 0 : {
-							if(!(fisherMen[i].getFishermanTileY() - 1 < 0) && m.getMap(fisherMen[i].getFishermanTileX(), fisherMen[i].getFishermanTileY() - 1).equals("w")) {
+							if(!(fm.getFishermanTileY() - 1 < 0) && m.getMap(fm.getFishermanTileX(), fm.getFishermanTileY() - 1).equals("w")) {
 								//fisherMan.setFishermanLocation(fishermanX, fishermanY - 1);
 								fishermanMoved = true;
-								fisherMen[i].move(0, -32, 0, -1);
+								fm.move(0, -32, 0, -1);
 								break;
 							}
 						break;
 					}
 					case 1 : {
-							if(!(fisherMen[i].getFishermanTileX() + 1 > m.getMapSize() - 1) && m.getMap(fisherMen[i].getFishermanTileX() + 1, fisherMen[i].getFishermanTileY()).equals("w")) {
+							if(!(fm.getFishermanTileX() + 1 > m.getMapSize() - 1) && m.getMap(fm.getFishermanTileX() + 1, fm.getFishermanTileY()).equals("w")) {
 								//fisherMan.setFishermanLocation(fishermanX + 1, fishermanY);
-								fisherMen[i].move(32, 0, 1, 0);
+								fm.move(32, 0, 1, 0);
 								fishermanMoved = true;
 								break;
 							}
 						break;
 					}
 					case 2 : {
-							if(!(fisherMen[i].getFishermanTileY() + 1 > m.getMapSize() - 1) && m.getMap(fisherMen[i].getFishermanTileX(), fisherMen[i].getFishermanTileY() + 1).equals("w")) {
+							if(!(fm.getFishermanTileY() + 1 > m.getMapSize() - 1) && m.getMap(fm.getFishermanTileX(), fm.getFishermanTileY() + 1).equals("w")) {
 								//fisherMan.setFishermanLocation(fishermanX, fishermanY + 1);
-								fisherMen[i].move(0, 32, 0, 1);
+								fm.move(0, 32, 0, 1);
 								fishermanMoved = true;
 								break;
 						}
 						break;
 					}
 					case 3 : {
-							if(!(fisherMen[i].getFishermanTileX() - 1 < 0) && m.getMap(fisherMen[i].getFishermanTileX() - 1, fisherMen[i].getFishermanTileY()).equals("w")) {
+							if(!(fm.getFishermanTileX() - 1 < 0) && m.getMap(fm.getFishermanTileX() - 1, fm.getFishermanTileY()).equals("w")) {
 								//fisherMan.setFishermanLocation(fishermanX - 1, fishermanY);
-								fisherMen[i].move(-32, 0, -1, 0);
+								fm.move(-32, 0, -1, 0);
 								fishermanMoved = true;
 								break;
 						}

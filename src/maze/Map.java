@@ -8,15 +8,16 @@ import javax.swing.ImageIcon;
 public class Map {
 	
 	private Scanner m;
-	private int arraySize = 14;
+	private int arraySize;
 	private int startX = 0;
 	private int startY = 0;
-	private String Map[] = new String[arraySize];
+	private String Map[];
 	private Image ground, wall, start, finish;
 	private String mapName = "Map.txt";
 	
 	
 	public Map() {
+		//arraySize = 14;
 		ImageIcon img = new ImageIcon("src/resources/water.png");
 		ground = img.getImage();
 		img = new ImageIcon("src/resources/wall.png");
@@ -25,7 +26,8 @@ public class Map {
 		start = img.getImage();
 		img = new ImageIcon("src/resources/finish.png");
 		finish = img.getImage();		
-		
+	}
+	public void setupMap(){
 		openFile();
 		readFile();
 		closeFile();
@@ -47,6 +49,11 @@ public class Map {
 	
 	public Image getStart() {
 		return start;
+	}
+	
+	public void setSize(int size){
+		arraySize = size;
+		Map = new String[arraySize];
 	}
 	
 	public int getMapSize() {
