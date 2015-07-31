@@ -14,29 +14,35 @@ public class Board extends JPanel implements ActionListener {
 	private long sTime, eTime;
 	private Map m;
 	private Player p;
-	private Fisherman fisherMan;
+	private Fisherman[] fisherMen;
 	private Fog f;
-	private int stepCount, caughtCounter, level, direction;
+	private int stepCount, caughtCounter,direction;
+	int level = 0;
 	private boolean fogEnabled = true;
 	private boolean caught = false;
 	
 	public Board() {
-		stepCount = 0;
-		caughtCounter = 0;
-		level = 1;
 		m = new Map();
 		p = new Player();
-		fisherMan = new Fisherman();
 		f = new Fog();
-		direction = 3;
-		p.setPlayerStart(m.getStartX(), m.getStartY());
-		randomStartFisherman(fisherMan);
-		
-		System.out.println("FM: (" + fisherMan.getFishermanTileX() + ", " + fisherMan.getFishermanTileY() + ") F: (" + p.getTileX() + ", " + p.getTileY() + ")");
-		
-		f.createFog(p.getTileX(), p.getTileY());
 		addKeyListener(new Al());
 		setFocusable(true);
+		startLevel();
+	}
+	
+	public void startLevel(){
+		stepCount = 0;
+		caughtCounter = 0;
+		level += 1;
+		fisherMen = new Fisherman[level];
+		for(int i = 0; i < level; i++){
+			fisherMen[i] = new Fisherman();
+		}
+		direction = 3;
+		p.setPlayerStart(m.getStartX(), m.getStartY());
+		randomStartFisherman(fisherMen[level - 1]);
+		
+		f.createFog(p.getTileX(), p.getTileY());
 		
 		//sTime = LocalTime.now();
 		sTime = System.currentTimeMillis();
@@ -93,8 +99,8 @@ public class Board extends JPanel implements ActionListener {
 		g.drawImage(drawPlayer(), p.getX(), p.getY(), null);
 		int[][] fog = f.getFogMap();
 		if(fogEnabled){
-			for(int i = 0; i < 14; i++){
-				for(int j = 0; j < 14; j++){
+			for(int i = 0; i < fog.length; i++){
+				for(int j = 0; j < fog.length; j++){
 					if(fog[i][j] == 1){
 						g.drawImage(f.getFog(),i * 32, j * 32, null);
 					}
@@ -103,9 +109,16 @@ public class Board extends JPanel implements ActionListener {
 					}
 				}
 			}
+		} else {
+			for(int i = 0; i < fog.length; i++){
+				for(int j = 0; j < fog.length; j++){
+					fog[i][j] = 0;
+				}
+			}
 		}
-		if(fog[fisherMan.getFishermanTileX()][fisherMan.getFishermanTileY()] == 0){
-			g.drawImage(fisherMan.getFisherman(), fisherMan.getFishermanX(), fisherMan.getFishermanY(), null);
+		for (Fisherman fisherman : fisherMen)
+		if(fog[fisherman.getFishermanTileX()][fisherman.getFishermanTileY()] == 0){
+			g.drawImage(fisherman.getFisherman(), fisherman.getFishermanX(), fisherman.getFishermanY(), null);
 		}
 	}
 	
@@ -174,45 +187,47 @@ public class Board extends JPanel implements ActionListener {
 	}*/
 	
 	public void moveFisherman() {
-		boolean fishermanMoved = false;
-		while (!fishermanMoved){
-			int direction = new Random().nextInt(4);
-			switch(direction){
-				case 0 : {				
-					if(!(fisherMan.getFishermanTileY() - 1 < 0) && m.getMap(fisherMan.getFishermanTileX(), fisherMan.getFishermanTileY() - 1).equals("w")) {
-						//fisherMan.setFishermanLocation(fishermanX, fishermanY - 1);
-						fishermanMoved = true;
-						fisherMan.move(0, -32, 0, -1);
+		for(int i = 0; i < fisherMen.length; i++){
+			boolean fishermanMoved = false;
+			while (!fishermanMoved){
+				int direction = new Random().nextInt(4);
+				switch(direction){
+					case 0 : {
+							if(!(fisherMen[i].getFishermanTileY() - 1 < 0) && m.getMap(fisherMen[i].getFishermanTileX(), fisherMen[i].getFishermanTileY() - 1).equals("w")) {
+								//fisherMan.setFishermanLocation(fishermanX, fishermanY - 1);
+								fishermanMoved = true;
+								fisherMen[i].move(0, -32, 0, -1);
+								break;
+							}
 						break;
 					}
-					break;
-				}
-				case 1 : {
-					if(!(fisherMan.getFishermanTileX() + 1 > m.getMapSize() - 1) && m.getMap(fisherMan.getFishermanTileX() + 1, fisherMan.getFishermanTileY()).equals("w")) {
-						//fisherMan.setFishermanLocation(fishermanX + 1, fishermanY);
-						fisherMan.move(32, 0, 1, 0);
-						fishermanMoved = true;
+					case 1 : {
+							if(!(fisherMen[i].getFishermanTileX() + 1 > m.getMapSize() - 1) && m.getMap(fisherMen[i].getFishermanTileX() + 1, fisherMen[i].getFishermanTileY()).equals("w")) {
+								//fisherMan.setFishermanLocation(fishermanX + 1, fishermanY);
+								fisherMen[i].move(32, 0, 1, 0);
+								fishermanMoved = true;
+								break;
+							}
 						break;
 					}
-					break;
-				}
-				case 2 : {
-					if(!(fisherMan.getFishermanTileY() + 1 > m.getMapSize() - 1) && m.getMap(fisherMan.getFishermanTileX(), fisherMan.getFishermanTileY() + 1).equals("w")) {
-						//fisherMan.setFishermanLocation(fishermanX, fishermanY + 1);
-						fisherMan.move(0, 32, 0, 1);
-						fishermanMoved = true;
+					case 2 : {
+							if(!(fisherMen[i].getFishermanTileY() + 1 > m.getMapSize() - 1) && m.getMap(fisherMen[i].getFishermanTileX(), fisherMen[i].getFishermanTileY() + 1).equals("w")) {
+								//fisherMan.setFishermanLocation(fishermanX, fishermanY + 1);
+								fisherMen[i].move(0, 32, 0, 1);
+								fishermanMoved = true;
+								break;
+						}
 						break;
 					}
-					break;
-				}
-				case 3 : {
-					if(!(fisherMan.getFishermanTileX() - 1 < 0) && m.getMap(fisherMan.getFishermanTileX() - 1, fisherMan.getFishermanTileY()).equals("w")) {
-						//fisherMan.setFishermanLocation(fishermanX - 1, fishermanY);
-						fisherMan.move(-32, 0, -1, 0);
-						fishermanMoved = true;
+					case 3 : {
+							if(!(fisherMen[i].getFishermanTileX() - 1 < 0) && m.getMap(fisherMen[i].getFishermanTileX() - 1, fisherMen[i].getFishermanTileY()).equals("w")) {
+								//fisherMan.setFishermanLocation(fishermanX - 1, fishermanY);
+								fisherMen[i].move(-32, 0, -1, 0);
+								fishermanMoved = true;
+								break;
+						}
 						break;
 					}
-					break;
 				}
 			}
 		}
@@ -221,20 +236,24 @@ public class Board extends JPanel implements ActionListener {
 	public void fishermanCaughtFish() {
 		JOptionPane.showMessageDialog(new JFrame(), "You have been caught! \nFisherman released you back into the water.");
 		caught = false;
-		randomStartFisherman(fisherMan);	
+		for(Fisherman fm : fisherMen){
+			randomStartFisherman(fm);
+		}
 		moveFishToStart();
 		caughtCounter++;
 	}
 	
 	public boolean isFishCaught() {
-		if(fisherMan.getFishermanTileX() + 1 == p.getTileX() && (fisherMan.getFishermanTileY() == p.getTileY())){
-			caught = true;
-		} else if(fisherMan.getFishermanTileX() - 1 == p.getTileX() && (fisherMan.getFishermanTileY() == p.getTileY())){
-			caught = true;
-		}else if(fisherMan.getFishermanTileX() == p.getTileX() && fisherMan.getFishermanTileY() == p.getTileY() + 1){
-			caught = true;
-		}else if(fisherMan.getFishermanTileX() == p.getTileX() && fisherMan.getFishermanTileY() == p.getTileY() - 1){
-			caught = true;
+		for(Fisherman fm : fisherMen){
+			if(fm.getFishermanTileX() + 1 == p.getTileX() && (fm.getFishermanTileY() == p.getTileY())){
+				caught = true;
+			} else if(fm.getFishermanTileX() - 1 == p.getTileX() && (fm.getFishermanTileY() == p.getTileY())){
+				caught = true;
+			}else if(fm.getFishermanTileX() == p.getTileX() && fm.getFishermanTileY() == p.getTileY() + 1){
+				caught = true;
+			}else if(fm.getFishermanTileX() == p.getTileX() && fm.getFishermanTileY() == p.getTileY() - 1){
+				caught = true;
+			}
 		}
 		return caught;
 	}
@@ -250,10 +269,24 @@ public class Board extends JPanel implements ActionListener {
 		if(isFishCaught()){
 			fishermanCaughtFish();
 		}
-		else{
+		/*else{
 			System.out.println("Tiles: FM: (" + fisherMan.getFishermanTileX() + ", " + fisherMan.getFishermanTileY() + ") F: (" + p.getTileX() + ", " + p.getTileY() + ")");
 			System.out.println("FM: (" + fisherMan.getFishermanX() + ", " + fisherMan.getFishermanY() + ") F: (" + p.getX() + ", " + p.getY() + ")");
-		}
+		}*/
+	}
+	
+	public void createNewFisherman(){
+		Fisherman[] newFisherman = new Fisherman[level + 1];
+		System.arraycopy(fisherMen, 0, newFisherman, 0, level);
+		newFisherman[level + 1] = new Fisherman();
+		fisherMen = new Fisherman[level + 1];
+		System.arraycopy(newFisherman, 0, fisherMen, 0, level + 1);
+	}
+	
+	//TODO: Need to make a new map, and increment fisherman by level number
+	public void nextLevel(){
+		//System.exit(0);
+		startLevel();
 	}
 	
 	public class Al extends KeyAdapter {
@@ -307,8 +340,8 @@ public class Board extends JPanel implements ActionListener {
  		        long minutes = seconds / 60;
 			    long secondsRemaining = seconds % 60;
 			    String time = minutes + "m : " + secondsRemaining + "s";
-				JOptionPane.showMessageDialog(new JFrame(), "You have won! \n Your Time: " + time + " \nSteps Taken: " + stepCount + "\nTimes Caught: " + caughtCounter);
-				System.exit(0);
+				JOptionPane.showMessageDialog(new JFrame(), "You have won! \nLevel: " + level + "\nYour Time: " + time + " \nSteps Taken: " + stepCount + "\nTimes Caught: " + caughtCounter);
+				nextLevel();
 			}
 			
 			

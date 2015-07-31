@@ -8,7 +8,6 @@ public class Fog {
 	private Image fog, fogOpaque;
 	private int fogMapSize = 14;
 	private int[][] fogMap = new int[fogMapSize][fogMapSize];
-	private String left;
 	
 	public Fog(){
 		ImageIcon img = new ImageIcon("src/resources/fog.png");

@@ -1,19 +1,16 @@
 package maze;
 
 import java.awt.Image;
-import java.util.Random;
 
 import javax.swing.ImageIcon;
 
 public class Fisherman {
 	
 	private Image fisherman;
-	private int x, y, tileX, tileY, direction;
+	private int x, y, tileX, tileY;
 	private String fishermanFile = "src/resources/player.png";
-	private Map m;
 	
 	public Fisherman() {
-		m = new Map();
 		ImageIcon img = new ImageIcon(fishermanFile);
 		fisherman = img.getImage();
 	}
