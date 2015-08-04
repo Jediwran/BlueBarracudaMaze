@@ -245,10 +245,6 @@ public class Board extends JPanel implements ActionListener {
 		if(isFishCaught()){
 			fishermanCaughtFish();
 		}
-		/*else{
-			System.out.println("Tiles: FM: (" + fisherMan.getFishermanTileX() + ", " + fisherMan.getFishermanTileY() + ") F: (" + p.getTileX() + ", " + p.getTileY() + ")");
-			System.out.println("FM: (" + fisherMan.getFishermanX() + ", " + fisherMan.getFishermanY() + ") F: (" + p.getX() + ", " + p.getY() + ")");
-		}*/
 	}
 	
 	public void createNewFisherman(){
@@ -259,10 +255,22 @@ public class Board extends JPanel implements ActionListener {
 		System.arraycopy(newFisherman, 0, fisherMen, 0, level + 1);
 	}
 	
-	//TODO: Need to make a new map, and increment fisherman by level number
-	public void nextLevel(){
-		//System.exit(0);
-		startLevel();
+	public void isFinish(){
+		if(m.getMap(p.getTileX(), p.getTileY()).equals("f")) {
+			repaint();
+			timer.stop();
+			//eTime = LocalTime.now();
+			eTime = System.currentTimeMillis();
+			long seconds = (eTime - sTime) / 1000;
+		        //long seconds = ChronoUnit.SECONDS.between(sTime, eTime);
+		        long minutes = seconds / 60;
+		    long secondsRemaining = seconds % 60;
+		    String time = minutes + "m : " + secondsRemaining + "s";
+			JOptionPane.showMessageDialog(new JFrame(), "You have won! \nLevel: " + level + "\nYour Time: " + time + " \nSteps Taken: " + stepCount + "\nTimes Caught: " + caughtCounter);
+			startLevel();
+		}else{
+			isFishermanNear();
+		}
 	}
 	
 	public class Al extends KeyAdapter {
@@ -274,7 +282,7 @@ public class Board extends JPanel implements ActionListener {
 					direction = 0;
 					stepCount++;
 					f.reFog(p.getTileX(), p.getTileY(), "U");
-					isFishermanNear();
+					isFinish();
 				}
 			}
 			if(keycode == KeyEvent.VK_S || keycode == KeyEvent.VK_DOWN){
@@ -283,7 +291,7 @@ public class Board extends JPanel implements ActionListener {
 					direction = 2;
 					stepCount++;
 					f.reFog(p.getTileX(), p.getTileY(), "D");
-					isFishermanNear();
+					isFinish();
 				}
 			}
 			if(keycode == KeyEvent.VK_A || keycode == KeyEvent.VK_LEFT){
@@ -292,7 +300,7 @@ public class Board extends JPanel implements ActionListener {
 					direction = 3;
 					stepCount++;
 					f.reFog(p.getTileX(), p.getTileY(), "L");
-					isFishermanNear();
+					isFinish();
 				}
 			}
 			if(keycode == KeyEvent.VK_D || keycode == KeyEvent.VK_RIGHT){
@@ -301,25 +309,12 @@ public class Board extends JPanel implements ActionListener {
 					direction = 1;
 					stepCount++;
 					f.reFog(p.getTileX(), p.getTileY(), "R");
-					isFishermanNear();
+					isFinish();
 				}
 			}
 		}
 		
 		public void keyReleased(KeyEvent e) {
-			if(m.getMap(p.getTileX(), p.getTileY()).equals("f")) {
-				timer.stop();
-				//eTime = LocalTime.now();
-				eTime = System.currentTimeMillis();
-				long seconds = (eTime - sTime) / 1000;
- 		        //long seconds = ChronoUnit.SECONDS.between(sTime, eTime);
- 		        long minutes = seconds / 60;
-			    long secondsRemaining = seconds % 60;
-			    String time = minutes + "m : " + secondsRemaining + "s";
-				JOptionPane.showMessageDialog(new JFrame(), "You have won! \nLevel: " + level + "\nYour Time: " + time + " \nSteps Taken: " + stepCount + "\nTimes Caught: " + caughtCounter);
-				nextLevel();
-			}
-			
 			
 		}
 		
