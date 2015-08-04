@@ -39,7 +39,7 @@ public class Board extends JPanel implements ActionListener {
 		stepCount = 0;
 		caughtCounter = 0;
 		level += 1;
-		m.setMapName(r.nextInt(4)+1);
+		m.setMapName(r.nextInt(8)+1);
 		m.setupMap();
 		fisherMen = new Fisherman[level];
 		for(int i = 0; i < level; i++){
