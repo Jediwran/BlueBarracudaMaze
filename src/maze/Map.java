@@ -13,8 +13,7 @@ public class Map {
 	private int startY = 0;
 	private String Map[];
 	private Image ground, wall, start, finish;
-	Random r = new Random();
-	private String mapName = "Map"+ (r.nextInt(5-1)+1) +".txt";
+	private String mapName;
 	
 	
 	public Map() {
@@ -87,7 +86,7 @@ public class Map {
 	
 	public void openFile() {
 		try{
-			m = new Scanner(new File("src/resources/" + mapName));
+			m = new Scanner(new File("src/resources/maps/" + mapName));
 		} catch(Exception e){
 			System.out.println("Error loading map");
 		}
@@ -119,5 +118,8 @@ public class Map {
 		}
 		
 		return allText;
+	}
+	public void setMapName(int mapNum){
+		mapName = "Map"+ mapNum +".txt";
 	}
 }

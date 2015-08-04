@@ -21,11 +21,13 @@ public class Board extends JPanel implements ActionListener {
 	private int level = 0;
 	private boolean fogEnabled = true;
 	private boolean caught = false;
+	private Random r = new Random();
+	private int lives = 5;
 	
 	public Board() {
 		m = new Map();
 		m.setSize(mapSize);
-		m.setupMap();
+		//m.setupMap();
 		p = new Player();
 		f = new Fog();
 		addKeyListener(new Al());
@@ -37,6 +39,8 @@ public class Board extends JPanel implements ActionListener {
 		stepCount = 0;
 		caughtCounter = 0;
 		level += 1;
+		m.setMapName(r.nextInt(4)+1);
+		m.setupMap();
 		fisherMen = new Fisherman[level];
 		for(int i = 0; i < level; i++){
 			fisherMen[i] = new Fisherman();
@@ -124,7 +128,7 @@ public class Board extends JPanel implements ActionListener {
 		}
 		g.setColor(new Color(255,255,255));
 		g.setFont(new Font("default", Font.BOLD, 16));
-		g.drawString("Level: " + level, 16, 24);
+		g.drawString("Level: " + level + "   Steps: " + stepCount + "   Lives: " + lives, 16, 24);
 	}
 	
 	public void randomStartFisherman(Fisherman f) {
@@ -195,6 +199,24 @@ public class Board extends JPanel implements ActionListener {
 		}
 		moveFishToStart();
 		caughtCounter++;
+		lives--;
+		if (lives ==0){
+			Object[] selectMenuOptions={"New Game", "Exit"};
+			int n = JOptionPane.showOptionDialog(null, "Select an option", "Game Over", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, selectMenuOptions, selectMenuOptions[0]);
+				switch (n) {
+				case 0:
+					level = 0;
+					lives = 5;
+					startLevel();
+					break;
+				case 1:
+					System.exit(0);
+					break;
+				default:
+					//you're an idiot, you shouldn't reach here!
+						break;
+				}
+		}
 	}
 	
 	public boolean isFishCaught() {
