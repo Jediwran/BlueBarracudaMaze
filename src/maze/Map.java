@@ -13,7 +13,8 @@ public class Map {
 	private int startY = 0;
 	private String Map[];
 	private Image ground, wall, start, finish;
-	private String mapName = "Map.txt";
+	Random r = new Random();
+	private String mapName = "Map"+ (r.nextInt(5-1)+1) +".txt";
 	
 	
 	public Map() {
