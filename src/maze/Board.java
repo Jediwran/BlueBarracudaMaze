@@ -133,12 +133,20 @@ public class Board extends JPanel implements ActionListener {
 	
 	public void randomStartFisherman(Fisherman f) {
 		Random rand = new Random();
-		int randX = rand.nextInt(13);
-		int randY = rand.nextInt(13);
-		while(!m.getMap(randX, randY).equals("w")){
+		int randX;
+		int randY;
+		
+		do{
+			do{
 			randX = rand.nextInt(13);
+			}while(Math.abs(m.getStartX()-randX) < 3);
+			
+			do{
 			randY = rand.nextInt(13);
-		}
+			}while(Math.abs(m.getStartY()-randY) < 3);
+			
+		}while(!m.getMap(randX, randY).equals("w"));
+		
 		if(m.getMap(randX, randY).equals("w")) {
 			f.setFishermanStartLocation(randX, randY);
 		}
