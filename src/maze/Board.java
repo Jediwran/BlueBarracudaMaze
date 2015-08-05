@@ -39,11 +39,33 @@ public class Board extends JPanel implements ActionListener {
 		for(int i = 0; i < numPlayers; i++){
 			player[i] = new Player();
 			player[i].setNumber(i);
+
+			selectPlayerColor(player[i]);
+			player[i].setPlayerImages();
 		}
 		f = new Fog();
 		addKeyListener(new Al());
 		setFocusable(true);
 		startLevel();
+	}
+	
+	public void selectPlayerColor(Player p){
+	Object[] selectMenuOptions={"Blue", "Orange", "Green", "Purple"};
+	int n = JOptionPane.showOptionDialog(null, "Player " + (p.getNumber()+1) + "Select Color of Fish", "Fish Color", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, selectMenuOptions, selectMenuOptions[0]);
+		switch (n) {
+		case 0:
+			p.setColor("blue");
+			break;
+		case 1:
+			p.setColor("orange");
+			break;
+		case 2:
+			p.setColor("green");
+			break;
+		case 3:
+			p.setColor("purple");
+			break;
+		}
 	}
 	
 	public void selectPlayerNumber(){
@@ -253,7 +275,7 @@ public class Board extends JPanel implements ActionListener {
 	}
 	
 	public void fishermanCaughtFish(Player p) {
-		JOptionPane.showMessageDialog(new JFrame(), "You have been caught! \nFisherman released you back into the water.");
+		JOptionPane.showMessageDialog(new JFrame(), "Player " + (p.getNumber()+1) + " You have been caught! \nFisherman released you back into the water.");
 		caught = false;
 		for(Fisherman fm : fisherMen){
 			randomStartFisherman(fm);
@@ -344,7 +366,9 @@ public class Board extends JPanel implements ActionListener {
 				isFinished = true;
 			}
 			if(!isFinished){
-				isFishermanNear(p);
+				for(Player checkPlayer: player){
+					isFishermanNear(checkPlayer);
+				}
 			}
 		//}
 		//if(m.getMap(player[0].getTileX(), player[0].getTileY()).equals("f") || m.getMap(player[1].getTileX(), player[1].getTileY()).equals("f")) {

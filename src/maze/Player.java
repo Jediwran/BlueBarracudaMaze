@@ -8,10 +8,10 @@ public class Player {
 	private int x, y, tileX, tileY, number;
 	private Image player, playerDown, playerRight, playerUp;
 	//private String playerFile = "src/resources/player.png";
-	private String playerFile = "src/resources/fish_left.png";
-	private String playerDownFile = "src/resources/fish_down.png";
-	private String playerRightFile = "src/resources/fish_right.png";
-	private String playerUpFile = "src/resources/fish_up.png";
+	private String playerFile = "src/resources/fish_left_";
+	private String playerDownFile = "src/resources/fish_down_";
+	private String playerRightFile = "src/resources/fish_right_";
+	private String playerUpFile = "src/resources/fish_up_";
 	private int playerLives = 5;
 	private int playerStepsTaken = 0;
 	private int TimesCaught = 0;
@@ -50,13 +50,17 @@ public class Player {
 	}
 
 	public Player() {
-		ImageIcon img = new ImageIcon(playerFile);
+		
+	}
+	
+	public void setPlayerImages(){
+		ImageIcon img = new ImageIcon(playerFile + color + ".png");
 		player = img.getImage();
-		img = new ImageIcon(playerDownFile);
+		img = new ImageIcon(playerDownFile + color + ".png");
 		playerDown = img.getImage();
-		img = new ImageIcon(playerRightFile);
+		img = new ImageIcon(playerRightFile + color + ".png");
 		playerRight = img.getImage();
-		img = new ImageIcon(playerUpFile);
+		img = new ImageIcon(playerUpFile + color + ".png");
 		playerUp = img.getImage();
 	}
 	
