@@ -14,6 +14,7 @@ public class Board extends JPanel implements ActionListener {
 	private long sTime, eTime;
 	private Map m;
 	private Player p;
+	private Player p2;
 	private Fisherman[] fisherMen;
 	private Fog f;
 	private int stepCount, caughtCounter,direction;
@@ -29,6 +30,7 @@ public class Board extends JPanel implements ActionListener {
 		m.setSize(mapSize);
 		//m.setupMap();
 		p = new Player();
+		p2 = new Player();
 		f = new Fog();
 		addKeyListener(new Al());
 		setFocusable(true);
@@ -45,18 +47,22 @@ public class Board extends JPanel implements ActionListener {
 		for(int i = 0; i < level; i++){
 			fisherMen[i] = new Fisherman();
 		}
+		//player 1
 		direction = 3;
 		p.setPlayerStart(m.getStartX(), m.getStartY());
+		//player 2
+		p2.setPlayerStart(m.getStartX(), m.getStartY());
 		randomStartFisherman(fisherMen[level - 1]);
-		
+		//player 1
 		f.createFog(p.getTileX(), p.getTileY());
+		//player 2
+		f.createFog(p2.getTileX(), p2.getTileY());
 		
 		//sTime = LocalTime.now();
 		sTime = System.currentTimeMillis();
 		timer = new Timer(25, this);
 		timer.start();
 	}
-	
 	public Image drawPlayer(){
 		Image temp = null;
 		switch(direction){
@@ -74,6 +80,22 @@ public class Board extends JPanel implements ActionListener {
 			}
 			case 3:{
 				temp = p.getPlayer();
+				break;
+			}
+			case 4:{
+				temp = p2.getPlayerUp();
+				break;
+			}
+			case 5:{
+				temp = p2.getPlayerDown();
+				break;
+			}
+			case 6:{
+				temp = p2.getPlayer();
+				break;
+			}
+			case 7:{
+				temp = p2.getPlayerRight();
 				break;
 			}
 		}
@@ -102,7 +124,10 @@ public class Board extends JPanel implements ActionListener {
 				}
 			}
 		}
+		//draw player 1
 		g.drawImage(drawPlayer(), p.getX(), p.getY(), null);
+		//Draw Player 2
+		g.drawImage(drawPlayer(), p2.getX(), p2.getY(), null);
 		int[][] fog = f.getFogMap();
 		if(fogEnabled){
 			for(int i = 0; i < fog.length; i++){
@@ -135,21 +160,33 @@ public class Board extends JPanel implements ActionListener {
 		Random rand = new Random();
 		int randX;
 		int randY;
-		
+		//int xIterate = 0;
+		//int yIterate = 0;
+		//int fIterate = 0;
+		//generate random number to assign placement of fisherman
+		//continues to generate a random number if position falls
+		//within 3 squares of the starting position
 		do{
+			//fIterate++; //iterator for Fisherman 
+			
 			do{
+			//xIterate++;	//iterator for x coordinate
 			randX = rand.nextInt(13);
 			}while(Math.abs(m.getStartX()-randX) < 3);
 			
 			do{
 			randY = rand.nextInt(13);
+			//yIterate++;	//iterator for y coordinate
 			}while(Math.abs(m.getStartY()-randY) < 3);
 			
+		//test that the location generated falls on a Wall "w" space	
 		}while(!m.getMap(randX, randY).equals("w"));
-		
-		if(m.getMap(randX, randY).equals("w")) {
+		//System.out.println("X generated " + xIterate + "x");		//displays the number of times the x value had to generate
+		//System.out.println("Y generated " + yIterate + "x");		//displays the number of times the y value had to generate
+		//System.out.println("FISHERMAN PLACED AFTER " + fIterate +" ATTEMPTS!");	//prints the number of times the fisherman coordinates had to be generated
+		//if(m.getMap(randX, randY).equals("w")) {
 			f.setFishermanStartLocation(randX, randY);
-		}
+		//}
 	}
 	
 	public void moveFisherman() {
@@ -229,13 +266,13 @@ public class Board extends JPanel implements ActionListener {
 	
 	public boolean isFishCaught() {
 		for(Fisherman fm : fisherMen){
-			if(fm.getFishermanTileX() + 1 == p.getTileX() && (fm.getFishermanTileY() == p.getTileY())){
+			if((fm.getFishermanTileX() + 1 == p.getTileX() && (fm.getFishermanTileY() == p.getTileY())) || (fm.getFishermanTileX() + 1 == p2.getTileX() && (fm.getFishermanTileY() == p2.getTileY()))){
 				caught = true;
-			} else if(fm.getFishermanTileX() - 1 == p.getTileX() && (fm.getFishermanTileY() == p.getTileY())){
+			} else if((fm.getFishermanTileX() - 1 == p.getTileX() && (fm.getFishermanTileY() == p.getTileY())) || (fm.getFishermanTileX() - 1 == p2.getTileX() && (fm.getFishermanTileY() == p2.getTileY()))){
 				caught = true;
-			}else if(fm.getFishermanTileX() == p.getTileX() && fm.getFishermanTileY() == p.getTileY() + 1){
+			}else if((fm.getFishermanTileX() == p.getTileX() && fm.getFishermanTileY() == p.getTileY() + 1) || (fm.getFishermanTileX() == p2.getTileX() && fm.getFishermanTileY() == p2.getTileY() + 1)){
 				caught = true;
-			}else if(fm.getFishermanTileX() == p.getTileX() && fm.getFishermanTileY() == p.getTileY() - 1){
+			}else if((fm.getFishermanTileX() == p.getTileX() && fm.getFishermanTileY() == p.getTileY() - 1) || (fm.getFishermanTileX() == p2.getTileX() && fm.getFishermanTileY() == p2.getTileY() - 1)){
 				caught = true;
 			}
 		}
@@ -243,9 +280,13 @@ public class Board extends JPanel implements ActionListener {
 	}
 	
 	public void moveFishToStart(){
+		//player one
 		f.reFog(p.getTileX(), p.getTileY(), "C");
 		p.setPlayerStart(m.getStartX(), m.getStartY());
 		f.iAmHereFog(m.getStartX(), m.getStartY());
+		//player two
+		p2.setPlayerStart(m.getStartX(), m.getStartY());
+		f.reFog(p2.getTileX(), p2.getTileY(), "C");
 	}
 	
 	public void isFishermanNear() {
@@ -264,7 +305,7 @@ public class Board extends JPanel implements ActionListener {
 	}
 	
 	public void isFinish(){
-		if(m.getMap(p.getTileX(), p.getTileY()).equals("f")) {
+		if(m.getMap(p.getTileX(), p.getTileY()).equals("f") || m.getMap(p2.getTileX(), p2.getTileY()).equals("f")) {
 			repaint();
 			timer.stop();
 			//eTime = LocalTime.now();
@@ -284,39 +325,84 @@ public class Board extends JPanel implements ActionListener {
 	public class Al extends KeyAdapter {
 		public void keyPressed(KeyEvent e) {
 			int keycode = e.getKeyCode();
-			if(keycode == KeyEvent.VK_W || keycode == KeyEvent.VK_UP){
+			if(keycode == KeyEvent.VK_UP){
 				if(!m.getMap(p.getTileX(), p.getTileY() - 1).equals("w")) {
 					p.move(0, -32, 0, -1);
 					direction = 0;
 					stepCount++;
 					f.reFog(p.getTileX(), p.getTileY(), "U");
+					f.iAmHereFog(p2.getTileX(), p2.getTileY());
 					isFinish();
 				}
 			}
-			if(keycode == KeyEvent.VK_S || keycode == KeyEvent.VK_DOWN){
+			if(keycode == KeyEvent.VK_DOWN){
 				if(!m.getMap(p.getTileX(), p.getTileY() + 1).equals("w")) {
 					p.move(0, 32, 0, 1);
 					direction = 2;
 					stepCount++;
 					f.reFog(p.getTileX(), p.getTileY(), "D");
+					f.iAmHereFog(p2.getTileX(), p2.getTileY());
 					isFinish();
 				}
 			}
-			if(keycode == KeyEvent.VK_A || keycode == KeyEvent.VK_LEFT){
+			if(keycode == KeyEvent.VK_LEFT){
 				if(!m.getMap(p.getTileX() - 1, p.getTileY()).equals("w")) {
 					p.move(-32, 0, -1, 0);
 					direction = 3;
 					stepCount++;
 					f.reFog(p.getTileX(), p.getTileY(), "L");
+					f.iAmHereFog(p2.getTileX(), p2.getTileY());
 					isFinish();
 				}
 			}
-			if(keycode == KeyEvent.VK_D || keycode == KeyEvent.VK_RIGHT){
+			if(keycode == KeyEvent.VK_RIGHT){
 				if(!m.getMap(p.getTileX() + 1, p.getTileY()).equals("w")) {
 					p.move(32, 0, 1, 0);
 					direction = 1;
 					stepCount++;
 					f.reFog(p.getTileX(), p.getTileY(), "R");
+					f.iAmHereFog(p2.getTileX(), p2.getTileY());
+					isFinish();
+				}
+			}
+			//Player 2 controls (WASD)
+			if(keycode == KeyEvent.VK_W){
+				if(!m.getMap(p2.getTileX(), p2.getTileY() - 1).equals("w")) {
+					p2.move(0, -32, 0, -1);
+					direction = 4;
+					stepCount++;
+					f.reFog(p2.getTileX(), p2.getTileY(), "U");
+					f.iAmHereFog(p.getTileX(), p.getTileY());
+					isFinish();
+				}
+			}
+			if(keycode == KeyEvent.VK_S){
+				if(!m.getMap(p2.getTileX(), p2.getTileY() + 1).equals("w")) {
+					p2.move(0, 32, 0, 1);
+					direction = 5;
+					stepCount++;
+					f.reFog(p2.getTileX(), p2.getTileY(), "D");
+					f.iAmHereFog(p.getTileX(), p.getTileY());
+					isFinish();
+				}
+			}
+			if(keycode == KeyEvent.VK_A){
+				if(!m.getMap(p2.getTileX() - 1, p2.getTileY()).equals("w")) {
+					p2.move(-32, 0, -1, 0);
+					direction = 6;
+					stepCount++;
+					f.reFog(p2.getTileX(), p2.getTileY(), "L");
+					f.iAmHereFog(p.getTileX(), p.getTileY());
+					isFinish();
+				}
+			}
+			if(keycode == KeyEvent.VK_D){
+				if(!m.getMap(p2.getTileX() + 1, p2.getTileY()).equals("w")) {
+					p2.move(32, 0, 1, 0);
+					direction = 7;
+					stepCount++;
+					f.reFog(p2.getTileX(), p2.getTileY(), "R");
+					f.iAmHereFog(p.getTileX(), p.getTileY());
 					isFinish();
 				}
 			}
