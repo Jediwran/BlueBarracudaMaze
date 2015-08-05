@@ -5,7 +5,7 @@ import javax.swing.ImageIcon;
 
 public class Player {
 
-	private int x, y, tileX, tileY;
+	private int x, y, tileX, tileY, number;
 	private Image player, playerDown, playerRight, playerUp;
 	//private String playerFile = "src/resources/player.png";
 	private String playerFile = "src/resources/fish.png";
@@ -67,6 +67,14 @@ public class Player {
 	
 	public int getTileY() {
 		return tileY;
+	}
+	
+	public void setNumber(int num) {
+		number = num;
+	}
+	
+	public int getNumber() {
+		return number;
 	}
 	
 	public void move(int dx, int dy, int tx, int ty) {
