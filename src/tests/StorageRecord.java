@@ -142,12 +142,12 @@ public class StorageRecord {
 	}
 	
 
-	public ArrayList<Integer> getNumberData() {
+	public ArrayList<Integer[]> getNumberData() {
 		return numberData;
 	}
 
 	
-	public ArrayList<Object> getObjectData() {
+	public ArrayList<Object[]> getObjectData() {
 		return objectData;
 	}
 
