@@ -29,6 +29,7 @@ public class Board extends JPanel implements ActionListener {
 		this.maze = maze;
 		m = new Map();
 		m.setSize(mapSize);
+		//m.setSize(18);
 		maze.frame.setSize(Maze.width+(32*m.getMapSize()), Maze.height+(32*m.getMapSize()));
 		//m.setupMap();
 		selectPlayerNumber();
@@ -90,6 +91,7 @@ public class Board extends JPanel implements ActionListener {
 	public void startLevel(){
 		level += 1;
 		m.setMapName(r.nextInt(8)+1);
+		//m.setMapName(2);
 		m.setupMap();
 		maze.frame.setSize(Maze.width+(32*m.getMapSize()), Maze.height+(32*m.getMapSize()));
 		maze.frame.setVisible(true);
