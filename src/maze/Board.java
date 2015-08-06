@@ -14,25 +14,22 @@ public class Board extends JPanel implements ActionListener {
 	private long sTime, eTime;
 	private Map m;
 	private Maze maze;
-	//private Player p;
-	//private Player p2;
 	private Player[] player;
 	private Fisherman[] fisherMen;
 	private Fog f;
-	//private int directionPlayer1, directionPlayer2;
 	private int mapSize = 16;
 	private int level = 0;
 	private boolean fogEnabled = false;
 	private boolean caught = false;
 	private boolean isFinished = false;
 	private Random r = new Random();
-	//private int lives = 5;
 	private int numPlayers = 1;
 	
 	public Board(Maze maze) {
+		this.maze = maze;
 		m = new Map();
 		m.setSize(mapSize);
-		this.maze = maze;
+		maze.frame.setSize(Maze.width+(32*m.getMapSize()), Maze.height+(32*m.getMapSize()));
 		//m.setupMap();
 		selectPlayerNumber();
 		//p = new Player();
@@ -94,7 +91,8 @@ public class Board extends JPanel implements ActionListener {
 		level += 1;
 		m.setMapName(r.nextInt(8)+1);
 		m.setupMap();
-		maze.frame.setSize(maze.width+(32*m.getMapSize()), maze.height+(32*m.getMapSize()));
+		maze.frame.setSize(Maze.width+(32*m.getMapSize()), Maze.height+(32*m.getMapSize()));
+		maze.frame.setVisible(true);
 		fisherMen = new Fisherman[level];
 		for(int i = 0; i < level; i++){
 			fisherMen[i] = new Fisherman();

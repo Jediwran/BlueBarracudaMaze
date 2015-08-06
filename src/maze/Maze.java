@@ -18,7 +18,7 @@ public class Maze {
 	public Maze() {
 		frame.setTitle(title + " - " + version);
 		frame.add(new Board(this));
-		frame.setSize(width+(32*16), height+(32*16));
+		//frame.setSize(width+(32*16), height+(32*16));
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
