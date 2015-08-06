@@ -27,8 +27,8 @@ public class StorageRecord {
 	private String errorLog;
 	
 	private ArrayList<String> textData;
-	private ArrayList<Integer[]> numberData;
-	private ArrayList<Object[]> objectData;
+	private ArrayList<ArrayList<Integer>> numberData;
+	private ArrayList<Object> objectData;
 	
 	private int currentRecordIndex = 0;
 	// CONSTRUCTOR
@@ -36,8 +36,8 @@ public class StorageRecord {
 		name = nameOfRecordSaved;
 		
 		textData = new ArrayList<String>();
-		numberData = new ArrayList<Integer[]>();
-		objectData = new ArrayList<Object[]>();
+		numberData = new ArrayList<ArrayList<Integer>>();
+		objectData = new ArrayList<Object>();
 	}
 	
 	// =======================================
@@ -54,7 +54,7 @@ public class StorageRecord {
 	 * @param objectData - an object used for the test you want to store to access later.
 	 * @return boolean success value
 	 */
-	public boolean addToRecord(String testText, Integer[] numberData, Object... objectData){
+	public boolean addToRecord(String testText, ArrayList<Integer> numberData, Object... objectData){
 		
 		if (recordAtIndexIsEmpty()) {
 			
@@ -113,12 +113,12 @@ public class StorageRecord {
 	}
 	
 	
-	public void addToNumberData(Integer[] num){
+	public void addToNumberData(ArrayList<Integer> num){
 		numberData.add(num);
 	}
 	
 	
-	public void addToObjectData(Object[] o){
+	public void addToObjectData(Object o){
 		objectData.add(o);
 	}
 	
@@ -142,12 +142,12 @@ public class StorageRecord {
 	}
 	
 
-	public ArrayList<Integer[]> getNumberData() {
+	public ArrayList<ArrayList<Integer>> getNumberData() {
 		return numberData;
 	}
 
 	
-	public ArrayList<Object[]> getObjectData() {
+	public ArrayList<Object> getObjectData() {
 		return objectData;
 	}
 
