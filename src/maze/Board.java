@@ -6,6 +6,18 @@ import java.util.Random;
 
 import javax.swing.*;
 
+/**
+ * Board contains all the data to show the game to the player(s). Utilizing the Singleton principal we only need to manipulate
+ * a single object to handle all primary game logic.
+ * 
+ * @variable sTime, eTime : start and end time (in seconds)
+ * @variable player : array of players, allows any number of players to join and be accounted for
+ * @variable fisherMen : array of fishermen, used to control all fishermen on board
+ * @variable f (Fog) : Handles the visibility around the characters post movement
+ * @variable directionPlayer1... : the direction the player heads in, represented as an integer value
+ * @variable mapSize : integer showing how many blocks across and down the map is. default is 14
+ *
+ */
 public class Board extends JPanel implements ActionListener {
 	
 	private static final long serialVersionUID = 1L;

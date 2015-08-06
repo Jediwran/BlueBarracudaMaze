@@ -1,3 +1,4 @@
+
 package maze;
 
 import java.awt.Image;
