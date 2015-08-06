@@ -5,6 +5,13 @@ import java.io.*;
 import java.util.*;
 import javax.swing.ImageIcon;
 
+
+/**
+ * Map controls all the methods needed to read a map txt file, load it into game memory, and handle 
+ * specific information about the map for the other objects (start, finish, wall or not etc)
+ * 
+ * 
+ */
 public class Map {
 	
 	private Scanner m;
@@ -88,7 +95,7 @@ public class Map {
 		try{
 			m = new Scanner(new File("src/resources/maps/" + mapName));
 		} catch(Exception e){
-			System.out.println("Error loading map");
+			System.out.println("Error loading map. given mapname: " + mapName);
 		}
 	}
 	
@@ -111,7 +118,7 @@ public class Map {
 	public StringBuilder printMap(){
 		StringBuilder allText = new StringBuilder();
 		allText.append(this.getMapName()
-				+ "\n==============");
+				+ "\n==============\n");
 		
 		for (int i = 0; i < arraySize; i++){
 			allText.append(Map[i] + "\n");
@@ -121,5 +128,16 @@ public class Map {
 	}
 	public void setMapName(int mapNum){
 		mapName = "Map"+ mapNum +".txt";
+	}
+	
+	/**
+	 * For when you need to open a file not in the map's folder.
+	 */
+	public void openCustomFile(String path){
+		try {
+			m = new Scanner (new File(path));
+		} catch (Exception e){
+			System.out.println("Failed to load file from given path: " + path);
+		}
 	}
 }
