@@ -16,6 +16,11 @@ public class Fog {
 		fogOpaque = img.getImage();
 	}
 	
+	public void setFogMapSize(int size){
+		fogMapSize = size;
+		fogMap = new int[fogMapSize][fogMapSize];
+	}
+	
 	public void iAmHereFog(int x, int y){
 		fogMap[x][y] = 0;
 		fogMap[x-1][y] = 0;

@@ -13,24 +13,26 @@ public class Board extends JPanel implements ActionListener {
 	//private LocalTime sTime, eTime;
 	private long sTime, eTime;
 	private Map m;
+	private Maze maze;
 	//private Player p;
 	//private Player p2;
 	private Player[] player;
 	private Fisherman[] fisherMen;
 	private Fog f;
-	private int directionPlayer1, directionPlayer2;
-	private int mapSize = 14;
+	//private int directionPlayer1, directionPlayer2;
+	private int mapSize = 16;
 	private int level = 0;
-	private boolean fogEnabled = true;
+	private boolean fogEnabled = false;
 	private boolean caught = false;
 	private boolean isFinished = false;
 	private Random r = new Random();
 	//private int lives = 5;
 	private int numPlayers = 1;
 	
-	public Board() {
+	public Board(Maze maze) {
 		m = new Map();
 		m.setSize(mapSize);
+		this.maze = maze;
 		//m.setupMap();
 		selectPlayerNumber();
 		//p = new Player();
@@ -44,6 +46,7 @@ public class Board extends JPanel implements ActionListener {
 			player[i].setPlayerImages();
 		}
 		f = new Fog();
+		f.setFogMapSize(mapSize);
 		addKeyListener(new Al());
 		setFocusable(true);
 		startLevel();
@@ -69,7 +72,7 @@ public class Board extends JPanel implements ActionListener {
 	}
 	
 	public void selectPlayerNumber(){
-		Object[] selectMenuOptions={"1 Player", "2 Players"};
+		Object[] selectMenuOptions={"1 Player", "2 Players", "3 Players", "4 Players"};
 		int n = JOptionPane.showOptionDialog(null, "Select Number of Players", "Number of Players", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, selectMenuOptions, selectMenuOptions[0]);
 			switch (n) {
 			case 0:
@@ -78,33 +81,42 @@ public class Board extends JPanel implements ActionListener {
 			case 1:
 				numPlayers = 2;
 				break;
+			case 2:
+				numPlayers = 3;
+				break;
+			case 3:
+				numPlayers = 4;
+				break;
 			}
 	}
 	
 	public void startLevel(){
-		for(Player p: player){
-			p.setPlayerStepsTaken(0);
-			p.setTimesCaught(0);
-		}
 		level += 1;
 		m.setMapName(r.nextInt(8)+1);
 		m.setupMap();
+		maze.frame.setSize(maze.width+(32*m.getMapSize()), maze.height+(32*m.getMapSize()));
 		fisherMen = new Fisherman[level];
 		for(int i = 0; i < level; i++){
 			fisherMen[i] = new Fisherman();
+			randomStartFisherman(fisherMen[i]);
+		}
+		for(Player p: player){
+			p.setPlayerStepsTaken(0);
+			p.setTimesCaught(0);
+			p.setPlayerStart(m.getStartX(), m.getStartY());
+			f.createFog(p.getTileX(), p.getTileY());
 		}
 		//player 1
-		directionPlayer1 = 3;
-		player[0].setPlayerStart(m.getStartX(), m.getStartY());
+		//directionPlayer1 = 3;
+		/*player[0].setPlayerStart(m.getStartX(), m.getStartY());
 		f.createFog(player[0].getTileX(), player[0].getTileY());
 		//player 2
 		if(player.length > 1){
-			directionPlayer2 = 3;
+			//directionPlayer2 = 3;
 			player[1].setPlayerStart(m.getStartX(), m.getStartY());
 			f.createFog(player[1].getTileX(), player[1].getTileY());
-		}
-		randomStartFisherman(fisherMen[level - 1]);
-		
+		}*/
+		//randomStartFisherman(fisherMen[level - 1]);
 		//sTime = LocalTime.now();
 		sTime = System.currentTimeMillis();
 		timer = new Timer(25, this);
@@ -126,7 +138,7 @@ public class Board extends JPanel implements ActionListener {
 				break;
 			}
 			case 3:{
-				temp = p.getPlayer();
+				temp = p.getPlayerLeft();
 				break;
 			}
 		}
@@ -144,6 +156,9 @@ public class Board extends JPanel implements ActionListener {
 				if(m.getMap(x, y).equals("g")){
 					g.drawImage(m.getGround(), x * 32, y * 32, null);
 				}
+				if(m.getMap(x, y).equals("b")){
+					g.drawImage(m.getWall(), x * 32, y * 32, null);
+				}
 				if(m.getMap(x, y).equals("w")){
 					g.drawImage(m.getWall(), x * 32, y * 32, null);
 				}
@@ -155,12 +170,15 @@ public class Board extends JPanel implements ActionListener {
 				}
 			}
 		}
-		//draw player 1
-		g.drawImage(drawPlayer(player[0], directionPlayer1), player[0].getX(), player[0].getY(), null);
-		//Draw Player 2
-		if(player.length > 1){
-			g.drawImage(drawPlayer(player[1], directionPlayer2), player[1].getX(), player[1].getY(), null);
+		for(Player p: player){
+			g.drawImage(drawPlayer(p, p.getDirection()), p.getX(), p.getY(), null);
 		}
+		//Draw Player 1
+		//g.drawImage(drawPlayer(player[0], directionPlayer1), player[0].getX(), player[0].getY(), null);
+		//Draw Player 2
+		/*if(player.length > 1){
+			g.drawImage(drawPlayer(player[1], directionPlayer2), player[1].getX(), player[1].getY(), null);
+		}*/
 		int[][] fog = f.getFogMap();
 		if(fogEnabled){
 			for(int i = 0; i < fog.length; i++){
@@ -188,9 +206,15 @@ public class Board extends JPanel implements ActionListener {
 		g.setFont(new Font("default", Font.BOLD, 16));
 		g.drawString("Level: " + level, 16, 24);
 		int i = 10;
+		int j = 10;
 		for(Player p : player){
-			g.drawString("P" + (p.getNumber()+1) + "-Steps: " + p.getPlayerStepsTaken() + "   Lives: " + p.getPlayerLives(), 80 + i, 24);
-			i += 180;
+			if(i == 370){
+				g.drawString("P" + (p.getNumber()+1) + "-Steps: " + p.getPlayerStepsTaken() + "   Lives: " + p.getPlayerLives(), 80 + j, 44);
+				j += 180;
+			}else{
+				g.drawString("P" + (p.getNumber()+1) + "-Steps: " + p.getPlayerStepsTaken() + "   Lives: " + p.getPlayerLives(), 80 + i, 24);
+				i += 180;
+			}
 		}
 	}
 	
@@ -235,7 +259,6 @@ public class Board extends JPanel implements ActionListener {
 				switch(direction){
 					case 0 : {
 							if(!(fm.getFishermanTileY() - 1 < 0) && m.getMap(fm.getFishermanTileX(), fm.getFishermanTileY() - 1).equals("w")) {
-								//fisherMan.setFishermanLocation(fishermanX, fishermanY - 1);
 								fishermanMoved = true;
 								fm.move(0, -32, 0, -1);
 								break;
@@ -244,7 +267,6 @@ public class Board extends JPanel implements ActionListener {
 					}
 					case 1 : {
 							if(!(fm.getFishermanTileX() + 1 > m.getMapSize() - 1) && m.getMap(fm.getFishermanTileX() + 1, fm.getFishermanTileY()).equals("w")) {
-								//fisherMan.setFishermanLocation(fishermanX + 1, fishermanY);
 								fm.move(32, 0, 1, 0);
 								fishermanMoved = true;
 								break;
@@ -253,7 +275,6 @@ public class Board extends JPanel implements ActionListener {
 					}
 					case 2 : {
 							if(!(fm.getFishermanTileY() + 1 > m.getMapSize() - 1) && m.getMap(fm.getFishermanTileX(), fm.getFishermanTileY() + 1).equals("w")) {
-								//fisherMan.setFishermanLocation(fishermanX, fishermanY + 1);
 								fm.move(0, 32, 0, 1);
 								fishermanMoved = true;
 								break;
@@ -262,7 +283,6 @@ public class Board extends JPanel implements ActionListener {
 					}
 					case 3 : {
 							if(!(fm.getFishermanTileX() - 1 < 0) && m.getMap(fm.getFishermanTileX() - 1, fm.getFishermanTileY()).equals("w")) {
-								//fisherMan.setFishermanLocation(fishermanX - 1, fishermanY);
 								fm.move(-32, 0, -1, 0);
 								fishermanMoved = true;
 								break;
@@ -383,15 +403,152 @@ public class Board extends JPanel implements ActionListener {
 		        long minutes = seconds / 60;
 		    long secondsRemaining = seconds % 60;
 		    String time = minutes + "m : " + secondsRemaining + "s";
-			JOptionPane.showMessageDialog(new JFrame(), "You have won! \nLevel: " + level + "\nYour Time: " + time);
+		    String stats = "";
+		    for(Player finalPlayer: player){
+		    	stats += "\n-----------------------\nPlayer " + (finalPlayer.getNumber()+1) + "\nSteps: " + finalPlayer.getPlayerStepsTaken() + "\nLives: " + finalPlayer.getPlayerLives();
+		    }
+			JOptionPane.showMessageDialog(new JFrame(), "You have won! \nLevel: " + level + "\nYour Time: " + time + stats);
 			startLevel();
+		}
+	}
+	
+	public void movePlayerUp(Player p){
+		if(!m.getMap(p.getTileX(), p.getTileY() - 1).equals("w")) {
+			p.move(0, -32, 0, -1);
+			//directionPlayer1 = 0;
+			p.setDirection(0);
+			p.setPlayerStepsTaken(p.getPlayerStepsTaken() + 1);
+			f.reFog(p.getTileX(), p.getTileY(), "U");
+			f.iAmHereFog(p.getTileX(), p.getTileY());
+			isFinish(p);
+		}
+	}
+	
+	public void movePlayerDown(Player p){
+		if(!m.getMap(p.getTileX(), p.getTileY() + 1).equals("w")) {
+			p.move(0, 32, 0, 1);
+			//directionPlayer1 = 2;
+			p.setDirection(2);
+			p.setPlayerStepsTaken(p.getPlayerStepsTaken() + 1);
+			f.reFog(p.getTileX(), p.getTileY(), "D");
+			f.iAmHereFog(p.getTileX(), p.getTileY());
+			isFinish(p);
+		}
+	}
+	
+	public void movePlayerLeft(Player p){
+		if(!m.getMap(p.getTileX() - 1, p.getTileY()).equals("w")) {
+			p.move(-32, 0, -1, 0);
+			//directionPlayer1 = 3;
+			p.setDirection(3);
+			p.setPlayerStepsTaken(p.getPlayerStepsTaken() + 1);
+			f.reFog(p.getTileX(), p.getTileY(), "L");
+			f.iAmHereFog(p.getTileX(), p.getTileY());
+			isFinish(p);
+		}
+	}
+	
+	public void movePlayerRight(Player p){
+		if(!m.getMap(p.getTileX() + 1, p.getTileY()).equals("w")) {
+			p.move(32, 0, 1, 0);
+			//directionPlayer1 = 1;
+			p.setDirection(1);
+			p.setPlayerStepsTaken(p.getPlayerStepsTaken() + 1);
+			f.reFog(p.getTileX(), p.getTileY(), "R");
+			f.iAmHereFog(p.getTileX(), p.getTileY());
+			isFinish(p);
 		}
 	}
 	
 	public class Al extends KeyAdapter {
 		public void keyPressed(KeyEvent e) {
 			int keycode = e.getKeyCode();
-			if(keycode == KeyEvent.VK_UP){
+			switch(keycode){
+				case KeyEvent.VK_UP:
+					movePlayerUp(player[0]);
+					break;
+				case KeyEvent.VK_LEFT:
+					movePlayerLeft(player[0]);
+					break;
+				case KeyEvent.VK_DOWN:
+					movePlayerDown(player[0]);
+					break;
+				case KeyEvent.VK_RIGHT:
+					movePlayerRight(player[0]);
+					break;
+				case KeyEvent.VK_W:
+					if(player.length > 1){
+						movePlayerUp(player[1]);
+					}
+					break;
+				case KeyEvent.VK_A:
+					if(player.length > 1){
+						movePlayerLeft(player[1]);
+					}
+					break;
+				case KeyEvent.VK_S:
+					if(player.length > 1){
+						movePlayerDown(player[1]);
+					}
+					break;
+				case KeyEvent.VK_D:
+					if(player.length > 1){
+						movePlayerRight(player[1]);
+					}
+					break;
+				case KeyEvent.VK_I:
+					if(player.length > 2){
+						movePlayerUp(player[2]);
+					}
+					break;
+				case KeyEvent.VK_J:
+					if(player.length > 2){
+						movePlayerLeft(player[2]);
+					}
+					break;
+				case KeyEvent.VK_K:
+					if(player.length > 2){
+						movePlayerDown(player[2]);
+					}
+					break;
+				case KeyEvent.VK_L:
+					if(player.length > 2){
+						movePlayerRight(player[2]);
+					}
+					break;
+				case KeyEvent.VK_NUMPAD8:
+					if(player.length > 3){
+						movePlayerUp(player[3]);
+					}
+					break;
+				case KeyEvent.VK_NUMPAD4:
+					if(player.length > 3){
+						movePlayerLeft(player[3]);
+					}
+					break;
+				case KeyEvent.VK_NUMPAD2:
+					if(player.length > 3){
+						movePlayerDown(player[3]);
+					}
+					break;
+				case KeyEvent.VK_NUMPAD6:
+					if(player.length > 3){
+						movePlayerRight(player[3]);
+					}
+					break;
+				/*if(!m.getMap(player[0].getTileX(), player[0].getTileY() - 1).equals("w")) {
+					player[0].move(0, -32, 0, -1);
+					directionPlayer1 = 0;
+					player[0].setPlayerStepsTaken(player[0].getPlayerStepsTaken() + 1);
+					f.reFog(player[0].getTileX(), player[0].getTileY(), "U");
+					//f.iAmHereFog(player[1].getTileX(), player[1].getTileY());
+					for(Player p: player){
+						f.iAmHereFog(p.getTileX(), p.getTileY());
+					}
+					isFinish(player[0]);
+				}*/
+			}
+			/*if(keycode == KeyEvent.VK_UP){
 				if(!m.getMap(player[0].getTileX(), player[0].getTileY() - 1).equals("w")) {
 					player[0].move(0, -32, 0, -1);
 					directionPlayer1 = 0;
@@ -403,8 +560,8 @@ public class Board extends JPanel implements ActionListener {
 					}
 					isFinish(player[0]);
 				}
-			}
-			if(keycode == KeyEvent.VK_DOWN){
+			}*/
+			/*if(keycode == KeyEvent.VK_DOWN){
 				if(!m.getMap(player[0].getTileX(), player[0].getTileY() + 1).equals("w")) {
 					player[0].move(0, 32, 0, 1);
 					directionPlayer1 = 2;
@@ -415,8 +572,8 @@ public class Board extends JPanel implements ActionListener {
 					}
 					isFinish(player[0]);
 				}
-			}
-			if(keycode == KeyEvent.VK_LEFT){
+			}*/
+			/*if(keycode == KeyEvent.VK_LEFT){
 				if(!m.getMap(player[0].getTileX() - 1, player[0].getTileY()).equals("w")) {
 					player[0].move(-32, 0, -1, 0);
 					directionPlayer1 = 3;
@@ -428,8 +585,8 @@ public class Board extends JPanel implements ActionListener {
 					}
 					isFinish(player[0]);
 				}
-			}
-			if(keycode == KeyEvent.VK_RIGHT){
+			}*/
+			/*if(keycode == KeyEvent.VK_RIGHT){
 				if(!m.getMap(player[0].getTileX() + 1, player[0].getTileY()).equals("w")) {
 					player[0].move(32, 0, 1, 0);
 					directionPlayer1 = 1;
@@ -441,60 +598,62 @@ public class Board extends JPanel implements ActionListener {
 					}
 					isFinish(player[0]);
 				}
-			}
-			//Player 2 controls (WASD)
-			if(keycode == KeyEvent.VK_W){
-				if(!m.getMap(player[1].getTileX(), player[1].getTileY() - 1).equals("w") && player.length > 1) {
-					player[1].move(0, -32, 0, -1);
-					directionPlayer2 = 0;
-					player[1].setPlayerStepsTaken(player[1].getPlayerStepsTaken() + 1);
-					f.reFog(player[1].getTileX(), player[1].getTileY(), "U");
-					//f.iAmHereFog(player[0].getTileX(), player[0].getTileY());
-					for(Player p: player){
-						f.iAmHereFog(p.getTileX(), p.getTileY());
+			}*/
+			/*if(player.length > 1){
+				//Player 2 controls (WASD)
+				if(keycode == KeyEvent.VK_W){
+					if(!m.getMap(player[1].getTileX(), player[1].getTileY() - 1).equals("w") && player.length > 1) {
+						player[1].move(0, -32, 0, -1);
+						directionPlayer2 = 0;
+						player[1].setPlayerStepsTaken(player[1].getPlayerStepsTaken() + 1);
+						f.reFog(player[1].getTileX(), player[1].getTileY(), "U");
+						//f.iAmHereFog(player[0].getTileX(), player[0].getTileY());
+						for(Player p: player){
+							f.iAmHereFog(p.getTileX(), p.getTileY());
+						}
+						isFinish(player[1]);
 					}
-					isFinish(player[1]);
 				}
-			}
-			if(keycode == KeyEvent.VK_S){
-				if(!m.getMap(player[1].getTileX(), player[1].getTileY() + 1).equals("w") && player.length > 1) {
-					player[1].move(0, 32, 0, 1);
-					directionPlayer2 = 2;
-					player[1].setPlayerStepsTaken(player[1].getPlayerStepsTaken() + 1);
-					f.reFog(player[1].getTileX(), player[1].getTileY(), "D");
-					//f.iAmHereFog(player[0].getTileX(), player[0].getTileY());
-					for(Player p: player){
-						f.iAmHereFog(p.getTileX(), p.getTileY());
+				if(keycode == KeyEvent.VK_S){
+					if(!m.getMap(player[1].getTileX(), player[1].getTileY() + 1).equals("w") && player.length > 1) {
+						player[1].move(0, 32, 0, 1);
+						directionPlayer2 = 2;
+						player[1].setPlayerStepsTaken(player[1].getPlayerStepsTaken() + 1);
+						f.reFog(player[1].getTileX(), player[1].getTileY(), "D");
+						//f.iAmHereFog(player[0].getTileX(), player[0].getTileY());
+						for(Player p: player){
+							f.iAmHereFog(p.getTileX(), p.getTileY());
+						}
+						isFinish(player[1]);
 					}
-					isFinish(player[1]);
 				}
-			}
-			if(keycode == KeyEvent.VK_A){
-				if(!m.getMap(player[1].getTileX() - 1, player[1].getTileY()).equals("w") && player.length > 1) {
-					player[1].move(-32, 0, -1, 0);
-					directionPlayer2 = 3;
-					player[1].setPlayerStepsTaken(player[1].getPlayerStepsTaken() + 1);
-					f.reFog(player[1].getTileX(), player[1].getTileY(), "L");
-					//f.iAmHereFog(player[0].getTileX(), player[0].getTileY());
-					for(Player p: player){
-						f.iAmHereFog(p.getTileX(), p.getTileY());
+				if(keycode == KeyEvent.VK_A){
+					if(!m.getMap(player[1].getTileX() - 1, player[1].getTileY()).equals("w") && player.length > 1) {
+						player[1].move(-32, 0, -1, 0);
+						directionPlayer2 = 3;
+						player[1].setPlayerStepsTaken(player[1].getPlayerStepsTaken() + 1);
+						f.reFog(player[1].getTileX(), player[1].getTileY(), "L");
+						//f.iAmHereFog(player[0].getTileX(), player[0].getTileY());
+						for(Player p: player){
+							f.iAmHereFog(p.getTileX(), p.getTileY());
+						}
+						isFinish(player[1]);
 					}
-					isFinish(player[1]);
 				}
-			}
-			if(keycode == KeyEvent.VK_D){
-				if(!m.getMap(player[1].getTileX() + 1, player[1].getTileY()).equals("w") && player.length > 1) {
-					player[1].move(32, 0, 1, 0);
-					directionPlayer2 = 1;
-					player[1].setPlayerStepsTaken(player[1].getPlayerStepsTaken() + 1);
-					f.reFog(player[1].getTileX(), player[1].getTileY(), "R");
-					//f.iAmHereFog(player[0].getTileX(), player[0].getTileY());
-					for(Player p: player){
-						f.iAmHereFog(p.getTileX(), p.getTileY());
+				if(keycode == KeyEvent.VK_D){
+					if(!m.getMap(player[1].getTileX() + 1, player[1].getTileY()).equals("w") && player.length > 1) {
+						player[1].move(32, 0, 1, 0);
+						directionPlayer2 = 1;
+						player[1].setPlayerStepsTaken(player[1].getPlayerStepsTaken() + 1);
+						f.reFog(player[1].getTileX(), player[1].getTileY(), "R");
+						//f.iAmHereFog(player[0].getTileX(), player[0].getTileY());
+						for(Player p: player){
+							f.iAmHereFog(p.getTileX(), p.getTileY());
+						}
+						isFinish(player[1]);
 					}
-					isFinish(player[1]);
 				}
-			}
+			}*/
 		}
 		
 		public void keyReleased(KeyEvent e) {

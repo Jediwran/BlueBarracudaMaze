@@ -12,7 +12,7 @@ public class Map {
 	private int startX = 0;
 	private int startY = 0;
 	private String Map[];
-	private Image ground, wall, start, finish;
+	private Image ground, wall, start, finish, block;
 	private String mapName;
 	
 	
@@ -25,7 +25,9 @@ public class Map {
 		img = new ImageIcon("src/resources/start.png");
 		start = img.getImage();
 		img = new ImageIcon("src/resources/finish.png");
-		finish = img.getImage();		
+		finish = img.getImage();
+		img = new ImageIcon("src/resource/block.png");
+		block = img.getImage();
 	}
 	public void setupMap(){
 		openFile();
@@ -49,6 +51,10 @@ public class Map {
 	
 	public Image getStart() {
 		return start;
+	}
+	
+	public Image getBlock() {
+		return block;
 	}
 	
 	public void setSize(int size){
