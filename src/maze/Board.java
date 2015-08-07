@@ -92,7 +92,11 @@ public class Board extends JPanel implements ActionListener {
 		level += 1;
 		m.setMapName(r.nextInt(8)+1);
 		//m.setMapName(2);
-		m.setupMap();
+		
+		//m.setupMap();
+		
+		m.newMap(mapSize);
+		
 		maze.frame.setSize(Maze.width+(32*m.getMapSize()), Maze.height+(32*m.getMapSize()));
 		maze.frame.setVisible(true);
 		fisherMen = new Fisherman[level];
@@ -153,19 +157,19 @@ public class Board extends JPanel implements ActionListener {
 		super.paint(g);
 		for(int y = 0; y < m.getMapSize(); y++) {
 			for(int x = 0; x < m.getMapSize(); x++) {
-				if(m.getMap(x, y).equals("g")){
+				if(m.getMap(x, y) == 'g'){
 					g.drawImage(m.getGround(), x * 32, y * 32, null);
 				}
-				if(m.getMap(x, y).equals("b")){
+				if(m.getMap(x, y) == 'b'){
 					g.drawImage(m.getWall(), x * 32, y * 32, null);
 				}
-				if(m.getMap(x, y).equals("w")){
+				if(m.getMap(x, y) == 'w'){
 					g.drawImage(m.getWall(), x * 32, y * 32, null);
 				}
-				if(m.getMap(x, y).equals("f")){
+				if(m.getMap(x, y) == 'f'){
 					g.drawImage(m.getFinish(), x * 32, y * 32, null);
 				}
-				if(m.getMap(x, y).equals("s")){
+				if(m.getMap(x, y) == 's'){
 					g.drawImage(m.getStart(), x * 32, y * 32, null);
 				}
 			}
@@ -242,7 +246,7 @@ public class Board extends JPanel implements ActionListener {
 			}while(Math.abs(m.getStartY()-randY) < 3);
 			
 		//test that the location generated falls on a Wall "w" space	
-		}while(!m.getMap(randX, randY).equals("w"));
+		}while(m.getMap(randX, randY) != 'w');
 		//System.out.println("X generated " + xIterate + "x");		//displays the number of times the x value had to generate
 		//System.out.println("Y generated " + yIterate + "x");		//displays the number of times the y value had to generate
 		//System.out.println("FISHERMAN PLACED AFTER " + fIterate +" ATTEMPTS!");	//prints the number of times the fisherman coordinates had to be generated
@@ -258,7 +262,7 @@ public class Board extends JPanel implements ActionListener {
 				int direction = new Random().nextInt(4);
 				switch(direction){
 					case 0 : {
-							if(!(fm.getFishermanTileY() - 1 < 0) && m.getMap(fm.getFishermanTileX(), fm.getFishermanTileY() - 1).equals("w")) {
+							if(!(fm.getFishermanTileY() - 1 < 0) && m.getMap(fm.getFishermanTileX(), fm.getFishermanTileY() - 1) == 'w') {
 								fishermanMoved = true;
 								fm.move(0, -32, 0, -1);
 								break;
@@ -266,7 +270,7 @@ public class Board extends JPanel implements ActionListener {
 						break;
 					}
 					case 1 : {
-							if(!(fm.getFishermanTileX() + 1 > m.getMapSize() - 1) && m.getMap(fm.getFishermanTileX() + 1, fm.getFishermanTileY()).equals("w")) {
+							if(!(fm.getFishermanTileX() + 1 > m.getMapSize() - 1) && m.getMap(fm.getFishermanTileX() + 1, fm.getFishermanTileY()) == 'w') {
 								fm.move(32, 0, 1, 0);
 								fishermanMoved = true;
 								break;
@@ -274,7 +278,7 @@ public class Board extends JPanel implements ActionListener {
 						break;
 					}
 					case 2 : {
-							if(!(fm.getFishermanTileY() + 1 > m.getMapSize() - 1) && m.getMap(fm.getFishermanTileX(), fm.getFishermanTileY() + 1).equals("w")) {
+							if(!(fm.getFishermanTileY() + 1 > m.getMapSize() - 1) && m.getMap(fm.getFishermanTileX(), fm.getFishermanTileY() + 1) == 'w') {
 								fm.move(0, 32, 0, 1);
 								fishermanMoved = true;
 								break;
@@ -282,7 +286,7 @@ public class Board extends JPanel implements ActionListener {
 						break;
 					}
 					case 3 : {
-							if(!(fm.getFishermanTileX() - 1 < 0) && m.getMap(fm.getFishermanTileX() - 1, fm.getFishermanTileY()).equals("w")) {
+							if(!(fm.getFishermanTileX() - 1 < 0) && m.getMap(fm.getFishermanTileX() - 1, fm.getFishermanTileY()) == 'w') {
 								fm.move(-32, 0, -1, 0);
 								fishermanMoved = true;
 								break;
@@ -382,7 +386,7 @@ public class Board extends JPanel implements ActionListener {
 	
 	public void isFinish(Player p){
 		//for(Player p : player){
-			if(m.getMap(p.getTileX(), p.getTileY()).equals("f")){
+			if(m.getMap(p.getTileX(), p.getTileY()) == 'f'){
 				isFinished = true;
 			}
 			if(!isFinished){
@@ -413,7 +417,7 @@ public class Board extends JPanel implements ActionListener {
 	}
 	
 	public void movePlayerUp(Player p){
-		if(!m.getMap(p.getTileX(), p.getTileY() - 1).equals("w")) {
+		if(m.getMap(p.getTileX(), p.getTileY() - 1) != 'w') {
 			p.move(0, -32, 0, -1);
 			//directionPlayer1 = 0;
 			p.setDirection(0);
@@ -425,7 +429,7 @@ public class Board extends JPanel implements ActionListener {
 	}
 	
 	public void movePlayerDown(Player p){
-		if(!m.getMap(p.getTileX(), p.getTileY() + 1).equals("w")) {
+		if(m.getMap(p.getTileX(), p.getTileY() + 1) != 'w') {
 			p.move(0, 32, 0, 1);
 			//directionPlayer1 = 2;
 			p.setDirection(2);
@@ -437,7 +441,7 @@ public class Board extends JPanel implements ActionListener {
 	}
 	
 	public void movePlayerLeft(Player p){
-		if(!m.getMap(p.getTileX() - 1, p.getTileY()).equals("w")) {
+		if(m.getMap(p.getTileX() - 1, p.getTileY()) != 'w') {
 			p.move(-32, 0, -1, 0);
 			//directionPlayer1 = 3;
 			p.setDirection(3);
@@ -449,7 +453,7 @@ public class Board extends JPanel implements ActionListener {
 	}
 	
 	public void movePlayerRight(Player p){
-		if(!m.getMap(p.getTileX() + 1, p.getTileY()).equals("w")) {
+		if(m.getMap(p.getTileX() + 1, p.getTileY()) != 'w') {
 			p.move(32, 0, 1, 0);
 			//directionPlayer1 = 1;
 			p.setDirection(1);

@@ -16,6 +16,8 @@ public class Map {
 	private String mapName;
 	
 	
+	private char[][] map;
+	
 	public Map() {
 		//arraySize = 14;
 		ImageIcon img = new ImageIcon("src/resources/water.png");
@@ -29,6 +31,13 @@ public class Map {
 		img = new ImageIcon("src/resource/block.png");
 		block = img.getImage();
 	}
+	
+	public void newMap(int size) {
+		map = Generate.newMaze(size);
+		
+		setStartLocation();
+	}
+	
 	public void setupMap(){
 		openFile();
 		readFile();
@@ -66,15 +75,15 @@ public class Map {
 		return Map.length;
 	}
 	
-	public String getMap(int x, int y) {
-		String index = Map[y].substring(x, x + 1);
-		return index;
+	public char getMap(int x, int y) {
+		char spot = map[y][x];
+		return spot;
 	}
 	
 	public void setStartLocation() {
 		for(int y = 0; y < arraySize; y++) {
 			for(int x = 0; x < arraySize; x++) {
-				if(getMap(x, y).equals("s")){
+				if(getMap(x, y) == 's'){
 					startX = x;
 					startY = y;
 				}
