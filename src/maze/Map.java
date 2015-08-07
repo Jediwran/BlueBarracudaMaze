@@ -128,4 +128,15 @@ public class Map {
 	public void setMapName(int mapNum){
 		mapName = "Map"+ mapNum +".txt";
 	}
+	
+	/**
+	 * For when you need to open a file not in the map's folder.
+	 */
+	public void openCustomFile(String path){
+		try {
+			m = new Scanner (new File(path));
+		} catch (Exception e){
+			System.out.println("Failed to load file from given path: " + path);
+		}
+	}
 }
