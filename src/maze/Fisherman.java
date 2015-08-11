@@ -2,18 +2,34 @@
 package maze;
 
 import java.awt.Image;
+import java.util.Random;
 
 import javax.swing.ImageIcon;
 
-public class Fisherman {
+public class Fisherman extends Thread {
 	
 	private Image fisherman;
+	private Map map;
 	private int x, y, tileX, tileY;
 	private String fishermanFile = "src/resources/player.png";
 	
-	public Fisherman() {
+	public Fisherman(Map m) {
 		ImageIcon img = new ImageIcon(fishermanFile);
 		fisherman = img.getImage();
+		map = m;
+	}
+	
+	public void run() {
+		while(true){
+			try {
+				sleep(1500);
+				//System.out.println("move fisherman");
+				move();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	public Image getFisherman() {
@@ -36,7 +52,7 @@ public class Fisherman {
 		return tileY;
 	}
 	
-	public void setFishermanStartLocation(int dx, int dy) {
+	public void setStartLocation(int dx, int dy) {
 		x = dx * 32;
 		y = dy * 32;
 		
@@ -44,11 +60,85 @@ public class Fisherman {
 		tileY = dy;
 	}
 	
-	public void move(int dx, int dy, int tx, int ty){
+	//public void move(int dx, int dy, int tx, int ty){
+	public void move(){
+		int tx = 0;
+		int ty = 0;
+		boolean fishermanMoved = false;
+		while (!fishermanMoved){
+			int direction = new Random().nextInt(4);
+			switch(direction){
+				case 0 : {
+						if(!(getFishermanTileY() - 1 < 0) && map.getMap(getFishermanTileX(), getFishermanTileY() - 1) == 'w') {
+							fishermanMoved = true;
+							//fm.move(0, -32, 0, -1);
+							tx = 0;
+							ty = -1;
+							break;
+						}
+					break;
+				}
+				case 1 : {
+						if(!(getFishermanTileX() + 1 > map.getMapSize() - 1) && map.getMap(getFishermanTileX() + 1, getFishermanTileY()) == 'w') {
+							//fm.move(32, 0, 1, 0);
+							tx = 1;
+							ty = 0;
+							fishermanMoved = true;
+							break;
+						}
+					break;
+				}
+				case 2 : {
+						if(!(getFishermanTileY() + 1 > map.getMapSize() - 1) && map.getMap(getFishermanTileX(), getFishermanTileY() + 1) == 'w') {
+							//fm.move(0, 32, 0, 1);
+							tx = 0;
+							ty = 1;
+							fishermanMoved = true;
+							break;
+					}
+					break;
+				}
+				case 3 : {
+						if(!(getFishermanTileX() - 1 < 0) && map.getMap(getFishermanTileX() - 1, getFishermanTileY()) == 'w') {
+							//fm.move(-32, 0, -1, 0);
+							tx = -1;
+							ty = 0;
+							fishermanMoved = true;
+							break;
+					}
+					break;
+				}
+			}
+		}
 		x += tx * 32;
 		y += ty * 32;
 		
 		tileX += tx;
 		tileY += ty;
+	}
+	
+	public void randomStart() {
+		Random rand = new Random();
+		int randX;
+		int randY;
+		do{
+			do{
+			randX = rand.nextInt(13);
+			}while(Math.abs(map.getStartX()-randX) < 3);
+			
+			do{
+			randY = rand.nextInt(13);
+			}while(Math.abs(map.getStartY()-randY) < 3);
+			
+		//test that the location generated falls on a Wall "w" space	
+		}while(map.getMap(randX, randY) != 'w');
+			setStartLocation(randX, randY);
+	}
+	
+	public void isNear(Player p) {
+		//moveFisherman();
+		//if(isFishCaught()){
+			//fishermanCaughtFish(p);
+		//}
 	}
 }

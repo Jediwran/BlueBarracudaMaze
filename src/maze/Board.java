@@ -10,7 +10,6 @@ public class Board extends JPanel implements ActionListener {
 	
 	private static final long serialVersionUID = 1L;
 	private Timer timer;
-	//private LocalTime sTime, eTime;
 	private long sTime, eTime;
 	private Map m;
 	private Maze maze;
@@ -19,9 +18,7 @@ public class Board extends JPanel implements ActionListener {
 	private Fog f;
 	private int mapSize = 16;
 	private int level = 0;
-	private boolean fogEnabled = false;
-	private boolean caught = false;
-	private boolean isFinished = false;
+	private boolean fogEnabled = true;
 	private Random r = new Random();
 	private int numPlayers = 1;
 	
@@ -29,23 +26,19 @@ public class Board extends JPanel implements ActionListener {
 		this.maze = maze;
 		m = new Map();
 		m.setSize(mapSize);
-		//m.setSize(18);
 		maze.frame.setSize(Maze.width+(32*m.getMapSize()), Maze.height+(32*m.getMapSize()));
-		//m.setupMap();
+		f = new Fog();
+		f.setFogMapSize(mapSize);
 		selectPlayerNumber();
-		//p = new Player();
-		//p2 = new Player();
 		player = new Player[numPlayers];
 		for(int i = 0; i < numPlayers; i++){
-			player[i] = new Player();
+			player[i] = new Player(m,f);
 			player[i].setNumber(i);
 
 			selectPlayerColor(player[i]);
 			player[i].setPlayerImages();
 		}
-		f = new Fog();
-		f.setFogMapSize(mapSize);
-		addKeyListener(new Al());
+		//addKeyListener(new Al());
 		setFocusable(true);
 		startLevel();
 	}
@@ -91,66 +84,37 @@ public class Board extends JPanel implements ActionListener {
 	public void startLevel(){
 		level += 1;
 		m.setMapName(r.nextInt(8)+1);
-		//m.setMapName(2);
-		
 		//m.setupMap();
-		
 		m.newMap(mapSize);
 		
 		maze.frame.setSize(Maze.width+(32*m.getMapSize()), Maze.height+(32*m.getMapSize()));
 		maze.frame.setVisible(true);
 		fisherMen = new Fisherman[level];
 		for(int i = 0; i < level; i++){
-			fisherMen[i] = new Fisherman();
+			fisherMen[i] = new Fisherman(m);
 			randomStartFisherman(fisherMen[i]);
+			fisherMen[i].start();
 		}
 		for(Player p: player){
 			p.setPlayerStepsTaken(0);
 			p.setTimesCaught(0);
 			p.setPlayerStart(m.getStartX(), m.getStartY());
 			f.createFog(p.getTileX(), p.getTileY());
+			new Thread(p).start();
 		}
-		//player 1
-		//directionPlayer1 = 3;
-		/*player[0].setPlayerStart(m.getStartX(), m.getStartY());
-		f.createFog(player[0].getTileX(), player[0].getTileY());
-		//player 2
-		if(player.length > 1){
-			//directionPlayer2 = 3;
-			player[1].setPlayerStart(m.getStartX(), m.getStartY());
-			f.createFog(player[1].getTileX(), player[1].getTileY());
-		}*/
-		//randomStartFisherman(fisherMen[level - 1]);
-		//sTime = LocalTime.now();
 		sTime = System.currentTimeMillis();
 		timer = new Timer(25, this);
 		timer.start();
 	}
-	public Image drawPlayer(Player p, int direction){
-		Image temp = null;
-		switch(direction){
-			case 0:{
-				temp = p.getPlayerUp();
-				break;
-			}
-			case 1:{
-				temp = p.getPlayerRight();
-				break;
-			}
-			case 2:{
-				temp = p.getPlayerDown();
-				break;
-			}
-			case 3:{
-				temp = p.getPlayerLeft();
-				break;
-			}
-		}
-		return temp;
-	}
 	
 	public void actionPerformed(ActionEvent e) {
 		repaint();
+		for(Player p : player){
+			if(m.getMap(p.getTileX(), p.getTileY()) == 'f'){
+				p.setFinished(true);
+				isFinished();
+			}
+		}
 	}
 	
 	public void paint(Graphics g) {
@@ -174,15 +138,6 @@ public class Board extends JPanel implements ActionListener {
 				}
 			}
 		}
-		for(Player p: player){
-			g.drawImage(drawPlayer(p, p.getDirection()), p.getX(), p.getY(), null);
-		}
-		//Draw Player 1
-		//g.drawImage(drawPlayer(player[0], directionPlayer1), player[0].getX(), player[0].getY(), null);
-		//Draw Player 2
-		/*if(player.length > 1){
-			g.drawImage(drawPlayer(player[1], directionPlayer2), player[1].getX(), player[1].getY(), null);
-		}*/
 		int[][] fog = f.getFogMap();
 		if(fogEnabled){
 			for(int i = 0; i < fog.length; i++){
@@ -202,9 +157,10 @@ public class Board extends JPanel implements ActionListener {
 				}
 			}
 		}
-		for (Fisherman fisherman : fisherMen)
-		if(fog[fisherman.getFishermanTileX()][fisherman.getFishermanTileY()] == 0){
-			g.drawImage(fisherman.getFisherman(), fisherman.getFishermanX(), fisherman.getFishermanY(), null);
+		for (Fisherman fisherman : fisherMen) {
+			if(fog[fisherman.getFishermanTileX()][fisherman.getFishermanTileY()] == 0){
+				g.drawImage(fisherman.getFisherman(), fisherman.getFishermanX(), fisherman.getFishermanY(), null);
+			}
 		}
 		g.setColor(new Color(255,255,255));
 		g.setFont(new Font("default", Font.BOLD, 16));
@@ -219,6 +175,8 @@ public class Board extends JPanel implements ActionListener {
 				g.drawString("P" + (p.getNumber()+1) + "-Steps: " + p.getPlayerStepsTaken() + "   Lives: " + p.getPlayerLives(), 80 + i, 24);
 				i += 180;
 			}
+			g.drawImage(p.drawPlayer(), p.getX(), p.getY(), null);
+			f.iAmHereFog(p.getTileX(), p.getTileY());
 		}
 	}
 	
@@ -226,33 +184,22 @@ public class Board extends JPanel implements ActionListener {
 		Random rand = new Random();
 		int randX;
 		int randY;
-		//int xIterate = 0;
-		//int yIterate = 0;
-		//int fIterate = 0;
 		//generate random number to assign placement of fisherman
 		//continues to generate a random number if position falls
 		//within 3 squares of the starting position
 		do{
-			//fIterate++; //iterator for Fisherman 
 			
 			do{
-			//xIterate++;	//iterator for x coordinate
 			randX = rand.nextInt(13);
 			}while(Math.abs(m.getStartX()-randX) < 3);
 			
 			do{
 			randY = rand.nextInt(13);
-			//yIterate++;	//iterator for y coordinate
 			}while(Math.abs(m.getStartY()-randY) < 3);
 			
 		//test that the location generated falls on a Wall "w" space	
 		}while(m.getMap(randX, randY) != 'w');
-		//System.out.println("X generated " + xIterate + "x");		//displays the number of times the x value had to generate
-		//System.out.println("Y generated " + yIterate + "x");		//displays the number of times the y value had to generate
-		//System.out.println("FISHERMAN PLACED AFTER " + fIterate +" ATTEMPTS!");	//prints the number of times the fisherman coordinates had to be generated
-		//if(m.getMap(randX, randY).equals("w")) {
-			f.setFishermanStartLocation(randX, randY);
-		//}
+			f.setStartLocation(randX, randY);
 	}
 	
 	public void moveFisherman() {
@@ -264,14 +211,14 @@ public class Board extends JPanel implements ActionListener {
 					case 0 : {
 							if(!(fm.getFishermanTileY() - 1 < 0) && m.getMap(fm.getFishermanTileX(), fm.getFishermanTileY() - 1) == 'w') {
 								fishermanMoved = true;
-								fm.move(0, -32, 0, -1);
+								//fm.move(0, -32, 0, -1);
 								break;
 							}
 						break;
 					}
 					case 1 : {
 							if(!(fm.getFishermanTileX() + 1 > m.getMapSize() - 1) && m.getMap(fm.getFishermanTileX() + 1, fm.getFishermanTileY()) == 'w') {
-								fm.move(32, 0, 1, 0);
+								//fm.move(32, 0, 1, 0);
 								fishermanMoved = true;
 								break;
 							}
@@ -279,7 +226,7 @@ public class Board extends JPanel implements ActionListener {
 					}
 					case 2 : {
 							if(!(fm.getFishermanTileY() + 1 > m.getMapSize() - 1) && m.getMap(fm.getFishermanTileX(), fm.getFishermanTileY() + 1) == 'w') {
-								fm.move(0, 32, 0, 1);
+								//fm.move(0, 32, 0, 1);
 								fishermanMoved = true;
 								break;
 						}
@@ -287,7 +234,7 @@ public class Board extends JPanel implements ActionListener {
 					}
 					case 3 : {
 							if(!(fm.getFishermanTileX() - 1 < 0) && m.getMap(fm.getFishermanTileX() - 1, fm.getFishermanTileY()) == 'w') {
-								fm.move(-32, 0, -1, 0);
+								//fm.move(-32, 0, -1, 0);
 								fishermanMoved = true;
 								break;
 						}
@@ -300,7 +247,7 @@ public class Board extends JPanel implements ActionListener {
 	
 	public void fishermanCaughtFish(Player p) {
 		JOptionPane.showMessageDialog(new JFrame(), "Player " + (p.getNumber()+1) + " You have been caught! \nFisherman released you back into the water.");
-		caught = false;
+		//caught = false;
 		for(Fisherman fm : fisherMen){
 			randomStartFisherman(fm);
 		}
@@ -331,42 +278,25 @@ public class Board extends JPanel implements ActionListener {
 	public boolean isFishCaught() {
 		for(Fisherman fm : fisherMen){
 			for(Player p : player){
-			//for(int i=0; i < player.length; i++){
+				p.isCaught(fm);
 				if(fm.getFishermanTileX()+1 == p.getTileX() && fm.getFishermanTileY() == p.getTileY()){
-					caught = true;
+					//caught = true;
 				}else if(fm.getFishermanTileX()-1 == p.getTileX() && fm.getFishermanTileY() == p.getTileY()){
-					caught = true;
+					//caught = true;
 				}else if(fm.getFishermanTileX() == p.getTileX() && fm.getFishermanTileY() == p.getTileY() + 1){
-					caught = true;
+					//caught = true;
 				}else if(fm.getFishermanTileX() == p.getTileX() && fm.getFishermanTileY() == p.getTileY() - 1){
-					caught = true;
+					//caught = true;
 				}
 			}
-			/*if((fm.getFishermanTileX() + 1 == player[0].getTileX() && (fm.getFishermanTileY() == player[0].getTileY())) || (fm.getFishermanTileX() + 1 == player[1].getTileX() && (fm.getFishermanTileY() == player[1].getTileY()))){
-				caught = true;
-			} else if((fm.getFishermanTileX() - 1 == player[0].getTileX() && (fm.getFishermanTileY() == player[0].getTileY())) || (fm.getFishermanTileX() - 1 == player[1].getTileX() && (fm.getFishermanTileY() == player[1].getTileY()))){
-				caught = true;
-			}else if((fm.getFishermanTileX() == player[0].getTileX() && fm.getFishermanTileY() == player[0].getTileY() + 1) || (fm.getFishermanTileX() == player[1].getTileX() && fm.getFishermanTileY() == player[1].getTileY() + 1)){
-				caught = true;
-			}else if((fm.getFishermanTileX() == player[0].getTileX() && fm.getFishermanTileY() == player[0].getTileY() - 1) || (fm.getFishermanTileX() == player[1].getTileX() && fm.getFishermanTileY() == player[1].getTileY() - 1)){
-				caught = true;
-			}*/
 		}
-		return caught;
+		return true;
 	}
 	
 	public void moveFishToStart(int caughtPlayer){
-		//for(Player p : player){
 		f.reFog(player[caughtPlayer].getTileX(), player[caughtPlayer].getTileY(), "C");
 		player[caughtPlayer].setPlayerStart(m.getStartX(), m.getStartY());
 		f.iAmHereFog(m.getStartX(), m.getStartY());
-/*		//player one
-		f.reFog(player[0].getTileX(), player[0].getTileY(), "C");
-		player[0].setPlayerStart(m.getStartX(), m.getStartY());
-		f.iAmHereFog(m.getStartX(), m.getStartY());
-		//player two
-		player[1].setPlayerStart(m.getStartX(), m.getStartY());
-		f.reFog(player[1].getTileX(), player[1].getTileY(), "C");*/
 	}
 	
 	public void isFishermanNear(Player p) {
@@ -379,92 +309,77 @@ public class Board extends JPanel implements ActionListener {
 	public void createNewFisherman(){
 		Fisherman[] newFisherman = new Fisherman[level + 1];
 		System.arraycopy(fisherMen, 0, newFisherman, 0, level);
-		newFisherman[level + 1] = new Fisherman();
+		newFisherman[level + 1] = new Fisherman(m);
 		fisherMen = new Fisherman[level + 1];
 		System.arraycopy(newFisherman, 0, fisherMen, 0, level + 1);
 	}
 	
-	public void isFinish(Player p){
-		//for(Player p : player){
-			if(m.getMap(p.getTileX(), p.getTileY()) == 'f'){
-				isFinished = true;
-			}
-			if(!isFinished){
-				for(Player checkPlayer: player){
-					isFishermanNear(checkPlayer);
-				}
-			}
-		//}
-		//if(m.getMap(player[0].getTileX(), player[0].getTileY()).equals("f") || m.getMap(player[1].getTileX(), player[1].getTileY()).equals("f")) {
-		if(isFinished){
-			repaint();
-			isFinished = false;
-			timer.stop();
-			//eTime = LocalTime.now();
-			eTime = System.currentTimeMillis();
-			long seconds = (eTime - sTime) / 1000;
-		        //long seconds = ChronoUnit.SECONDS.between(sTime, eTime);
-		        long minutes = seconds / 60;
-		    long secondsRemaining = seconds % 60;
-		    String time = minutes + "m : " + secondsRemaining + "s";
-		    String stats = "";
-		    for(Player finalPlayer: player){
-		    	stats += "\n-----------------------\nPlayer " + (finalPlayer.getNumber()+1) + "\nSteps: " + finalPlayer.getPlayerStepsTaken() + "\nLives: " + finalPlayer.getPlayerLives();
-		    }
-			JOptionPane.showMessageDialog(new JFrame(), "You have won! \nLevel: " + level + "\nYour Time: " + time + stats);
-			startLevel();
+	//public void isFinish(Player p){
+	public void isFinished(){
+		//isFinished = false;
+		for(Player p : player){
+			p.setFinished(false);
 		}
+		
+		timer.stop();
+		eTime = System.currentTimeMillis();
+		long seconds = (eTime - sTime) / 1000;
+        long minutes = seconds / 60;
+	    long secondsRemaining = seconds % 60;
+	    String time = minutes + "m : " + secondsRemaining + "s";
+	    String stats = "";
+	    for(Player finalPlayer: player){
+	    	stats += "\n-----------------------\nPlayer " + (finalPlayer.getNumber()+1) + "\nSteps: " + finalPlayer.getPlayerStepsTaken() + "\nLives: " + finalPlayer.getPlayerLives();
+	    }
+		JOptionPane.showMessageDialog(new JFrame(), "You have won! \nLevel: " + level + "\nYour Time: " + time + stats);
+		startLevel();
 	}
 	
-	public void movePlayerUp(Player p){
-		if(m.getMap(p.getTileX(), p.getTileY() - 1) != 'w') {
+	/*public void movePlayerUp(Player p){
+		if(!m.getMap(p.getTileX(), p.getTileY() - 1).equals("w")) {
 			p.move(0, -32, 0, -1);
-			//directionPlayer1 = 0;
 			p.setDirection(0);
 			p.setPlayerStepsTaken(p.getPlayerStepsTaken() + 1);
 			f.reFog(p.getTileX(), p.getTileY(), "U");
 			f.iAmHereFog(p.getTileX(), p.getTileY());
 			isFinish(p);
 		}
-	}
+	}*/
 	
-	public void movePlayerDown(Player p){
-		if(m.getMap(p.getTileX(), p.getTileY() + 1) != 'w') {
+	/*public void movePlayerDown(Player p){
+		if(!m.getMap(p.getTileX(), p.getTileY() + 1).equals("w")) {
 			p.move(0, 32, 0, 1);
-			//directionPlayer1 = 2;
 			p.setDirection(2);
 			p.setPlayerStepsTaken(p.getPlayerStepsTaken() + 1);
 			f.reFog(p.getTileX(), p.getTileY(), "D");
 			f.iAmHereFog(p.getTileX(), p.getTileY());
 			isFinish(p);
 		}
-	}
+	}*/
 	
-	public void movePlayerLeft(Player p){
-		if(m.getMap(p.getTileX() - 1, p.getTileY()) != 'w') {
+	/*public void movePlayerLeft(Player p){
+		if(!m.getMap(p.getTileX() - 1, p.getTileY()).equals("w")) {
 			p.move(-32, 0, -1, 0);
-			//directionPlayer1 = 3;
 			p.setDirection(3);
 			p.setPlayerStepsTaken(p.getPlayerStepsTaken() + 1);
 			f.reFog(p.getTileX(), p.getTileY(), "L");
 			f.iAmHereFog(p.getTileX(), p.getTileY());
 			isFinish(p);
 		}
-	}
+	}*/
 	
-	public void movePlayerRight(Player p){
-		if(m.getMap(p.getTileX() + 1, p.getTileY()) != 'w') {
+	/*public void movePlayerRight(Player p){
+		if(!m.getMap(p.getTileX() + 1, p.getTileY()).equals("w")) {
 			p.move(32, 0, 1, 0);
-			//directionPlayer1 = 1;
 			p.setDirection(1);
 			p.setPlayerStepsTaken(p.getPlayerStepsTaken() + 1);
 			f.reFog(p.getTileX(), p.getTileY(), "R");
 			f.iAmHereFog(p.getTileX(), p.getTileY());
 			isFinish(p);
 		}
-	}
+	}*/
 	
-	public class Al extends KeyAdapter {
+	/*public class Al extends KeyAdapter {
 		public void keyPressed(KeyEvent e) {
 			int keycode = e.getKeyCode();
 			switch(keycode){
@@ -540,124 +455,7 @@ public class Board extends JPanel implements ActionListener {
 						movePlayerRight(player[3]);
 					}
 					break;
-				/*if(!m.getMap(player[0].getTileX(), player[0].getTileY() - 1).equals("w")) {
-					player[0].move(0, -32, 0, -1);
-					directionPlayer1 = 0;
-					player[0].setPlayerStepsTaken(player[0].getPlayerStepsTaken() + 1);
-					f.reFog(player[0].getTileX(), player[0].getTileY(), "U");
-					//f.iAmHereFog(player[1].getTileX(), player[1].getTileY());
-					for(Player p: player){
-						f.iAmHereFog(p.getTileX(), p.getTileY());
-					}
-					isFinish(player[0]);
-				}*/
 			}
-			/*if(keycode == KeyEvent.VK_UP){
-				if(!m.getMap(player[0].getTileX(), player[0].getTileY() - 1).equals("w")) {
-					player[0].move(0, -32, 0, -1);
-					directionPlayer1 = 0;
-					player[0].setPlayerStepsTaken(player[0].getPlayerStepsTaken() + 1);
-					f.reFog(player[0].getTileX(), player[0].getTileY(), "U");
-					//f.iAmHereFog(player[1].getTileX(), player[1].getTileY());
-					for(Player p: player){
-						f.iAmHereFog(p.getTileX(), p.getTileY());
-					}
-					isFinish(player[0]);
-				}
-			}*/
-			/*if(keycode == KeyEvent.VK_DOWN){
-				if(!m.getMap(player[0].getTileX(), player[0].getTileY() + 1).equals("w")) {
-					player[0].move(0, 32, 0, 1);
-					directionPlayer1 = 2;
-					player[0].setPlayerStepsTaken(player[0].getPlayerStepsTaken() + 1);
-					f.reFog(player[0].getTileX(), player[0].getTileY(), "D");
-					for(Player p: player){
-						f.iAmHereFog(p.getTileX(), p.getTileY());
-					}
-					isFinish(player[0]);
-				}
-			}*/
-			/*if(keycode == KeyEvent.VK_LEFT){
-				if(!m.getMap(player[0].getTileX() - 1, player[0].getTileY()).equals("w")) {
-					player[0].move(-32, 0, -1, 0);
-					directionPlayer1 = 3;
-					player[0].setPlayerStepsTaken(player[0].getPlayerStepsTaken() + 1);
-					f.reFog(player[0].getTileX(), player[0].getTileY(), "L");
-					//f.iAmHereFog(player[1].getTileX(), player[1].getTileY());
-					for(Player p: player){
-						f.iAmHereFog(p.getTileX(), p.getTileY());
-					}
-					isFinish(player[0]);
-				}
-			}*/
-			/*if(keycode == KeyEvent.VK_RIGHT){
-				if(!m.getMap(player[0].getTileX() + 1, player[0].getTileY()).equals("w")) {
-					player[0].move(32, 0, 1, 0);
-					directionPlayer1 = 1;
-					player[0].setPlayerStepsTaken(player[0].getPlayerStepsTaken() + 1);
-					f.reFog(player[0].getTileX(), player[0].getTileY(), "R");
-					//f.iAmHereFog(player[1].getTileX(), player[1].getTileY());
-					for(Player p: player){
-						f.iAmHereFog(p.getTileX(), p.getTileY());
-					}
-					isFinish(player[0]);
-				}
-			}*/
-			/*if(player.length > 1){
-				//Player 2 controls (WASD)
-				if(keycode == KeyEvent.VK_W){
-					if(!m.getMap(player[1].getTileX(), player[1].getTileY() - 1).equals("w") && player.length > 1) {
-						player[1].move(0, -32, 0, -1);
-						directionPlayer2 = 0;
-						player[1].setPlayerStepsTaken(player[1].getPlayerStepsTaken() + 1);
-						f.reFog(player[1].getTileX(), player[1].getTileY(), "U");
-						//f.iAmHereFog(player[0].getTileX(), player[0].getTileY());
-						for(Player p: player){
-							f.iAmHereFog(p.getTileX(), p.getTileY());
-						}
-						isFinish(player[1]);
-					}
-				}
-				if(keycode == KeyEvent.VK_S){
-					if(!m.getMap(player[1].getTileX(), player[1].getTileY() + 1).equals("w") && player.length > 1) {
-						player[1].move(0, 32, 0, 1);
-						directionPlayer2 = 2;
-						player[1].setPlayerStepsTaken(player[1].getPlayerStepsTaken() + 1);
-						f.reFog(player[1].getTileX(), player[1].getTileY(), "D");
-						//f.iAmHereFog(player[0].getTileX(), player[0].getTileY());
-						for(Player p: player){
-							f.iAmHereFog(p.getTileX(), p.getTileY());
-						}
-						isFinish(player[1]);
-					}
-				}
-				if(keycode == KeyEvent.VK_A){
-					if(!m.getMap(player[1].getTileX() - 1, player[1].getTileY()).equals("w") && player.length > 1) {
-						player[1].move(-32, 0, -1, 0);
-						directionPlayer2 = 3;
-						player[1].setPlayerStepsTaken(player[1].getPlayerStepsTaken() + 1);
-						f.reFog(player[1].getTileX(), player[1].getTileY(), "L");
-						//f.iAmHereFog(player[0].getTileX(), player[0].getTileY());
-						for(Player p: player){
-							f.iAmHereFog(p.getTileX(), p.getTileY());
-						}
-						isFinish(player[1]);
-					}
-				}
-				if(keycode == KeyEvent.VK_D){
-					if(!m.getMap(player[1].getTileX() + 1, player[1].getTileY()).equals("w") && player.length > 1) {
-						player[1].move(32, 0, 1, 0);
-						directionPlayer2 = 1;
-						player[1].setPlayerStepsTaken(player[1].getPlayerStepsTaken() + 1);
-						f.reFog(player[1].getTileX(), player[1].getTileY(), "R");
-						//f.iAmHereFog(player[0].getTileX(), player[0].getTileY());
-						for(Player p: player){
-							f.iAmHereFog(p.getTileX(), p.getTileY());
-						}
-						isFinish(player[1]);
-					}
-				}
-			}*/
 		}
 		
 		public void keyReleased(KeyEvent e) {
@@ -667,5 +465,5 @@ public class Board extends JPanel implements ActionListener {
 		public void keyTyped(KeyEvent e) {
 			
 		}
-	}
+	}*/
 }
