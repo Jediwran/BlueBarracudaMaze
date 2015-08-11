@@ -70,19 +70,29 @@ public class Fisherman extends Thread {
 		int ty = 0;
 		boolean fishermanMoved = false;
 		while (!fishermanMoved){
-			int direction = new Random().nextInt(4);
+			int direction = new Random().nextInt(8);
 			switch(direction){
 				case 0 : {
-						if(!(getFishermanTileY() - 1 < 0) && map.getMap(getFishermanTileX(), getFishermanTileY() - 1) == 'w') {
-							fishermanMoved = true;
-							//fm.move(0, -32, 0, -1);
-							tx = 0;
-							ty = -1;
-							break;
-						}
+					if(!(getFishermanTileY() - 1 < 0) && map.getMap(getFishermanTileX(), getFishermanTileY() - 1) == 'w') {
+						fishermanMoved = true;
+						//fm.move(0, -32, 0, -1);
+						tx = 0;
+						ty = -1;
+						break;
+					}
 					break;
 				}
 				case 1 : {
+					if(!(getFishermanTileY() - 1 < 0) && !(getFishermanTileX() + 1 > map.getMapSize() - 1) && map.getMap(getFishermanTileX() + 1, getFishermanTileY() - 1) == 'w') {
+						fishermanMoved = true;
+						//fm.move(0, -32, 0, -1);
+						tx = 1;
+						ty = -1;
+						break;
+					}
+					break;
+				}
+				case 2 : {
 						if(!(getFishermanTileX() + 1 > map.getMapSize() - 1) && map.getMap(getFishermanTileX() + 1, getFishermanTileY()) == 'w') {
 							//fm.move(32, 0, 1, 0);
 							tx = 1;
@@ -92,7 +102,17 @@ public class Fisherman extends Thread {
 						}
 					break;
 				}
-				case 2 : {
+				case 3 : {
+					if(!(getFishermanTileY() + 1 > map.getMapSize()) && !(getFishermanTileX() + 1 > map.getMapSize() - 1) && map.getMap(getFishermanTileX() + 1, getFishermanTileY() + 1) == 'w') {
+						fishermanMoved = true;
+						//fm.move(0, -32, 0, -1);
+						tx = 1;
+						ty = 1;
+						break;
+					}
+					break;
+				}
+				case 4 : {
 						if(!(getFishermanTileY() + 1 > map.getMapSize() - 1) && map.getMap(getFishermanTileX(), getFishermanTileY() + 1) == 'w') {
 							//fm.move(0, 32, 0, 1);
 							tx = 0;
@@ -102,13 +122,33 @@ public class Fisherman extends Thread {
 					}
 					break;
 				}
-				case 3 : {
+				case 5 : {
+					if(!(getFishermanTileX() - 1 < 0) && !(getFishermanTileY() + 1 > map.getMapSize() - 1) && map.getMap(getFishermanTileX() - 1, getFishermanTileY() + 1) == 'w') {
+						fishermanMoved = true;
+						//fm.move(0, -32, 0, -1);
+						tx = -1;
+						ty = 1;
+						break;
+					}
+					break;
+				}
+				case 6 : {
 						if(!(getFishermanTileX() - 1 < 0) && map.getMap(getFishermanTileX() - 1, getFishermanTileY()) == 'w') {
 							//fm.move(-32, 0, -1, 0);
 							tx = -1;
 							ty = 0;
 							fishermanMoved = true;
 							break;
+					}
+					break;
+				}
+				case 7 : {
+					if(!(getFishermanTileY() - 1 < 0) && !(getFishermanTileX() - 1 < 0) && map.getMap(getFishermanTileX() - 1, getFishermanTileY() - 1) == 'w') {
+						fishermanMoved = true;
+						//fm.move(0, -32, 0, -1);
+						tx = -1;
+						ty = -1;
+						break;
 					}
 					break;
 				}
