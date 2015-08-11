@@ -18,7 +18,7 @@ public class Board extends JPanel implements ActionListener {
 	private Fog f;
 	private int mapSize = 16;
 	private int level = 0;
-	private boolean fogEnabled = true;
+	private boolean fogEnabled = false;
 	private Random r = new Random();
 	private int numPlayers = 1;
 	
@@ -86,7 +86,6 @@ public class Board extends JPanel implements ActionListener {
 	public void startLevel(){
 		level += 1;
 		m.setMapName(r.nextInt(8)+1);
-		//m.setupMap();
 		m.newMap(mapSize);
 		
 		maze.frame.setSize(Maze.width+(32*m.getMapSize()), Maze.height+(32*m.getMapSize()));
@@ -208,49 +207,6 @@ public class Board extends JPanel implements ActionListener {
 			f.setStartLocation(randX, randY);
 	}
 	
-	public void moveFisherman() {
-		for(Fisherman fm : fisherMen){
-			boolean fishermanMoved = false;
-			while (!fishermanMoved){
-				int direction = new Random().nextInt(4);
-				switch(direction){
-					case 0 : {
-							if(!(fm.getFishermanTileY() - 1 < 0) && m.getMap(fm.getFishermanTileX(), fm.getFishermanTileY() - 1) == 'w') {
-								fishermanMoved = true;
-								//fm.move(0, -32, 0, -1);
-								break;
-							}
-						break;
-					}
-					case 1 : {
-							if(!(fm.getFishermanTileX() + 1 > m.getMapSize() - 1) && m.getMap(fm.getFishermanTileX() + 1, fm.getFishermanTileY()) == 'w') {
-								//fm.move(32, 0, 1, 0);
-								fishermanMoved = true;
-								break;
-							}
-						break;
-					}
-					case 2 : {
-							if(!(fm.getFishermanTileY() + 1 > m.getMapSize() - 1) && m.getMap(fm.getFishermanTileX(), fm.getFishermanTileY() + 1) == 'w') {
-								//fm.move(0, 32, 0, 1);
-								fishermanMoved = true;
-								break;
-						}
-						break;
-					}
-					case 3 : {
-							if(!(fm.getFishermanTileX() - 1 < 0) && m.getMap(fm.getFishermanTileX() - 1, fm.getFishermanTileY()) == 'w') {
-								//fm.move(-32, 0, -1, 0);
-								fishermanMoved = true;
-								break;
-						}
-						break;
-					}
-				}
-			}
-		}
-	}
-	
 	public void fishermanCaughtFish(Player p) {
 		JOptionPane.showMessageDialog(new JFrame(), "Player " + (p.getNumber()+1) + " You have been caught! \nFisherman released you back into the water.");
 		//caught = false;
@@ -306,23 +262,21 @@ public class Board extends JPanel implements ActionListener {
 	}
 	
 	public void isFishermanNear(Player p) {
-		moveFisherman();
+		//moveFisherman();
 		if(isFishCaught()){
 			fishermanCaughtFish(p);
 		}
 	}
 	
-	public void createNewFisherman(){
+	/*public void createNewFisherman(){
 		Fisherman[] newFisherman = new Fisherman[level + 1];
 		System.arraycopy(fisherMen, 0, newFisherman, 0, level);
 		newFisherman[level + 1] = new Fisherman(m);
 		fisherMen = new Fisherman[level + 1];
 		System.arraycopy(newFisherman, 0, fisherMen, 0, level + 1);
-	}
+	}*/
 	
-	//public void isFinish(Player p){
 	public void isFinished(){
-		//isFinished = false;
 		for(Player p : playerList){
 			p.setFinished(false);
 		}
@@ -339,137 +293,5 @@ public class Board extends JPanel implements ActionListener {
 	    }
 		JOptionPane.showMessageDialog(new JFrame(), "You have won! \nLevel: " + level + "\nYour Time: " + time + stats);
 		startLevel();
-	}
-	
-	/*public void movePlayerUp(Player p){
-		if(!m.getMap(p.getTileX(), p.getTileY() - 1).equals("w")) {
-			p.move(0, -32, 0, -1);
-			p.setDirection(0);
-			p.setPlayerStepsTaken(p.getPlayerStepsTaken() + 1);
-			f.reFog(p.getTileX(), p.getTileY(), "U");
-			f.iAmHereFog(p.getTileX(), p.getTileY());
-			isFinish(p);
-		}
-	}*/
-	
-	/*public void movePlayerDown(Player p){
-		if(!m.getMap(p.getTileX(), p.getTileY() + 1).equals("w")) {
-			p.move(0, 32, 0, 1);
-			p.setDirection(2);
-			p.setPlayerStepsTaken(p.getPlayerStepsTaken() + 1);
-			f.reFog(p.getTileX(), p.getTileY(), "D");
-			f.iAmHereFog(p.getTileX(), p.getTileY());
-			isFinish(p);
-		}
-	}*/
-	
-	/*public void movePlayerLeft(Player p){
-		if(!m.getMap(p.getTileX() - 1, p.getTileY()).equals("w")) {
-			p.move(-32, 0, -1, 0);
-			p.setDirection(3);
-			p.setPlayerStepsTaken(p.getPlayerStepsTaken() + 1);
-			f.reFog(p.getTileX(), p.getTileY(), "L");
-			f.iAmHereFog(p.getTileX(), p.getTileY());
-			isFinish(p);
-		}
-	}*/
-	
-	/*public void movePlayerRight(Player p){
-		if(!m.getMap(p.getTileX() + 1, p.getTileY()).equals("w")) {
-			p.move(32, 0, 1, 0);
-			p.setDirection(1);
-			p.setPlayerStepsTaken(p.getPlayerStepsTaken() + 1);
-			f.reFog(p.getTileX(), p.getTileY(), "R");
-			f.iAmHereFog(p.getTileX(), p.getTileY());
-			isFinish(p);
-		}
-	}*/
-	
-	/*public class Al extends KeyAdapter {
-		public void keyPressed(KeyEvent e) {
-			int keycode = e.getKeyCode();
-			switch(keycode){
-				case KeyEvent.VK_UP:
-					movePlayerUp(player[0]);
-					break;
-				case KeyEvent.VK_LEFT:
-					movePlayerLeft(player[0]);
-					break;
-				case KeyEvent.VK_DOWN:
-					movePlayerDown(player[0]);
-					break;
-				case KeyEvent.VK_RIGHT:
-					movePlayerRight(player[0]);
-					break;
-				case KeyEvent.VK_W:
-					if(player.length > 1){
-						movePlayerUp(player[1]);
-					}
-					break;
-				case KeyEvent.VK_A:
-					if(player.length > 1){
-						movePlayerLeft(player[1]);
-					}
-					break;
-				case KeyEvent.VK_S:
-					if(player.length > 1){
-						movePlayerDown(player[1]);
-					}
-					break;
-				case KeyEvent.VK_D:
-					if(player.length > 1){
-						movePlayerRight(player[1]);
-					}
-					break;
-				case KeyEvent.VK_I:
-					if(player.length > 2){
-						movePlayerUp(player[2]);
-					}
-					break;
-				case KeyEvent.VK_J:
-					if(player.length > 2){
-						movePlayerLeft(player[2]);
-					}
-					break;
-				case KeyEvent.VK_K:
-					if(player.length > 2){
-						movePlayerDown(player[2]);
-					}
-					break;
-				case KeyEvent.VK_L:
-					if(player.length > 2){
-						movePlayerRight(player[2]);
-					}
-					break;
-				case KeyEvent.VK_NUMPAD8:
-					if(player.length > 3){
-						movePlayerUp(player[3]);
-					}
-					break;
-				case KeyEvent.VK_NUMPAD4:
-					if(player.length > 3){
-						movePlayerLeft(player[3]);
-					}
-					break;
-				case KeyEvent.VK_NUMPAD2:
-					if(player.length > 3){
-						movePlayerDown(player[3]);
-					}
-					break;
-				case KeyEvent.VK_NUMPAD6:
-					if(player.length > 3){
-						movePlayerRight(player[3]);
-					}
-					break;
-			}
-		}
-		
-		public void keyReleased(KeyEvent e) {
-			
-		}
-		
-		public void keyTyped(KeyEvent e) {
-			
-		}
-	}*/
+	}	
 }
