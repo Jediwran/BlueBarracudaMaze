@@ -172,10 +172,11 @@ public class Player extends JPanel implements Runnable, ActionListener {
 	
 	public void movePlayerUp(){
 		if(m.getMap(getTileX(), getTileY() - 1) != 'w') {
+			f.reFog(getTileX(), getTileY(), "U");
 			move(0, -32, 0, -1);
 			setDirection(0);
 			setPlayerStepsTaken(getPlayerStepsTaken() + 1);
-			f.reFog(getTileX(), getTileY(), "U");
+			
 			f.iAmHereFog(getTileX(), getTileY());
 			//isFinish(p);
 		}
@@ -183,10 +184,11 @@ public class Player extends JPanel implements Runnable, ActionListener {
 	
 	public void movePlayerDown(){
 		if(m.getMap(getTileX(), getTileY() + 1) != 'w') {
+			f.reFog(getTileX(), getTileY(), "D");
+
 			move(0, 32, 0, 1);
 			setDirection(2);
 			setPlayerStepsTaken(getPlayerStepsTaken() + 1);
-			f.reFog(getTileX(), getTileY(), "D");
 			f.iAmHereFog(getTileX(), getTileY());
 			//isFinish(p);
 		}
@@ -194,10 +196,10 @@ public class Player extends JPanel implements Runnable, ActionListener {
 	
 	public void movePlayerLeft(){
 		if(m.getMap(tileX - 1, tileY) != 'w') {
+			f.reFog(tileX, tileY, "L");
 			move(-32, 0, -1, 0);
 			setDirection(3);
 			setPlayerStepsTaken(getPlayerStepsTaken() + 1);
-			f.reFog(tileX, tileY, "L");
 			f.iAmHereFog(tileX, tileY);
 			//isFinish(p);
 		}
@@ -205,10 +207,10 @@ public class Player extends JPanel implements Runnable, ActionListener {
 	
 	public void movePlayerRight(){
 		if(m.getMap(getTileX() + 1, getTileY()) != 'w') {
+			f.reFog(tileX, tileY, "R");
 			move(32, 0, 1, 0);
 			setDirection(1);
 			setPlayerStepsTaken(getPlayerStepsTaken() + 1);
-			f.reFog(tileX, tileY, "R");
 			f.iAmHereFog(getTileX(), getTileY());
 			//isFinish(p);
 		}
