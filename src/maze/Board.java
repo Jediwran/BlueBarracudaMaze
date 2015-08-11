@@ -13,8 +13,8 @@ public class Board extends JPanel implements ActionListener {
 	private long sTime, eTime;
 	private Map m;
 	private Maze maze;
-	private Player[] player;
-	private Fisherman[] fisherMen;
+	private Player[] playerList;
+	private Fisherman[] fisherMen = new Fisherman[0];
 	private Fog f;
 	private int mapSize = 16;
 	private int level = 0;
@@ -30,13 +30,15 @@ public class Board extends JPanel implements ActionListener {
 		f = new Fog();
 		f.setFogMapSize(mapSize);
 		selectPlayerNumber();
-		player = new Player[numPlayers];
+		playerList = new Player[numPlayers];
 		for(int i = 0; i < numPlayers; i++){
-			player[i] = new Player(m,f);
-			player[i].setNumber(i);
+			playerList[i] = new Player(m,f);
+			playerList[i].setNumber(i);
 
-			selectPlayerColor(player[i]);
-			player[i].setPlayerImages();
+			selectPlayerColor(playerList[i]);
+			playerList[i].setPlayerImages();
+			new Thread(playerList[i]).start();
+
 		}
 		//addKeyListener(new Al());
 		setFocusable(true);
@@ -89,18 +91,22 @@ public class Board extends JPanel implements ActionListener {
 		
 		maze.frame.setSize(Maze.width+(32*m.getMapSize()), Maze.height+(32*m.getMapSize()));
 		maze.frame.setVisible(true);
+		for(Fisherman fisher:fisherMen)
+		{
+			fisher.requestStop();
+		}
+		
 		fisherMen = new Fisherman[level];
 		for(int i = 0; i < level; i++){
 			fisherMen[i] = new Fisherman(m);
 			randomStartFisherman(fisherMen[i]);
 			fisherMen[i].start();
 		}
-		for(Player p: player){
+		for(Player p: playerList){
 			p.setPlayerStepsTaken(0);
 			p.setTimesCaught(0);
 			p.setPlayerStart(m.getStartX(), m.getStartY());
 			f.createFog(p.getTileX(), p.getTileY());
-			new Thread(p).start();
 		}
 		sTime = System.currentTimeMillis();
 		timer = new Timer(25, this);
@@ -109,7 +115,7 @@ public class Board extends JPanel implements ActionListener {
 	
 	public void actionPerformed(ActionEvent e) {
 		repaint();
-		for(Player p : player){
+		for(Player p : playerList){
 			if(m.getMap(p.getTileX(), p.getTileY()) == 'f'){
 				p.setFinished(true);
 				isFinished();
@@ -167,7 +173,7 @@ public class Board extends JPanel implements ActionListener {
 		g.drawString("Level: " + level, 16, 24);
 		int i = 10;
 		int j = 10;
-		for(Player p : player){
+		for(Player p : playerList){
 			if(i == 370){
 				g.drawString("P" + (p.getNumber()+1) + "-Steps: " + p.getPlayerStepsTaken() + "   Lives: " + p.getPlayerLives(), 80 + j, 44);
 				j += 180;
@@ -260,7 +266,7 @@ public class Board extends JPanel implements ActionListener {
 				switch (n) {
 				case 0:
 					level = 0;
-					for(Player newPlayer: player){
+					for(Player newPlayer: playerList){
 						newPlayer.setPlayerLives(5);
 					}
 					startLevel();
@@ -277,7 +283,7 @@ public class Board extends JPanel implements ActionListener {
 	
 	public boolean isFishCaught() {
 		for(Fisherman fm : fisherMen){
-			for(Player p : player){
+			for(Player p : playerList){
 				p.isCaught(fm);
 				if(fm.getFishermanTileX()+1 == p.getTileX() && fm.getFishermanTileY() == p.getTileY()){
 					//caught = true;
@@ -294,8 +300,8 @@ public class Board extends JPanel implements ActionListener {
 	}
 	
 	public void moveFishToStart(int caughtPlayer){
-		f.reFog(player[caughtPlayer].getTileX(), player[caughtPlayer].getTileY(), "C");
-		player[caughtPlayer].setPlayerStart(m.getStartX(), m.getStartY());
+		f.reFog(playerList[caughtPlayer].getTileX(), playerList[caughtPlayer].getTileY(), "C");
+		playerList[caughtPlayer].setPlayerStart(m.getStartX(), m.getStartY());
 		f.iAmHereFog(m.getStartX(), m.getStartY());
 	}
 	
@@ -317,7 +323,7 @@ public class Board extends JPanel implements ActionListener {
 	//public void isFinish(Player p){
 	public void isFinished(){
 		//isFinished = false;
-		for(Player p : player){
+		for(Player p : playerList){
 			p.setFinished(false);
 		}
 		
@@ -328,7 +334,7 @@ public class Board extends JPanel implements ActionListener {
 	    long secondsRemaining = seconds % 60;
 	    String time = minutes + "m : " + secondsRemaining + "s";
 	    String stats = "";
-	    for(Player finalPlayer: player){
+	    for(Player finalPlayer: playerList){
 	    	stats += "\n-----------------------\nPlayer " + (finalPlayer.getNumber()+1) + "\nSteps: " + finalPlayer.getPlayerStepsTaken() + "\nLives: " + finalPlayer.getPlayerLives();
 	    }
 		JOptionPane.showMessageDialog(new JFrame(), "You have won! \nLevel: " + level + "\nYour Time: " + time + stats);

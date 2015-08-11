@@ -12,7 +12,7 @@ public class Fisherman extends Thread {
 	private Map map;
 	private int x, y, tileX, tileY;
 	private String fishermanFile = "src/resources/player.png";
-	
+	private boolean stopRequested = false; 
 	public Fisherman(Map m) {
 		ImageIcon img = new ImageIcon(fishermanFile);
 		fisherman = img.getImage();
@@ -20,7 +20,7 @@ public class Fisherman extends Thread {
 	}
 	
 	public void run() {
-		while(true){
+		while(!stopRequested){
 			try {
 				sleep(1500);
 				//System.out.println("move fisherman");
@@ -30,8 +30,12 @@ public class Fisherman extends Thread {
 				e.printStackTrace();
 			}
 		}
+		System.out.println("Fisherman stopping");
 	}
-	
+	public void requestStop()
+	{
+		stopRequested = true;
+	}
 	public Image getFisherman() {
 		return fisherman;
 	}
