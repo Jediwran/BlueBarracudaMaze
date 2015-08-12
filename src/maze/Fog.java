@@ -26,7 +26,6 @@ public class Fog {
 	}
 	
 	public void iAmHereFog(int x, int y){
-		
 		fog(x,y,0);
 	}
 	private void fog(int x, int y, int set_type)

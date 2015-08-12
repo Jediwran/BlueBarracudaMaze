@@ -36,11 +36,10 @@ public class Board extends JPanel implements ActionListener {
 			playerList[i].setNumber(i);
 
 			selectPlayerColor(playerList[i]);
-			playerList[i].setPlayerImages();
+			playerList[i].setImages();
 			new Thread(playerList[i]).start();
 
 		}
-		//addKeyListener(new Al());
 		setFocusable(true);
 		startLevel();
 	}
@@ -98,13 +97,13 @@ public class Board extends JPanel implements ActionListener {
 		fisherMen = new Fisherman[level];
 		for(int i = 0; i < level; i++){
 			fisherMen[i] = new Fisherman(m);
-			randomStartFisherman(fisherMen[i]);
+			fisherMen[i].randomStart();
 			fisherMen[i].start();
 		}
 		for(Player p: playerList){
-			p.setPlayerStepsTaken(0);
+			p.setStepsTaken(0);
 			p.setTimesCaught(0);
-			p.setPlayerStart(m.getStartX(), m.getStartY());
+			p.moveToStart(m.getStartX(), m.getStartY());
 			f.createFog(p.getTileX(), p.getTileY());
 		}
 		sTime = System.currentTimeMillis();
@@ -114,11 +113,16 @@ public class Board extends JPanel implements ActionListener {
 	
 	public void actionPerformed(ActionEvent e) {
 		repaint();
-		for(Player p : playerList){
-			if(m.getMap(p.getTileX(), p.getTileY()) == 'f'){
-				p.setFinished(true);
+		for(Player player : playerList){
+			for(Fisherman fisherman: fisherMen){
+				fisherman.isPlayerNear(player);
+				if(fisherman.getCaughtPlayer() < 5) playerList[fisherman.getCaughtPlayer()].setCaught(true);
+			}
+			if(m.getMap(player.getTileX(), player.getTileY()) == 'f'){
+				player.setFinished(true);
 				isFinished();
 			}
+			isPlayerCaught();
 		}
 	}
 	
@@ -163,118 +167,59 @@ public class Board extends JPanel implements ActionListener {
 			}
 		}
 		for (Fisherman fisherman : fisherMen) {
-			if(fog[fisherman.getFishermanTileX()][fisherman.getFishermanTileY()] == 0){
-				g.drawImage(fisherman.getFisherman(), fisherman.getFishermanX(), fisherman.getFishermanY(), null);
+			if(fog[fisherman.getTileX()][fisherman.getTileY()] == 0){
+				g.drawImage(fisherman.getImage(), fisherman.getX(), fisherman.getY(), null);
 			}
 		}
 		g.setColor(new Color(255,255,255));
 		g.setFont(new Font("default", Font.BOLD, 16));
-		g.drawString("Level: " + level, 16, 24);
-		int i = 10;
-		int j = 10;
-		for(Player p : playerList){
-			if(i == 370){
-				g.drawString("P" + (p.getNumber()+1) + "-Steps: " + p.getPlayerStepsTaken() + "   Lives: " + p.getPlayerLives(), 80 + j, 44);
-				j += 180;
+		g.drawString("Level: " + level, 0, 24);
+		int i = 0;
+		int j = 0;
+		for(Player player : playerList){
+			if(i == 450){
+				g.drawString("P" + (player.getNumber()+1) + "-Steps: " + player.getStepsTaken() + "   Health: " + player.getHealth() + " / " + player.getMaxHealth(), 80 + j, 44);
+				j += 225;
 			}else{
-				g.drawString("P" + (p.getNumber()+1) + "-Steps: " + p.getPlayerStepsTaken() + "   Lives: " + p.getPlayerLives(), 80 + i, 24);
-				i += 180;
+				g.drawString("P" + (player.getNumber()+1) + "-Steps: " + player.getStepsTaken() + "   Health: " + player.getHealth() + " / " + player.getMaxHealth(), 80 + i, 24);
+				i += 225;
 			}
-			g.drawImage(p.drawPlayer(), p.getX(), p.getY(), null);
-			f.iAmHereFog(p.getTileX(), p.getTileY());
+			g.drawImage(player.draw(), player.getX(), player.getY(), null);
+			f.iAmHereFog(player.getTileX(), player.getTileY());
 		}
 	}
 	
-	public void randomStartFisherman(Fisherman f) {
-		Random rand = new Random();
-		int randX;
-		int randY;
-		//generate random number to assign placement of fisherman
-		//continues to generate a random number if position falls
-		//within 3 squares of the starting position
-		do{
-			
-			do{
-			randX = rand.nextInt(13);
-			}while(Math.abs(m.getStartX()-randX) < 3);
-			
-			do{
-			randY = rand.nextInt(13);
-			}while(Math.abs(m.getStartY()-randY) < 3);
-			
-		//test that the location generated falls on a Wall "w" space	
-		}while(m.getMap(randX, randY) != 'w');
-			f.setStartLocation(randX, randY);
-	}
-	
-	public void fishermanCaughtFish(Player p) {
-		JOptionPane.showMessageDialog(new JFrame(), "Player " + (p.getNumber()+1) + " You have been caught! \nFisherman released you back into the water.");
-		//caught = false;
-		for(Fisherman fm : fisherMen){
-			randomStartFisherman(fm);
-		}
-		moveFishToStart(p.getNumber());
-		p.setTimesCaught(p.getTimesCaught()+1);
-		p.setPlayerLives(p.getPlayerLives() - 1);
-		if (p.getPlayerLives() ==0){
-			Object[] selectMenuOptions={"New Game", "Exit"};
-			int n = JOptionPane.showOptionDialog(null, "Select an option", "Game Over", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, selectMenuOptions, selectMenuOptions[0]);
-				switch (n) {
-				case 0:
-					level = 0;
-					for(Player newPlayer: playerList){
-						newPlayer.setPlayerLives(5);
-					}
-					startLevel();
-					break;
-				case 1:
-					System.exit(0);
-					break;
-				default:
-					//you're an idiot, you shouldn't reach here!
+	public void isPlayerCaught(){
+		for(Player player: playerList){
+			if(player.getCaught()){
+				player.setCaught(false);
+				if(player.getHealth() > 5){
+					JOptionPane.showMessageDialog(new JFrame(), "Player " + (player.getNumber() + 1) + " You have been caught! \nFisherman released you back into the water.");
+					player.decreaseHealth();
+					player.moveToStart(m.getStartX(), m.getStartY());
+				}else{
+					player.died();
+					Object[] selectMenuOptions={"New Game", "Exit"};
+					int n = JOptionPane.showOptionDialog(null, "Select an option", "Game Over", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, selectMenuOptions, selectMenuOptions[0]);
+					switch (n) {
+					case 0:
+						level = 0;
+						for(Player newPlayer: playerList){
+							newPlayer.setHealth(50);
+						}
+						startLevel();
 						break;
-				}
-		}
-	}
-	
-	public boolean isFishCaught() {
-		for(Fisherman fm : fisherMen){
-			for(Player p : playerList){
-				p.isCaught(fm);
-				if(fm.getFishermanTileX()+1 == p.getTileX() && fm.getFishermanTileY() == p.getTileY()){
-					//caught = true;
-				}else if(fm.getFishermanTileX()-1 == p.getTileX() && fm.getFishermanTileY() == p.getTileY()){
-					//caught = true;
-				}else if(fm.getFishermanTileX() == p.getTileX() && fm.getFishermanTileY() == p.getTileY() + 1){
-					//caught = true;
-				}else if(fm.getFishermanTileX() == p.getTileX() && fm.getFishermanTileY() == p.getTileY() - 1){
-					//caught = true;
+					case 1:
+						System.exit(0);
+						break;
+					}
 				}
 			}
 		}
-		return true;
-	}
-	
-	public void moveFishToStart(int caughtPlayer){
-		f.reFog(playerList[caughtPlayer].getTileX(), playerList[caughtPlayer].getTileY(), "C");
-		playerList[caughtPlayer].setPlayerStart(m.getStartX(), m.getStartY());
-		f.iAmHereFog(m.getStartX(), m.getStartY());
-	}
-	
-	public void isFishermanNear(Player p) {
-		//moveFisherman();
-		if(isFishCaught()){
-			fishermanCaughtFish(p);
+		for(Fisherman fisherman: fisherMen){
+			fisherman.resetCaughtPlayer();
 		}
 	}
-	
-	/*public void createNewFisherman(){
-		Fisherman[] newFisherman = new Fisherman[level + 1];
-		System.arraycopy(fisherMen, 0, newFisherman, 0, level);
-		newFisherman[level + 1] = new Fisherman(m);
-		fisherMen = new Fisherman[level + 1];
-		System.arraycopy(newFisherman, 0, fisherMen, 0, level + 1);
-	}*/
 	
 	public void isFinished(){
 		for(Player p : playerList){
@@ -289,7 +234,7 @@ public class Board extends JPanel implements ActionListener {
 	    String time = minutes + "m : " + secondsRemaining + "s";
 	    String stats = "";
 	    for(Player finalPlayer: playerList){
-	    	stats += "\n-----------------------\nPlayer " + (finalPlayer.getNumber()+1) + "\nSteps: " + finalPlayer.getPlayerStepsTaken() + "\nLives: " + finalPlayer.getPlayerLives();
+	    	stats += "\n-----------------------\nPlayer " + (finalPlayer.getNumber()+1) + "\nSteps: " + finalPlayer.getStepsTaken() + "\nFinal Health: " + finalPlayer.getHealth();
 	    }
 		JOptionPane.showMessageDialog(new JFrame(), "You have won! \nLevel: " + level + "\nYour Time: " + time + stats);
 		startLevel();

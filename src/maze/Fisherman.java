@@ -1,4 +1,3 @@
-
 package maze;
 
 import java.awt.Image;
@@ -11,10 +10,12 @@ public class Fisherman extends Thread {
 	private Image fisherman;
 	private Map map;
 	private int x, y, tileX, tileY;
-	private String fishermanFile = "src/resources/player.png";
+	private int caughtPlayer = 5;
+	private String file = "src/resources/player.png";
 	private boolean stopRequested = false; 
+	
 	public Fisherman(Map m) {
-		ImageIcon img = new ImageIcon(fishermanFile);
+		ImageIcon img = new ImageIcon(file);
 		fisherman = img.getImage();
 		map = m;
 	}
@@ -23,37 +24,16 @@ public class Fisherman extends Thread {
 		while(!stopRequested){
 			try {
 				sleep(1500);
-				//System.out.println("move fisherman");
 				move();
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				System.out.println("Fisherman did not move.");
 			}
 		}
-		System.out.println("Fisherman stopping");
 	}
+	
 	public void requestStop()
 	{
 		stopRequested = true;
-	}
-	public Image getFisherman() {
-		return fisherman;
-	}
-	
-	public int getFishermanX() {
-		return x;
-	}
-	
-	public int getFishermanY() {
-		return y;
-	}
-	
-	public int getFishermanTileX() {
-		return tileX;
-	}
-	
-	public int getFishermanTileY() {
-		return tileY;
 	}
 	
 	public void setStartLocation(int dx, int dy) {
@@ -64,7 +44,6 @@ public class Fisherman extends Thread {
 		tileY = dy;
 	}
 	
-	//public void move(int dx, int dy, int tx, int ty){
 	public void move(){
 		int tx = 0;
 		int ty = 0;
@@ -73,9 +52,8 @@ public class Fisherman extends Thread {
 			int direction = new Random().nextInt(8);
 			switch(direction){
 				case 0 : {
-					if(!(getFishermanTileY() - 1 < 0) && map.getMap(getFishermanTileX(), getFishermanTileY() - 1) == 'w') {
+					if(!(getTileY() - 1 < 0) && map.getMap(getTileX(), getTileY() - 1) == 'w') {
 						fishermanMoved = true;
-						//fm.move(0, -32, 0, -1);
 						tx = 0;
 						ty = -1;
 						break;
@@ -83,9 +61,8 @@ public class Fisherman extends Thread {
 					break;
 				}
 				case 1 : {
-					if(!(getFishermanTileY() - 1 < 0) && !(getFishermanTileX() + 1 > map.getMapSize() - 1) && map.getMap(getFishermanTileX() + 1, getFishermanTileY() - 1) == 'w') {
+					if(!(getTileY() - 1 < 0) && !(getTileX() + 1 > map.getMapSize() - 1) && map.getMap(getTileX() + 1, getTileY() - 1) == 'w') {
 						fishermanMoved = true;
-						//fm.move(0, -32, 0, -1);
 						tx = 1;
 						ty = -1;
 						break;
@@ -93,8 +70,7 @@ public class Fisherman extends Thread {
 					break;
 				}
 				case 2 : {
-						if(!(getFishermanTileX() + 1 > map.getMapSize() - 1) && map.getMap(getFishermanTileX() + 1, getFishermanTileY()) == 'w') {
-							//fm.move(32, 0, 1, 0);
+						if(!(getTileX() + 1 > map.getMapSize() - 1) && map.getMap(getTileX() + 1, getTileY()) == 'w') {
 							tx = 1;
 							ty = 0;
 							fishermanMoved = true;
@@ -103,9 +79,8 @@ public class Fisherman extends Thread {
 					break;
 				}
 				case 3 : {
-					if(!(getFishermanTileY() + 1 > map.getMapSize()) && !(getFishermanTileX() + 1 > map.getMapSize() - 1) && map.getMap(getFishermanTileX() + 1, getFishermanTileY() + 1) == 'w') {
+					if(!(getTileY() + 1 > map.getMapSize()) && !(getTileX() + 1 > map.getMapSize() - 2) && map.getMap(getTileX() + 1, getTileY() + 1) == 'w') {
 						fishermanMoved = true;
-						//fm.move(0, -32, 0, -1);
 						tx = 1;
 						ty = 1;
 						break;
@@ -113,8 +88,7 @@ public class Fisherman extends Thread {
 					break;
 				}
 				case 4 : {
-						if(!(getFishermanTileY() + 1 > map.getMapSize() - 1) && map.getMap(getFishermanTileX(), getFishermanTileY() + 1) == 'w') {
-							//fm.move(0, 32, 0, 1);
+						if(!(getTileY() + 1 > map.getMapSize() - 1) && map.getMap(getTileX(), getTileY() + 1) == 'w') {
 							tx = 0;
 							ty = 1;
 							fishermanMoved = true;
@@ -123,9 +97,8 @@ public class Fisherman extends Thread {
 					break;
 				}
 				case 5 : {
-					if(!(getFishermanTileX() - 1 < 0) && !(getFishermanTileY() + 1 > map.getMapSize() - 1) && map.getMap(getFishermanTileX() - 1, getFishermanTileY() + 1) == 'w') {
+					if(!(getTileX() - 1 < 0) && !(getTileY() + 1 > map.getMapSize() - 1) && map.getMap(getTileX() - 1, getTileY() + 1) == 'w') {
 						fishermanMoved = true;
-						//fm.move(0, -32, 0, -1);
 						tx = -1;
 						ty = 1;
 						break;
@@ -133,8 +106,7 @@ public class Fisherman extends Thread {
 					break;
 				}
 				case 6 : {
-						if(!(getFishermanTileX() - 1 < 0) && map.getMap(getFishermanTileX() - 1, getFishermanTileY()) == 'w') {
-							//fm.move(-32, 0, -1, 0);
+						if(!(getTileX() - 1 < 0) && map.getMap(getTileX() - 1, getTileY()) == 'w') {
 							tx = -1;
 							ty = 0;
 							fishermanMoved = true;
@@ -143,9 +115,8 @@ public class Fisherman extends Thread {
 					break;
 				}
 				case 7 : {
-					if(!(getFishermanTileY() - 1 < 0) && !(getFishermanTileX() - 1 < 0) && map.getMap(getFishermanTileX() - 1, getFishermanTileY() - 1) == 'w') {
+					if(!(getTileY() - 1 < 0) && !(getTileX() - 1 < 0) && map.getMap(getTileX() - 1, getTileY() - 1) == 'w') {
 						fishermanMoved = true;
-						//fm.move(0, -32, 0, -1);
 						tx = -1;
 						ty = -1;
 						break;
@@ -179,10 +150,44 @@ public class Fisherman extends Thread {
 			setStartLocation(randX, randY);
 	}
 	
-	public void isNear(Player p) {
-		//moveFisherman();
-		//if(isFishCaught()){
-			//fishermanCaughtFish(p);
-		//}
+	public int isPlayerNear(Player player){
+		if(player.getTileX() == tileX + 1 && player.getTileY() == tileY){
+			caughtPlayer = player.getNumber();
+		}else if(player.getTileX() == tileX - 1 && player.getTileY() == tileY){
+			caughtPlayer = player.getNumber();
+		}else if(player.getTileX() == tileX && player.getTileY() == tileY + 1){
+			caughtPlayer = player.getNumber();
+		}else if(player.getTileX() == tileX && player.getTileY() == tileY - 1){
+			caughtPlayer = player.getNumber();
+		}
+		return caughtPlayer;
+	}
+	
+	public int getCaughtPlayer(){
+		return caughtPlayer;
+	}
+	
+	public void resetCaughtPlayer(){
+		caughtPlayer = 5;
+	}
+	
+	public Image getImage() {
+		return fisherman;
+	}
+	
+	public int getX() {
+		return x;
+	}
+	
+	public int getY() {
+		return y;
+	}
+	
+	public int getTileX() {
+		return tileX;
+	}
+	
+	public int getTileY() {
+		return tileY;
 	}
 }

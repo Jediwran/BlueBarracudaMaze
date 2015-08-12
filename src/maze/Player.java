@@ -3,15 +3,12 @@ package maze;
 import java.awt.Image;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
 @SuppressWarnings("serial")
-public class Player extends JPanel implements Runnable, ActionListener {
+public class Player extends JPanel implements Runnable {
 
 	private int x, y, tileX, tileY, number;
 	private Image leftImage, downImage, rightImage, upImage;
@@ -19,63 +16,24 @@ public class Player extends JPanel implements Runnable, ActionListener {
 	private String downFile = "src/resources/fish_down_";
 	private String rightFile = "src/resources/fish_right_";
 	private String upFile = "src/resources/fish_up_";
-	private int lives = 5;
 	private int stepsTaken = 0;
 	private int timesCaught = 0;
 	private int direction = 3;
+	private int health = 50;
+	private int maxHealth = 50;
 	private String color;
 	private Map m;
 	private Fog f;
 	private boolean caught = false;
-	private boolean isAtFinish = false;
+	private boolean finish = false;
 		
 	public Player(Map m, Fog f) {
 		this.m = m;
 		this.f = f;
 		keyBindings();
 	}
-	
-	public int getDirection() {
-		return direction;
-	}
 
-	public void setDirection(int direction) {
-		this.direction = direction;
-	}
-	
-	public String getColor() {
-		return color;
-	}
-
-	public void setColor(String color) {
-		this.color = color;
-	}
-
-	public int getTimesCaught() {
-		return timesCaught;
-	}
-
-	public void setTimesCaught(int timesCaught) {
-		this.timesCaught = timesCaught;
-	}
-
-	public int getPlayerStepsTaken() {
-		return stepsTaken;
-	}
-
-	public void setPlayerStepsTaken(int playerStepsTaken) {
-		this.stepsTaken = playerStepsTaken;
-	}
-
-	public int getPlayerLives() {
-		return lives;
-	}
-
-	public void setPlayerLives(int playerLives) {
-		this.lives = playerLives;
-	}
-
-	public void setPlayerImages(){
+	public void setImages(){
 		ImageIcon img = new ImageIcon(leftFile + color + ".png");
 		leftImage = img.getImage();
 		img = new ImageIcon(downFile + color + ".png");
@@ -86,32 +44,228 @@ public class Player extends JPanel implements Runnable, ActionListener {
 		upImage = img.getImage();
 	}
 	
-	public void setPlayerStart(int tX, int tY) {
+	public void moveToStart(int tX, int tY) {
 		tileX = tX;
 		tileY = tY;
 		
-		//Normal 32x32 character
+		//32x32 character
 		x = tX * 32;
 		y = tY * 32;
-		
-		//Character with black around him
-		//x = tX * 32 - 783;
-		//y = tY * 32 - 784;
 	}
 	
-	public Image getPlayerLeft() {
+	private void move(int dx, int dy, int tx, int ty) {
+		x += dx;
+		y += dy;
+		
+		tileX += tx;
+		tileY += ty;
+	}
+	
+	public Image draw(){
+		Image playerImage = null;
+		switch(direction){
+			case 0:{
+				playerImage = getUpImage();
+				break;
+			}
+			case 1:{
+				playerImage = getRightImage();
+				break;
+			}
+			case 2:{
+				playerImage = getDownImage();
+				break;
+			}
+			case 3:{
+				playerImage = getLeftImage();
+				break;
+			}
+		}
+		return playerImage;
+	}
+	
+	public void moveUp(){
+		if(m.getMap(tileX, tileY - 1) != 'w') {
+			f.reFog(tileX, tileY, "U");
+			move(0, -32, 0, -1);
+			setDirection(0);
+			setStepsTaken(getStepsTaken() + 1);
+			
+			f.iAmHereFog(tileX, tileY);
+		}
+	}
+	
+	public void moveDown(){
+		if(m.getMap(tileX, tileY + 1) != 'w' && m.getMap(tileX, tileY + 1) != 'b' ) {
+			f.reFog(tileX, tileY, "D");
+
+			move(0, 32, 0, 1);
+			setDirection(2);
+			setStepsTaken(getStepsTaken() + 1);
+			f.iAmHereFog(tileX, tileY);
+		}
+	}
+	
+	public void moveLeft(){
+		if(m.getMap(tileX - 1, tileY) != 'w' && m.getMap(tileX, tileY + 1) != 'b' ) {
+			f.reFog(tileX, tileY, "L");
+			move(-32, 0, -1, 0);
+			setDirection(3);
+			setStepsTaken(getStepsTaken() + 1);
+			f.iAmHereFog(tileX, tileY);
+		}
+	}
+	
+	public void moveRight(){
+		if(m.getMap(getTileX() + 1, getTileY()) != 'w' && m.getMap(tileX, tileY + 1) != 'b' ) {
+			f.reFog(tileX, tileY, "R");
+			move(32, 0, 1, 0);
+			setDirection(1);
+			setStepsTaken(getStepsTaken() + 1);
+			f.iAmHereFog(tileX, tileY);
+		}
+	}
+
+	@Override
+	public void run() {
+		while(true){
+			
+		}
+	}
+		
+	public void keyBindings() {
+		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyEventDispatcher() {
+			
+			@Override
+            public boolean dispatchKeyEvent(KeyEvent ke) {
+            	int keyID = ke.getID();
+            	int keyCode = ke.getKeyCode();
+            	if(keyID == KeyEvent.KEY_PRESSED && number == 0){
+                	switch(keyCode){
+                		case KeyEvent.VK_UP:
+                			moveUp();
+                			break;
+                		case KeyEvent.VK_LEFT:
+                			moveLeft();
+                			break;
+                		case KeyEvent.VK_DOWN:
+                			moveDown();
+                			break;
+                		case KeyEvent.VK_RIGHT:
+                			moveRight();
+                			break;
+                	}
+            	}else if(keyID == KeyEvent.KEY_PRESSED && number == 1){
+    				switch(keyCode){
+					case KeyEvent.VK_W:
+							moveUp();
+						break;
+					case KeyEvent.VK_A:
+							moveLeft();
+						break;
+					case KeyEvent.VK_S:
+							moveDown();
+						break;
+					case KeyEvent.VK_D:
+							moveRight();
+						break;
+					}
+    			}else if(keyID == KeyEvent.KEY_PRESSED && number == 2){
+    				switch(keyCode) {
+    					case KeyEvent.VK_I:
+    							moveUp();
+    						break;
+    					case KeyEvent.VK_J:
+    							moveLeft();
+    						break;
+    					case KeyEvent.VK_K:
+    							moveDown();
+    						break;
+    					case KeyEvent.VK_L:
+    							moveRight();
+    						break;
+    				}
+    			}else if(keyID == KeyEvent.KEY_PRESSED && number == 3){
+    				switch(keyCode){
+    					case KeyEvent.VK_NUMPAD8:
+    							moveUp();
+    						break;
+    					case KeyEvent.VK_NUMPAD4:
+    							moveLeft();
+    						break;
+    					case KeyEvent.VK_NUMPAD2:
+    							moveDown();
+    						break;
+    					case KeyEvent.VK_NUMPAD6:
+    							moveRight();
+    						break;
+    				}
+                }
+				return false;
+            }
+		});
+		
+	}
+	
+	public void isAtFinish(){
+		if(m.getMap(tileX, tileY) == 'f'){
+			finish = true;
+		}
+	}
+	
+	public void died(){
+		System.out.println("game over!!!");
+	}
+	
+	public void decreaseHealth(){
+		health = health - 5;
+	}
+
+	public void setHealth(int value){
+		health = value;
+	}
+	
+	public int getHealth() {
+		return health;
+	}
+	
+	public void setMaxHealth(int value){
+		maxHealth = value;
+	}
+	
+	public int getMaxHealth(){
+		return maxHealth;
+	}
+
+	public boolean getCaught(){
+		return caught;
+	}
+	
+	public void setCaught(boolean value){
+		caught = value;
+	}
+	
+	public boolean getFinish(){
+		return finish;
+	}
+	
+	public void setFinished(boolean value){
+		finish = value;
+	}
+	
+	private Image getLeftImage() {
 		return leftImage;
 	}
 	
-	public Image getPlayerDown(){
+	private Image getDownImage(){
 		return downImage;
 	}
 	
-	public Image getPlayerRight(){
+	private Image getRightImage(){
 		return rightImage;
 	}
 	
-	public Image getPlayerUp(){
+	private Image getUpImage(){
 		return upImage;
 	}
 	
@@ -139,336 +293,35 @@ public class Player extends JPanel implements Runnable, ActionListener {
 		return number;
 	}
 	
-	public void move(int dx, int dy, int tx, int ty) {
-		x += dx;
-		y += dy;
-		
-		tileX += tx;
-		tileY += ty;
-	}
-	
-	public Image drawPlayer(){
-		Image playerImage = null;
-		switch(direction){
-			case 0:{
-				playerImage = getPlayerUp();
-				break;
-			}
-			case 1:{
-				playerImage = getPlayerRight();
-				break;
-			}
-			case 2:{
-				playerImage = getPlayerDown();
-				break;
-			}
-			case 3:{
-				playerImage = getPlayerLeft();
-				break;
-			}
-		}
-		return playerImage;
-	}
-	
-	public void movePlayerUp(){
-		if(m.getMap(getTileX(), getTileY() - 1) != 'w') {
-			f.reFog(getTileX(), getTileY(), "U");
-			move(0, -32, 0, -1);
-			setDirection(0);
-			setPlayerStepsTaken(getPlayerStepsTaken() + 1);
-			
-			f.iAmHereFog(getTileX(), getTileY());
-			//isFinish(p);
-		}
-	}
-	
-	public void movePlayerDown(){
-		if(m.getMap(getTileX(), getTileY() + 1) != 'w') {
-			f.reFog(getTileX(), getTileY(), "D");
-
-			move(0, 32, 0, 1);
-			setDirection(2);
-			setPlayerStepsTaken(getPlayerStepsTaken() + 1);
-			f.iAmHereFog(getTileX(), getTileY());
-			//isFinish(p);
-		}
-	}
-	
-	public void movePlayerLeft(){
-		if(m.getMap(tileX - 1, tileY) != 'w') {
-			f.reFog(tileX, tileY, "L");
-			move(-32, 0, -1, 0);
-			setDirection(3);
-			setPlayerStepsTaken(getPlayerStepsTaken() + 1);
-			f.iAmHereFog(tileX, tileY);
-			//isFinish(p);
-		}
-	}
-	
-	public void movePlayerRight(){
-		if(m.getMap(getTileX() + 1, getTileY()) != 'w') {
-			f.reFog(tileX, tileY, "R");
-			move(32, 0, 1, 0);
-			setDirection(1);
-			setPlayerStepsTaken(getPlayerStepsTaken() + 1);
-			f.iAmHereFog(getTileX(), getTileY());
-			//isFinish(p);
-		}
+	public int getDirection() {
+		return direction;
 	}
 
-	@Override
-	public void run() {
-		//JComponent component = null;
-		while(true){
-			/*KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyEventDispatcher() {
-				
-				@Override
-	            public boolean dispatchKeyEvent(KeyEvent ke) {
-	                synchronized (IsKeyPressed.class) {
-	                    switch (ke.getID()) {
-	                    case KeyEvent.KEY_PRESSED:
-	                        if (ke.getKeyCode() == KeyEvent.VK_W) {
-	                            wPressed = true;
-	                        }
-	                        break;
-
-	                    case KeyEvent.KEY_RELEASED:
-	                        if (ke.getKeyCode() == KeyEvent.VK_W) {
-	                            wPressed = false;
-	                        }
-	                        break;
-	                    }
-	                    return false;
-	                }
-	            }
-			});
-			
-			System.out.println(wPressed);*/
-			//Action anAction = new Action();
-			//anAction.setEnabled(true);
-			//TestAction testAction = new TestAction("MoveUp", null, "Moving player up", new Integer(KeyEvent.VK_W));
-			/*Action doSomething = new AbstractAction(){
-				public void actionPerformed(ActionEvent e){
-					System.out.println("Pressed W");
-				}
-			};
-			getInputMap().put(KeyStroke.getKeyStroke("W"),"doSomething");
-			getActionMap().put("doSomething", doSomething);*/
-			/*KeyStroke test = (KeyStroke) getActionForKeyStroke(KeyStroke.getKeyStroke("ctrl CONTROL"));
-			if(test != null){
-				System.out.println(test);
-			}*/
-			//addKeyListener(new Al());
-			//component.getInputMap().put(KeyStroke.getKeyStroke("S"), "pressed");
-			//System.out.println(KeyStroke.getKeyStroke("W"));		
-		}
+	public void setDirection(int direction) {
+		this.direction = direction;
 	}
 	
-	/*public class IsKeyPressed {
-		public boolean isWPressed() {
-			synchronized(IsKeyPressed.class){
-				return wPressed;
-			}
-		}
-		public boolean isUpPressed() {
-			synchronized(IsKeyPressed.class){
-				return upPressed;
-			}
-		}
-	}*/
-	
-	public void keyBindings() {
-		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyEventDispatcher() {
-			
-			@Override
-            public boolean dispatchKeyEvent(KeyEvent ke) {
-                //synchronized (IsKeyPressed.class) {
-                	int keyID = ke.getID();
-                	int keyCode = ke.getKeyCode();
-                	if(keyID == KeyEvent.KEY_PRESSED && number == 0){
-	                	switch(keyCode){
-	                		case KeyEvent.VK_UP:
-	                			movePlayerUp();
-	                			break;
-	                		case KeyEvent.VK_LEFT:
-	                			movePlayerLeft();
-	                			break;
-	                		case KeyEvent.VK_DOWN:
-	                			movePlayerDown();
-	                			break;
-	                		case KeyEvent.VK_RIGHT:
-	                			movePlayerRight();
-	                			break;
-	                	}
-                	}else if(keyID == KeyEvent.KEY_PRESSED && number == 1){
-        				switch(keyCode){
-    					case KeyEvent.VK_W:
-    							movePlayerUp();
-    						break;
-    					case KeyEvent.VK_A:
-    							movePlayerLeft();
-    						break;
-    					case KeyEvent.VK_S:
-    							movePlayerDown();
-    						break;
-    					case KeyEvent.VK_D:
-    							movePlayerRight();
-    						break;
-    				}
-    			}else if(keyID == KeyEvent.KEY_PRESSED && number == 2){
-    				switch(keyCode) {
-    					case KeyEvent.VK_I:
-    							movePlayerUp();
-    						break;
-    					case KeyEvent.VK_J:
-    							movePlayerLeft();
-    						break;
-    					case KeyEvent.VK_K:
-    							movePlayerDown();
-    						break;
-    					case KeyEvent.VK_L:
-    							movePlayerRight();
-    						break;
-    				}
-    			}else if(keyID == KeyEvent.KEY_PRESSED && number == 3){
-    				switch(keyCode){
-    					case KeyEvent.VK_NUMPAD8:
-    							movePlayerUp();
-    						break;
-    					case KeyEvent.VK_NUMPAD4:
-    							movePlayerLeft();
-    						break;
-    					case KeyEvent.VK_NUMPAD2:
-    							movePlayerDown();
-    						break;
-    					case KeyEvent.VK_NUMPAD6:
-    							movePlayerRight();
-    						break;
-    				}
-    			//}
-                    /*switch (ke.getID()) {
-                    case KeyEvent.KEY_PRESSED:
-                        if (ke.getKeyCode() == KeyEvent.VK_W) {
-                            wPressed = true;
-                        }
-                        break;
-
-                    case KeyEvent.KEY_RELEASED:
-                        if (ke.getKeyCode() == KeyEvent.VK_W) {
-                            wPressed = false;
-                        }
-                        break;
-                    }*/
-                    //return false;
-                }
-				return false;
-            }
-		});
-		
-	}
-	
-	public boolean isCaught(Fisherman fisherMan){
-		if((tileX == fisherMan.getFishermanTileX() + 1 || tileX == fisherMan.getFishermanTileX() - 1) && tileY == fisherMan.getFishermanTileY()){
-			caught = true;
-		}else if((tileY == fisherMan.getFishermanTileY() + 1 || tileY == fisherMan.getFishermanTileY() - 1 ) && tileX == fisherMan.getFishermanTileX()){
-			caught = true;
-		}else caught = false;
-		
-		return caught;
-	}
-	
-	public void isAtFinish(){
-		if(m.getMap(tileX, tileY) == 'f'){
-			isAtFinish = true;
-		}
+	public String getColor() {
+		return color;
 	}
 
-	public void setFinished(boolean value){
-		isAtFinish = value;
-	}
-	
-	public boolean getIsAtFinish(){
-		return isAtFinish;
-	}
-	
-	public class Al extends KeyAdapter {
-		public void keyPressed(KeyEvent e) {
-			int keycode = e.getKeyCode();
-			System.out.println("Key Pressed!");
-			if(number == 0){
-				switch(keycode){
-					case KeyEvent.VK_UP:
-						movePlayerUp();
-						break;
-					case KeyEvent.VK_LEFT:
-						movePlayerLeft();
-						break;
-					case KeyEvent.VK_DOWN:
-						movePlayerDown();
-						break;
-					case KeyEvent.VK_RIGHT:
-						movePlayerRight();
-						break;
-				}
-			}else if(number == 1){
-				switch(keycode){
-					case KeyEvent.VK_W:
-							movePlayerUp();
-						break;
-					case KeyEvent.VK_A:
-							movePlayerLeft();
-						break;
-					case KeyEvent.VK_S:
-							movePlayerDown();
-						break;
-					case KeyEvent.VK_D:
-							movePlayerRight();
-						break;
-				}
-			}else if(number == 2){
-				switch(keycode) {
-					case KeyEvent.VK_I:
-							movePlayerUp();
-						break;
-					case KeyEvent.VK_J:
-							movePlayerLeft();
-						break;
-					case KeyEvent.VK_K:
-							movePlayerDown();
-						break;
-					case KeyEvent.VK_L:
-							movePlayerRight();
-						break;
-				}
-			}else{
-				switch(keycode){
-					case KeyEvent.VK_NUMPAD8:
-							movePlayerUp();
-						break;
-					case KeyEvent.VK_NUMPAD4:
-							movePlayerLeft();
-						break;
-					case KeyEvent.VK_NUMPAD2:
-							movePlayerDown();
-						break;
-					case KeyEvent.VK_NUMPAD6:
-							movePlayerRight();
-						break;
-				}
-			}
-		}
-		
-		public void keyReleased(KeyEvent e) {
-			
-		}
-		
-		public void keyTyped(KeyEvent e) {
-			
-		}
+	public void setColor(String color) {
+		this.color = color;
 	}
 
-	@Override
-	public void actionPerformed(ActionEvent arg0) {
-				
+	public int getTimesCaught() {
+		return timesCaught;
+	}
+
+	public void setTimesCaught(int timesCaught) {
+		this.timesCaught = timesCaught;
+	}
+
+	public int getStepsTaken() {
+		return stepsTaken;
+	}
+
+	public void setStepsTaken(int playerStepsTaken) {
+		this.stepsTaken = playerStepsTaken;
 	}
 }
