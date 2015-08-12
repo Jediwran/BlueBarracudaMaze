@@ -69,6 +69,8 @@ public class Generate {
 //			maze[i][0] = BORDER;
 //			maze[i][sizeX-1] = BORDER;
 		}
+		maze[sizeY-1][0] = BORDER;
+		maze[sizeY-1][sizeX-1] = BORDER;
 		int[] start = new int[2];
 		
 		start[0] = randy.nextInt(sizeY-2) + 1;

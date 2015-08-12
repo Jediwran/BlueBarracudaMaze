@@ -79,7 +79,7 @@ public class Fisherman extends Thread {
 					break;
 				}
 				case 3 : {
-					if(!(getTileY() + 1 > map.getMapSize()) && !(getTileX() + 1 > map.getMapSize() - 2) && map.getMap(getTileX() + 1, getTileY() + 1) == 'w') {
+					if(!(getTileY() + 1 > map.getMapSize() - 1) && !(getTileX() + 1 > map.getMapSize() - 2) && map.getMap(getTileX() + 1, getTileY() + 1) == 'w') {
 						fishermanMoved = true;
 						tx = 1;
 						ty = 1;
@@ -97,7 +97,7 @@ public class Fisherman extends Thread {
 					break;
 				}
 				case 5 : {
-					if(!(getTileX() - 1 < 0) && !(getTileY() + 1 > map.getMapSize() - 1) && map.getMap(getTileX() - 1, getTileY() + 1) == 'w') {
+					if((!(getTileX() - 1 < 0)) && (!(getTileY() + 1 > map.getMapSize() - 1)) && map.getMap(getTileX() - 1, getTileY() + 1) == 'w') {
 						fishermanMoved = true;
 						tx = -1;
 						ty = 1;

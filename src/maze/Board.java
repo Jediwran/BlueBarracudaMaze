@@ -18,7 +18,8 @@ public class Board extends JPanel implements ActionListener {
 	private Fog f;
 	private int mapSize = 16;
 	private int level = 0;
-	private boolean fogEnabled = false;
+	private int deadPlayers = 0;
+	private boolean fogEnabled = true;
 	private Random r = new Random();
 	private int numPlayers = 1;
 	
@@ -196,9 +197,10 @@ public class Board extends JPanel implements ActionListener {
 				if(player.getHealth() > 5){
 					JOptionPane.showMessageDialog(new JFrame(), "Player " + (player.getNumber() + 1) + " You have been caught! \nFisherman released you back into the water.");
 					player.decreaseHealth();
-					player.moveToStart(m.getStartX(), m.getStartY());
+					//player.moveToStart(m.getStartX(), m.getStartY());
 				}else{
 					player.died();
+					deadPlayers += 1;
 					Object[] selectMenuOptions={"New Game", "Exit"};
 					int n = JOptionPane.showOptionDialog(null, "Select an option", "Game Over", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, selectMenuOptions, selectMenuOptions[0]);
 					switch (n) {

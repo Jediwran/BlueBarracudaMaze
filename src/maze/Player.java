@@ -215,6 +215,8 @@ public class Player extends JPanel implements Runnable {
 	
 	public void died(){
 		System.out.println("game over!!!");
+		caught = false;
+		
 	}
 	
 	public void decreaseHealth(){
