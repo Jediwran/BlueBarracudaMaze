@@ -19,7 +19,7 @@ public class Board extends JPanel implements ActionListener {
 	private int mapSize = 16;
 	private int level = 0;
 	private int deadPlayers = 0;
-	private boolean fogEnabled = true;
+	private boolean fogEnabled = false;
 	private Random r = new Random();
 	private int numPlayers = 1;
 	
@@ -185,8 +185,13 @@ public class Board extends JPanel implements ActionListener {
 				g.drawString("P" + (player.getNumber()+1) + "-Steps: " + player.getStepsTaken() + "   Health: " + player.getHealth() + " / " + player.getMaxHealth(), 80 + i, 24);
 				i += 225;
 			}
-			g.drawImage(player.draw(), player.getX(), player.getY(), null);
-			f.iAmHereFog(player.getTileX(), player.getTileY());
+			if(!player.isDead()){
+				g.drawImage(player.draw(), player.getX(), player.getY(), null);
+				f.iAmHereFog(player.getTileX(), player.getTileY());
+			}
+			if(player.isDead() && level == player.getDeathOnLevel()){
+				g.drawImage(player.draw(), player.getX(), player.getY(), null);
+			}
 		}
 	}
 	
@@ -198,22 +203,25 @@ public class Board extends JPanel implements ActionListener {
 					JOptionPane.showMessageDialog(new JFrame(), "Player " + (player.getNumber() + 1) + " You have been caught! \nFisherman released you back into the water.");
 					player.decreaseHealth();
 					//player.moveToStart(m.getStartX(), m.getStartY());
-				}else{
+				}else if(!(player.getHealth() == 0)){
 					player.died();
+					player.setDeathOnLevel(level);
 					deadPlayers += 1;
-					Object[] selectMenuOptions={"New Game", "Exit"};
-					int n = JOptionPane.showOptionDialog(null, "Select an option", "Game Over", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, selectMenuOptions, selectMenuOptions[0]);
-					switch (n) {
-					case 0:
-						level = 0;
-						for(Player newPlayer: playerList){
-							newPlayer.setHealth(50);
+					if(deadPlayers == numPlayers){
+						Object[] selectMenuOptions={"New Game", "Exit"};
+						int n = JOptionPane.showOptionDialog(null, "Select an option", "Game Over", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, selectMenuOptions, selectMenuOptions[0]);
+						switch (n) {
+						case 0:
+							level = 0;
+							for(Player newPlayer: playerList){
+								newPlayer.setHealth(50);
+							}
+							startLevel();
+							break;
+						case 1:
+							System.exit(0);
+							break;
 						}
-						startLevel();
-						break;
-					case 1:
-						System.exit(0);
-						break;
 					}
 				}
 			}

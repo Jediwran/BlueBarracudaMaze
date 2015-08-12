@@ -10,12 +10,13 @@ import javax.swing.JPanel;
 @SuppressWarnings("serial")
 public class Player extends JPanel implements Runnable {
 
-	private int x, y, tileX, tileY, number;
+	private int x, y, tileX, tileY, number, deathOnLevel;
 	private Image leftImage, downImage, rightImage, upImage;
 	private String leftFile = "src/resources/fish_left_";
 	private String downFile = "src/resources/fish_down_";
 	private String rightFile = "src/resources/fish_right_";
 	private String upFile = "src/resources/fish_up_";
+	private String deadFile = "src/resources/deadfish.png";
 	private int stepsTaken = 0;
 	private int timesCaught = 0;
 	private int direction = 3;
@@ -24,6 +25,7 @@ public class Player extends JPanel implements Runnable {
 	private String color;
 	private Map m;
 	private Fog f;
+	private boolean isDead = false;
 	private boolean caught = false;
 	private boolean finish = false;
 		
@@ -41,6 +43,14 @@ public class Player extends JPanel implements Runnable {
 		img = new ImageIcon(rightFile + color + ".png");
 		rightImage = img.getImage();
 		img = new ImageIcon(upFile + color + ".png");
+		upImage = img.getImage();
+	}
+	
+	public void setDeadImage(){
+		ImageIcon img = new ImageIcon(deadFile);
+		leftImage = img.getImage();
+		downImage = img.getImage();
+		rightImage = img.getImage();
 		upImage = img.getImage();
 	}
 	
@@ -140,67 +150,69 @@ public class Player extends JPanel implements Runnable {
             public boolean dispatchKeyEvent(KeyEvent ke) {
             	int keyID = ke.getID();
             	int keyCode = ke.getKeyCode();
-            	if(keyID == KeyEvent.KEY_PRESSED && number == 0){
-                	switch(keyCode){
-                		case KeyEvent.VK_UP:
-                			moveUp();
-                			break;
-                		case KeyEvent.VK_LEFT:
-                			moveLeft();
-                			break;
-                		case KeyEvent.VK_DOWN:
-                			moveDown();
-                			break;
-                		case KeyEvent.VK_RIGHT:
-                			moveRight();
-                			break;
-                	}
-            	}else if(keyID == KeyEvent.KEY_PRESSED && number == 1){
-    				switch(keyCode){
-					case KeyEvent.VK_W:
-							moveUp();
-						break;
-					case KeyEvent.VK_A:
-							moveLeft();
-						break;
-					case KeyEvent.VK_S:
-							moveDown();
-						break;
-					case KeyEvent.VK_D:
-							moveRight();
-						break;
-					}
-    			}else if(keyID == KeyEvent.KEY_PRESSED && number == 2){
-    				switch(keyCode) {
-    					case KeyEvent.VK_I:
-    							moveUp();
-    						break;
-    					case KeyEvent.VK_J:
-    							moveLeft();
-    						break;
-    					case KeyEvent.VK_K:
-    							moveDown();
-    						break;
-    					case KeyEvent.VK_L:
-    							moveRight();
-    						break;
-    				}
-    			}else if(keyID == KeyEvent.KEY_PRESSED && number == 3){
-    				switch(keyCode){
-    					case KeyEvent.VK_NUMPAD8:
-    							moveUp();
-    						break;
-    					case KeyEvent.VK_NUMPAD4:
-    							moveLeft();
-    						break;
-    					case KeyEvent.VK_NUMPAD2:
-    							moveDown();
-    						break;
-    					case KeyEvent.VK_NUMPAD6:
-    							moveRight();
-    						break;
-    				}
-                }
+            	if(!isDead){
+	            	if(keyID == KeyEvent.KEY_PRESSED && number == 0){
+	                	switch(keyCode){
+	                		case KeyEvent.VK_UP:
+	                			moveUp();
+	                			break;
+	                		case KeyEvent.VK_LEFT:
+	                			moveLeft();
+	                			break;
+	                		case KeyEvent.VK_DOWN:
+	                			moveDown();
+	                			break;
+	                		case KeyEvent.VK_RIGHT:
+	                			moveRight();
+	                			break;
+	                	}
+	            	}else if(keyID == KeyEvent.KEY_PRESSED && number == 1){
+	    				switch(keyCode){
+						case KeyEvent.VK_W:
+								moveUp();
+							break;
+						case KeyEvent.VK_A:
+								moveLeft();
+							break;
+						case KeyEvent.VK_S:
+								moveDown();
+							break;
+						case KeyEvent.VK_D:
+								moveRight();
+							break;
+						}
+	    			}else if(keyID == KeyEvent.KEY_PRESSED && number == 2){
+	    				switch(keyCode) {
+	    					case KeyEvent.VK_I:
+	    							moveUp();
+	    						break;
+	    					case KeyEvent.VK_J:
+	    							moveLeft();
+	    						break;
+	    					case KeyEvent.VK_K:
+	    							moveDown();
+	    						break;
+	    					case KeyEvent.VK_L:
+	    							moveRight();
+	    						break;
+	    				}
+	    			}else if(keyID == KeyEvent.KEY_PRESSED && number == 3){
+	    				switch(keyCode){
+	    					case KeyEvent.VK_NUMPAD8:
+	    							moveUp();
+	    						break;
+	    					case KeyEvent.VK_NUMPAD4:
+	    							moveLeft();
+	    						break;
+	    					case KeyEvent.VK_NUMPAD2:
+	    							moveDown();
+	    						break;
+	    					case KeyEvent.VK_NUMPAD6:
+	    							moveRight();
+	    						break;
+	    				}
+	                }
+            	}
 				return false;
             }
 		});
@@ -215,8 +227,11 @@ public class Player extends JPanel implements Runnable {
 	
 	public void died(){
 		System.out.println("game over!!!");
+		health = 0;
 		caught = false;
-		
+		isDead = true;
+		setDeadImage();
+		Thread.interrupted();
 	}
 	
 	public void decreaseHealth(){
@@ -325,5 +340,17 @@ public class Player extends JPanel implements Runnable {
 
 	public void setStepsTaken(int playerStepsTaken) {
 		this.stepsTaken = playerStepsTaken;
+	}
+	
+	public boolean isDead() {
+		return isDead;
+	}
+
+	public int getDeathOnLevel() {
+		return deathOnLevel;
+	}
+
+	public void setDeathOnLevel(int deathOnLevel) {
+		this.deathOnLevel = deathOnLevel;
 	}
 }
