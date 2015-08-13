@@ -41,22 +41,6 @@ public class Barrel extends Thread{
 		return barrel;
 	}
 	
-	public int getBarrelX() {
-		return x;
-	}
-	
-	public int getBarrelY() {
-		return y;
-	}
-	
-	public int getBarrelTileX() {
-		return tileX;
-	}
-	
-	public int getBarrelTileY() {
-		return tileY;
-	}
-	
 	public void setStartLocation(int dx, int dy) {
 		x = dx * 32;
 		y = dy * 32;
@@ -74,7 +58,7 @@ public class Barrel extends Thread{
 			int direction = new Random().nextInt(8);
 			switch(direction){
 				case 0 : {
-					if(!(getBarrelTileY() - 1 < 0) && map.getMap(getBarrelTileX(), getBarrelTileY() - 1) == 'g') {
+					if(!(getTileY() - 1 < 0) && map.getMap(getTileX(), getTileY() - 1) == 'g') {
 						barrelMoved = true;
 						//fm.move(0, -32, 0, -1);
 						tx = 0;
@@ -85,7 +69,7 @@ public class Barrel extends Thread{
 				}
 
 				case 2 : {
-						if(!(getBarrelTileX() + 1 > map.getMapSize() - 1) && map.getMap(getBarrelTileX() + 1, getBarrelTileY()) == 'g') {
+						if(!(getTileX() + 1 > map.getMapSize() - 1) && map.getMap(getTileX() + 1, getTileY()) == 'g') {
 							//fm.move(32, 0, 1, 0);
 							tx = 1;
 							ty = 0;
@@ -96,7 +80,7 @@ public class Barrel extends Thread{
 				}
 
 				case 4 : {
-						if(!(getBarrelTileY() + 1 > map.getMapSize() - 1) && map.getMap(getBarrelTileX(), getBarrelTileY() + 1) == 'g') {
+						if(!(getTileY() + 1 > map.getMapSize() - 1) && map.getMap(getTileX(), getTileY() + 1) == 'g') {
 							//fm.move(0, 32, 0, 1);
 							tx = 0;
 							ty = 1;
@@ -107,7 +91,7 @@ public class Barrel extends Thread{
 				}
 
 				case 6 : {
-						if(!(getBarrelTileX() - 1 < 0) && map.getMap(getBarrelTileX() - 1, getBarrelTileY()) == 'g') {
+						if(!(getTileX() - 1 < 0) && map.getMap(getTileX() - 1, getTileY()) == 'g') {
 							//fm.move(-32, 0, -1, 0);
 							tx = -1;
 							ty = 0;
@@ -187,6 +171,14 @@ public class Barrel extends Thread{
 
 	public boolean isStopRequested() {
 		return stopRequested;
+	}
+
+	public void hide() {
+		x = 0;
+		y = 0;
+		tileX = 0;
+		tileY = 0;
+		
 	}
 	
 
