@@ -36,7 +36,7 @@ public class Settings
 
 		try
 		{
-			BufferedWriter bw = new BufferedWriter(new FileWriter("setting.txt"));
+			BufferedWriter bw = new BufferedWriter(new FileWriter(Constants.SETTINGS_FILE));
 			bw.write(gson.toJson(this));
 			bw.close();
 		}
@@ -57,7 +57,7 @@ public class Settings
 		try
 		{			
 
-			 input = new BufferedReader(new FileReader(new File("setting.txt")));
+			 input = new BufferedReader(new FileReader(new File(Constants.SETTINGS_FILE)));
 			 String setting_json = "";
 			 while(input.ready())
 			 {
@@ -88,10 +88,10 @@ public class Settings
 	 		setting.sight = 2;
 	 		setting.numPlayers = 1;
 	 		setting.playerColors = new ArrayList<>();
-	 		setting.playerColors.add("BLUE");
-	 		setting.playerColors.add("ORANGE");
-	 		setting.playerColors.add("GREEN");
-	 		setting.playerColors.add("PURPLE");
+	 		setting.playerColors.add(Constants.BLUE);
+	 		setting.playerColors.add(Constants.ORANGE);
+	 		setting.playerColors.add(Constants.GREEN);
+	 		setting.playerColors.add(Constants.PURPLE);
 	 		setting.saveSettings();
 			
 		}
@@ -156,7 +156,7 @@ public class Settings
 		}
 		for(String color:colors)
 		{
-			if(color.compareTo("BLUE") == 0 || color.compareTo("ORANGE") == 0 ||color.compareTo("GREEN") == 0 ||color.compareTo("PURPLE") == 0)
+			if(color.compareTo(Constants.BLUE) == 0 || color.compareTo(Constants.ORANGE) == 0 ||color.compareTo(Constants.GREEN) == 0 ||color.compareTo(Constants.PURPLE) == 0)
 			{
 				continue;
 			}

@@ -14,9 +14,9 @@ public class Fog {
 	private int[][] fogMap = new int[fogMapSize][fogMapSize];
 	
 	public Fog(){
-		ImageIcon img = new ImageIcon("src/resources/fog.png");
+		ImageIcon img = new ImageIcon(Constants.FOG_IMAGE);
 		fog = img.getImage();
-		img = new ImageIcon("src/resources/fog-opaque.png");
+		img = new ImageIcon(Constants.FOG_OPAQUE_IMAGE);
 		fogOpaque = img.getImage();
 	}
 	
