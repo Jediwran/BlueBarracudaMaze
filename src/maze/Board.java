@@ -163,11 +163,11 @@ public class Board extends JPanel implements ActionListener {
 				
 				if(!player.isDead()){
 					player.setColor("grey");
-					player.setImages();
+					player.setImages();}
 					barrel.resetsharkTime();
 					barrel.hide();
 					barrel.requestStop();
-					}
+					
 			}
 		}
 	}
