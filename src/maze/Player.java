@@ -400,5 +400,6 @@ public class Player extends JPanel implements Runnable {
 			caughtRecent = false;
 			invincibleTime.cancel();
 		}
+		
 	}
 }

@@ -23,6 +23,8 @@ public class Board extends JPanel implements ActionListener {
 	private Random r = new Random();
 	private int numPlayers = Settings.getSettings().getNumberPlayers();
 	private Barrel barrel;
+	private String colorRestore;
+	private int playerNum;
 	
 	public Board(Maze maze) {
 		this.maze = maze;
@@ -42,6 +44,7 @@ public class Board extends JPanel implements ActionListener {
 
 			//selectPlayerColor(playerList[i]);
 			playerList[i].setColor(Settings.getSettings().getPlayerColors().get(i));
+			
 			playerList[i].setImages();
 			new Thread(playerList[i]).start();
 		}
@@ -121,6 +124,11 @@ public class Board extends JPanel implements ActionListener {
 			f.createFog(p.getTileX(), p.getTileY());
 		}
 		
+		if(colorRestore != null){
+			playerList[playerNum].setColor(colorRestore);
+			playerList[playerNum].setImages();
+		}
+		
 		barrel = new Barrel(m);
 		barrel.randomStart();
 		barrel.start();
@@ -150,17 +158,23 @@ public class Board extends JPanel implements ActionListener {
 			
 			barrel.isPlayerNear(player);
 			if(barrel.getSharkTime()){
-				player.setColor("grey");
-				player.setImages();
-				barrel.resetsharkTime();
-				barrel.hide();
-				barrel.requestStop();
+				colorRestore = player.getColor();
+				playerNum = player.getNumber();
+				
+				if(!player.isDead()){
+					player.setColor("grey");
+					player.setImages();
+					barrel.resetsharkTime();
+					barrel.hide();
+					barrel.requestStop();
+					}
 			}
 		}
 	}
 	
 	public void paint(Graphics g) {
 		super.paint(g);
+		
 		for(int y = 0; y < m.getMapSize(); y++) {
 			for(int x = 0; x < m.getMapSize(); x++) {
 				if(m.getMap(x, y) == 'g'){
