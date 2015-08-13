@@ -24,13 +24,34 @@ public class Board extends JPanel implements ActionListener {
 	private int numPlayers = Settings.getSettings().getNumberPlayers();
 	private Barrel barrel;
 	
+	public static Object monitor = new Object();
+	
 	public Board(Maze maze) {
+		//pause until user inputs desired settings
+		synchronized(monitor) {
+			SwingUtilities.invokeLater(new Runnable() {
+	            @Override
+	            public void run() {
+	                new SettingsPage().setVisible(true);
+	            }
+			});
+			try {
+				monitor.wait();
+			} catch (InterruptedException e) {
+				System.out.println("whoops!");
+				e.printStackTrace();
+			}
+        }
+		
+		//resume and build with user settings
 		this.maze = maze;
 		m = new Map();
 		m.setSize(mapSize);
 		maze.frame.setSize(Maze.width+(32*m.getMapSize()), Maze.height+(32*m.getMapSize()));
 		f = new Fog();
 		f.setFogMapSize(mapSize);
+		f.setFishSight(Settings.getSettings().getSight());
+		fogEnabled = Settings.getSettings().getFogEnabled();
 		//selectPlayerNumber();
 		playerList = new Player[numPlayers];
 		

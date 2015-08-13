@@ -39,6 +39,9 @@ public class Settings
 			BufferedWriter bw = new BufferedWriter(new FileWriter("setting.txt"));
 			bw.write(gson.toJson(this));
 			bw.close();
+			synchronized(Board.monitor) {
+				Board.monitor.notify();
+			}
 		}
 		catch (IOException e1)
 		{
