@@ -10,12 +10,11 @@ public class Barrel extends Thread{
 	private Image barrel;
 	private Map map;
 	private int x, y, tileX, tileY;
-	private String barrelFile = Constants.BARREL_IMAGE;
 	private boolean stopRequested = false; 
 	private boolean sharkTime = false;
 	
 	public Barrel(Map m) {
-		ImageIcon img = new ImageIcon(barrelFile);
+		ImageIcon img = new ImageIcon(Constants.BARREL_IMAGE);
 		barrel = img.getImage();
 		map = m;
 	}
