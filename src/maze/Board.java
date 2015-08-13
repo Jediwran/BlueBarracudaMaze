@@ -211,7 +211,7 @@ public class Board extends JPanel implements ActionListener {
 					JOptionPane.showMessageDialog(new JFrame(), "Player " + (player.getNumber() + 1) + " You have been caught! \nFisherman released you back into the water.");
 					player.decreaseHealth();
 					player.setCaughtRecent(true);
-					player.getAwayTime();
+					player.getTimer(2000);
 					//player.moveToStart(m.getStartX(), m.getStartY());
 					
 				}else if(!(player.getHealth() == 0)){

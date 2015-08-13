@@ -230,9 +230,9 @@ public class Player extends JPanel implements Runnable {
 		}
 	}
 	
-	public void getAwayTime(){
+	public void getTimer(int time){
 		invincibleTime = new Timer();
-		invincibleTime.schedule(new NotInvincible(), 2000);
+		invincibleTime.schedule(new NotInvincible(), time);
 	}
 	
 	public void died(){
