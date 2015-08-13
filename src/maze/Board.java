@@ -23,6 +23,8 @@ public class Board extends JPanel implements ActionListener {
 	private Random r = new Random();
 	private int numPlayers = Settings.getSettings().getNumberPlayers();
 	private Barrel barrel;
+	private String colorRestore;
+	private int playerNum;
 	
 	public static Object monitor = new Object();
 	
@@ -47,7 +49,7 @@ public class Board extends JPanel implements ActionListener {
 		this.maze = maze;
 		m = new Map();
 		m.setSize(mapSize);
-		maze.frame.setSize(Maze.width+(32*m.getMapSize()), Maze.height+(32*m.getMapSize()));
+		maze.frame.setSize(Constants.WIDTH_REQUIRED_SPACING+(32*m.getMapSize()), Constants.HEIGHT_REQUIRED_SPACING+(32*m.getMapSize()));
 		f = new Fog();
 		f.setFogMapSize(mapSize);
 		f.setFishSight(Settings.getSettings().getSight());
@@ -63,6 +65,7 @@ public class Board extends JPanel implements ActionListener {
 
 			//selectPlayerColor(playerList[i]);
 			playerList[i].setColor(Settings.getSettings().getPlayerColors().get(i));
+			
 			playerList[i].setImages();
 			new Thread(playerList[i]).start();
 		}
@@ -122,7 +125,7 @@ public class Board extends JPanel implements ActionListener {
 		m.setMapName(r.nextInt(8)+1);
 		m.newMap(mapSize);
 		
-		maze.frame.setSize(Maze.width+(32*m.getMapSize()), Maze.height+(32*m.getMapSize()));
+		maze.frame.setSize(Constants.WIDTH_REQUIRED_SPACING+(32*m.getMapSize()), Constants.HEIGHT_REQUIRED_SPACING+(32*m.getMapSize()));
 		maze.frame.setVisible(true);
 		for(Fisherman fisher:fisherMen)
 		{
@@ -140,6 +143,11 @@ public class Board extends JPanel implements ActionListener {
 			p.setTimesCaught(0);
 			p.moveToStart(m.getStartX(), m.getStartY());
 			f.createFog(p.getTileX(), p.getTileY());
+		}
+		
+		if(colorRestore != null){
+			playerList[playerNum].setColor(colorRestore);
+			playerList[playerNum].setImages();
 		}
 		
 		barrel = new Barrel(m);
@@ -160,7 +168,7 @@ public class Board extends JPanel implements ActionListener {
 				if(fisherman.getCaughtPlayer() < 5 && player.getColor() == "grey"){
 					fisherman.requestStop();
 					fisherman.setImage();
-					fisherman.drawFisherman();
+					//fisherman.drawFisherman();
 				}
 			}
 			if(m.getMap(player.getTileX(), player.getTileY()) == 'f'){
@@ -171,17 +179,23 @@ public class Board extends JPanel implements ActionListener {
 			
 			barrel.isPlayerNear(player);
 			if(barrel.getSharkTime()){
-				player.setColor("grey");
-				player.setImages();
-				barrel.resetsharkTime();
-				barrel.hide();
-				barrel.requestStop();
+				colorRestore = player.getColor();
+				playerNum = player.getNumber();
+				
+				if(!player.isDead()){
+					player.setColor("grey");
+					player.setImages();}
+					barrel.resetsharkTime();
+					barrel.hide();
+					barrel.requestStop();
+					
 			}
 		}
 	}
 	
 	public void paint(Graphics g) {
 		super.paint(g);
+		
 		for(int y = 0; y < m.getMapSize(); y++) {
 			for(int x = 0; x < m.getMapSize(); x++) {
 				if(m.getMap(x, y) == 'g'){
@@ -230,7 +244,7 @@ public class Board extends JPanel implements ActionListener {
 			g.drawImage(barrel.getImage(), barrel.getX(), barrel.getY(), null);}
 		
 		g.setColor(new Color(255,255,255));
-		g.setFont(new Font("default", Font.BOLD, 16));
+		g.setFont(new Font(Constants.FONT_NAME, Font.BOLD, 16));
 		g.drawString("Level: " + level, 0, 24);
 		int i = 0;
 		int j = 0;

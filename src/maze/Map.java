@@ -20,15 +20,15 @@ public class Map {
 	
 	public Map() {
 		//arraySize = 14;
-		ImageIcon img = new ImageIcon("src/resources/water.png");
+		ImageIcon img = new ImageIcon(Constants.WATER_IMAGE);
 		ground = img.getImage();
-		img = new ImageIcon("src/resources/wall.png");
+		img = new ImageIcon(Constants.WALL_IMAGE);
 		wall = img.getImage();
-		img = new ImageIcon("src/resources/start.png");
+		img = new ImageIcon(Constants.START_IMAGE);
 		start = img.getImage();
-		img = new ImageIcon("src/resources/finish.png");
+		img = new ImageIcon(Constants.FINISH_IMAGE);
 		finish = img.getImage();
-		img = new ImageIcon("src/resource/block.png");
+		img = new ImageIcon(Constants.BLOCK_IMAGE);
 		block = img.getImage();
 	}
 	
@@ -101,7 +101,7 @@ public class Map {
 	
 	public void openFile() {
 		try{
-			m = new Scanner(new File("src/resources/maps/" + mapName));
+			m = new Scanner(new File(Constants.MAPS_LOCATION + mapName));
 		} catch(Exception e){
 			System.out.println("Error loading map");
 		}

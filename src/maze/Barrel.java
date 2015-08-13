@@ -10,12 +10,11 @@ public class Barrel extends Thread{
 	private Image barrel;
 	private Map map;
 	private int x, y, tileX, tileY;
-	private String barrelFile = "src/resources/barrel.png";
 	private boolean stopRequested = false; 
 	private boolean sharkTime = false;
 	
 	public Barrel(Map m) {
-		ImageIcon img = new ImageIcon(barrelFile);
+		ImageIcon img = new ImageIcon(Constants.BARREL_IMAGE);
 		barrel = img.getImage();
 		map = m;
 	}
@@ -31,7 +30,7 @@ public class Barrel extends Thread{
 				e.printStackTrace();
 			}
 		}
-		System.out.println("Barrel stopping");
+		//System.out.println("Barrel stopping");
 	}
 	public void requestStop()
 	{

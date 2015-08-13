@@ -11,7 +11,6 @@ public class Fisherman extends Thread {
 	private Map map;
 	private int x, y, tileX, tileY;
 	private int caughtPlayer = 5;
-	private String file = "src/resources/player.png";
 	private boolean stopRequested = false; 
 	private boolean dead = false;
 	
@@ -200,12 +199,13 @@ public class Fisherman extends Thread {
 	}
 	
 	public void drawFisherman(){
-		ImageIcon img = new ImageIcon(file);
+		ImageIcon img = new ImageIcon(Constants.FISHERMAN_IMAGE);
 		fisherman = img.getImage();
 	}
 	
 	public void setImage(){
-		file = "src/resources/skull.png";
+		ImageIcon img = new ImageIcon(Constants.FISHERMAN_DEAD_IMAGE);
+		fisherman = img.getImage();
 		isDead();
 		
 	}

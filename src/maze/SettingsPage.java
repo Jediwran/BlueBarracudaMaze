@@ -45,10 +45,10 @@ public class SettingsPage extends JFrame
 
 
     
-    String blueFish = "src/resources/images/player/fish_left_blue.png";
-    String orangeFish = "src/resources/images/player/fish_left_orange.png";
-    String greenFish = "src/resources/images/player/fish_left_green.png";
-    String purpleFish = "src/resources/images/player/fish_left_purple.png";
+    String blueFish = Constants.FISH_LEFT_BLUE_IMAGE;
+    String orangeFish = Constants.FISH_LEFT_ORANGE_IMAGE;
+    String greenFish = Constants.FISH_LEFT_GREEN_IMAGE;
+    String purpleFish = Constants.FISH_LEFT_PURPLE_IMAGE;
     JPanel mainPanel = new JPanel(new GridBagLayout());
 
     Settings settings = null;
@@ -99,9 +99,7 @@ public class SettingsPage extends JFrame
         JPanel sidePanel = new JPanel(new GridBagLayout());
 	    createPlayerColorGroup(fish1, sidePanel,settings.getPlayerColors().get(0));    
 
-	    mainPanel.add(sidePanel,constraints);
-		   
-        
+	    mainPanel.add(sidePanel,constraints);        
         
         constraints.gridx = 0;
         constraints.gridy = ++y;     
@@ -111,9 +109,7 @@ public class SettingsPage extends JFrame
 	    JPanel sidePanel2 = new JPanel(new GridBagLayout());
         createPlayerColorGroup(fish2, sidePanel2,settings.getPlayerColors().get(1));
         mainPanel.add(sidePanel2,constraints);
-        
-	        
-        
+                
         constraints.gridx = 0;
         constraints.gridy = ++y;     
         mainPanel.add(colorPlayer3, constraints);
@@ -131,15 +127,12 @@ public class SettingsPage extends JFrame
 	    JPanel sidePanel4 = new JPanel(new GridBagLayout());
         createPlayerColorGroup(fish4, sidePanel4,settings.getPlayerColors().get(3));
         mainPanel.add(sidePanel4,constraints);
- 
-        
-        
-        
         
         constraints.gridx = 0;
         constraints.gridy = ++y;
         constraints.gridwidth = 2;
         constraints.anchor = GridBagConstraints.CENTER;
+        
         buttonSave.addActionListener(new ActionListener(){
         	@Override
         	public void actionPerformed(ActionEvent event)
