@@ -4,6 +4,9 @@ import java.awt.Image;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
 import java.awt.event.KeyEvent;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
@@ -12,11 +15,11 @@ public class Player extends JPanel implements Runnable {
 
 	private int x, y, tileX, tileY, number, deathOnLevel;
 	private Image leftImage, downImage, rightImage, upImage;
-	private String leftFile = "src/resources/fish_left_";
-	private String downFile = "src/resources/fish_down_";
-	private String rightFile = "src/resources/fish_right_";
-	private String upFile = "src/resources/fish_up_";
-	private String deadFile = "src/resources/deadfish.png";
+	private String leftFile = "src/resources/images/player/fish_left_";
+	private String downFile = "src/resources/images/player/fish_down_";
+	private String rightFile = "src/resources/images/player/fish_right_";
+	private String upFile = "src/resources/images/player/fish_up_";
+	private String deadFile = "src/resources/images/player/deadfish.png";
 	private int stepsTaken = 0;
 	private int timesCaught = 0;
 	private int direction = 3;
@@ -28,6 +31,8 @@ public class Player extends JPanel implements Runnable {
 	private boolean isDead = false;
 	private boolean caught = false;
 	private boolean finish = false;
+	private boolean caughtRecent = false;
+	private Timer invincibleTime;
 		
 	public Player(Map m, Fog f) {
 		this.m = m;
@@ -225,6 +230,11 @@ public class Player extends JPanel implements Runnable {
 		}
 	}
 	
+	public void getAwayTime(){
+		invincibleTime = new Timer();
+		invincibleTime.schedule(new NotInvincible(), 2000);
+	}
+	
 	public void died(){
 		System.out.println("game over!!!");
 		health = 0;
@@ -232,6 +242,12 @@ public class Player extends JPanel implements Runnable {
 		isDead = true;
 		setDeadImage();
 		Thread.interrupted();
+	}
+	
+	public void undead(){
+		health = 50;
+		isDead = false;
+		setImages();
 	}
 	
 	public void decreaseHealth(){
@@ -352,5 +368,21 @@ public class Player extends JPanel implements Runnable {
 
 	public void setDeathOnLevel(int deathOnLevel) {
 		this.deathOnLevel = deathOnLevel;
+	}
+
+	public boolean isCaughtRecent() {
+		return caughtRecent;
+	}
+
+	public void setCaughtRecent(boolean caughtRecent) {
+		this.caughtRecent = caughtRecent;
+	}
+	
+	private class NotInvincible extends TimerTask {
+		public void run(){
+			caught = false;
+			caughtRecent = false;
+			invincibleTime.cancel();
+		}
 	}
 }

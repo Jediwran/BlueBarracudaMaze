@@ -39,9 +39,17 @@ public class Board extends JPanel implements ActionListener {
 			selectPlayerColor(playerList[i]);
 			playerList[i].setImages();
 			new Thread(playerList[i]).start();
-
 		}
 		setFocusable(true);
+		startLevel();
+	}
+	
+	public void newGame(){
+		for(Player player: playerList){
+			if(player.isDead()){
+				player.undead();
+			}
+		}
 		startLevel();
 	}
 	
@@ -197,12 +205,15 @@ public class Board extends JPanel implements ActionListener {
 	
 	public void isPlayerCaught(){
 		for(Player player: playerList){
-			if(player.getCaught()){
+			if(player.getCaught() && !player.isCaughtRecent()){
 				player.setCaught(false);
 				if(player.getHealth() > 5){
 					JOptionPane.showMessageDialog(new JFrame(), "Player " + (player.getNumber() + 1) + " You have been caught! \nFisherman released you back into the water.");
 					player.decreaseHealth();
+					player.setCaughtRecent(true);
+					player.getAwayTime();
 					//player.moveToStart(m.getStartX(), m.getStartY());
+					
 				}else if(!(player.getHealth() == 0)){
 					player.died();
 					player.setDeathOnLevel(level);
@@ -216,7 +227,7 @@ public class Board extends JPanel implements ActionListener {
 							for(Player newPlayer: playerList){
 								newPlayer.setHealth(50);
 							}
-							startLevel();
+							newGame();
 							break;
 						case 1:
 							System.exit(0);
