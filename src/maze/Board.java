@@ -152,6 +152,8 @@ public class Board extends JPanel implements ActionListener {
 			if(barrel.getSharkTime()){
 				player.setColor("grey");
 				player.setImages();
+				barrel.resetsharkTime();
+				barrel.hide();
 				barrel.requestStop();
 			}
 		}
