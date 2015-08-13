@@ -19,9 +19,9 @@ public class Board extends JPanel implements ActionListener {
 	private int mapSize = 16;
 	private int level = 0;
 	private int deadPlayers = 0;
-	private boolean fogEnabled = false;
+	private boolean fogEnabled = Settings.getSettings().getFogEnabled();
 	private Random r = new Random();
-	private int numPlayers = 1;
+	private int numPlayers = Settings.getSettings().getNumberPlayers();
 	private Barrel barrel;
 	
 	public Board(Maze maze) {
@@ -31,13 +31,17 @@ public class Board extends JPanel implements ActionListener {
 		maze.frame.setSize(Maze.width+(32*m.getMapSize()), Maze.height+(32*m.getMapSize()));
 		f = new Fog();
 		f.setFogMapSize(mapSize);
-		selectPlayerNumber();
+		//selectPlayerNumber();
 		playerList = new Player[numPlayers];
+		
+		
+		
 		for(int i = 0; i < numPlayers; i++){
 			playerList[i] = new Player(m,f);
 			playerList[i].setNumber(i);
 
-			selectPlayerColor(playerList[i]);
+			//selectPlayerColor(playerList[i]);
+			playerList[i].setColor(Settings.getSettings().getPlayerColors().get(i));
 			playerList[i].setImages();
 			new Thread(playerList[i]).start();
 		}

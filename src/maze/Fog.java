@@ -8,7 +8,7 @@ public class Fog {
 	
 	private Image fog, fogOpaque;
 	private int fogMapSize = 14;
-	private int fish_sight = 2;
+	private int fish_sight = Settings.getSettings().getSight();
 
 
 	private int[][] fogMap = new int[fogMapSize][fogMapSize];
