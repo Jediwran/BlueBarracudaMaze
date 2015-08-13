@@ -153,6 +153,7 @@ public class Board extends JPanel implements ActionListener {
 				player.setColor("grey");
 				player.setImages();
 				barrel.resetsharkTime();
+				barrel.hide();
 				barrel.requestStop();
 			}
 		}
@@ -204,7 +205,7 @@ public class Board extends JPanel implements ActionListener {
 			}
 		}
 		
-		if(fog[barrel.getBarrelTileX()][barrel.getBarrelTileY()] == 0 && (!barrel.isStopRequested())){
+		if(fog[barrel.getTileX()][barrel.getTileY()] == 0 && (!barrel.isStopRequested())){
 			g.drawImage(barrel.getImage(), barrel.getX(), barrel.getY(), null);}
 		
 		g.setColor(new Color(255,255,255));
