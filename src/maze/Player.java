@@ -9,6 +9,8 @@ import java.util.TimerTask;
 
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 
 @SuppressWarnings("serial")
 public class Player extends JPanel implements Runnable {
@@ -169,6 +171,20 @@ public class Player extends JPanel implements Runnable {
 	                			break;
 	                		case KeyEvent.VK_RIGHT:
 	                			moveRight();
+	                			break;
+	                		case KeyEvent.VK_P:
+	                			try {
+	            		            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+	            		        } catch (Exception ex) {
+	            		            ex.printStackTrace();
+	            		        }
+	            		         
+	                				SwingUtilities.invokeLater(new Runnable() {
+	            		            @Override
+	            		            public void run() {
+	            		                new SettingsPage().setVisible(true);
+	            		            }
+	            		        });
 	                			break;
 	                	}
 	            	}else if(keyID == KeyEvent.KEY_PRESSED && number == 1){
@@ -339,7 +355,7 @@ public class Player extends JPanel implements Runnable {
 	}
 
 	public void setColor(String color) {
-		this.color = color;
+		this.color = color.toLowerCase();
 	}
 
 	public int getTimesCaught() {
