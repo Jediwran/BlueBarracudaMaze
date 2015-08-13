@@ -22,6 +22,7 @@ public class Board extends JPanel implements ActionListener {
 	private boolean fogEnabled = false;
 	private Random r = new Random();
 	private int numPlayers = 1;
+	private Barrel barrel;
 	
 	public Board(Maze maze) {
 		this.maze = maze;
@@ -115,6 +116,11 @@ public class Board extends JPanel implements ActionListener {
 			p.moveToStart(m.getStartX(), m.getStartY());
 			f.createFog(p.getTileX(), p.getTileY());
 		}
+		
+		barrel = new Barrel(m);
+		barrel.randomStart();
+		barrel.start();
+		
 		sTime = System.currentTimeMillis();
 		timer = new Timer(25, this);
 		timer.start();
@@ -125,13 +131,26 @@ public class Board extends JPanel implements ActionListener {
 		for(Player player : playerList){
 			for(Fisherman fisherman: fisherMen){
 				fisherman.isPlayerNear(player);
-				if(fisherman.getCaughtPlayer() < 5) playerList[fisherman.getCaughtPlayer()].setCaught(true);
+				if(fisherman.getCaughtPlayer() < 5 && player.getColor() != "grey" && !(fisherman.getDead())) playerList[fisherman.getCaughtPlayer()].setCaught(true);
+				if(fisherman.getCaughtPlayer() < 5 && player.getColor() == "grey"){
+					fisherman.requestStop();
+					fisherman.setImage();
+					fisherman.drawFisherman();
+				}
 			}
 			if(m.getMap(player.getTileX(), player.getTileY()) == 'f'){
 				player.setFinished(true);
 				isFinished();
 			}
 			isPlayerCaught();
+			
+			barrel.isPlayerNear(player);
+			if(barrel.getSharkTime()){
+				player.setColor("grey");
+				player.setImages();
+				barrel.resetsharkTime();
+				barrel.requestStop();
+			}
 		}
 	}
 	
@@ -180,6 +199,10 @@ public class Board extends JPanel implements ActionListener {
 				g.drawImage(fisherman.getImage(), fisherman.getX(), fisherman.getY(), null);
 			}
 		}
+		
+		if(fog[barrel.getBarrelTileX()][barrel.getBarrelTileY()] == 0 && (!barrel.isStopRequested())){
+			g.drawImage(barrel.getImage(), barrel.getX(), barrel.getY(), null);}
+		
 		g.setColor(new Color(255,255,255));
 		g.setFont(new Font("default", Font.BOLD, 16));
 		g.drawString("Level: " + level, 0, 24);
