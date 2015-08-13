@@ -17,11 +17,6 @@ public class Player extends JPanel implements Runnable {
 
 	private int x, y, tileX, tileY, number, deathOnLevel;
 	private Image leftImage, downImage, rightImage, upImage;
-	private String leftFile = "src/resources/images/player/fish_left_";
-	private String downFile = "src/resources/images/player/fish_down_";
-	private String rightFile = "src/resources/images/player/fish_right_";
-	private String upFile = "src/resources/images/player/fish_up_";
-	private String deadFile = "src/resources/images/player/deadfish.png";
 	private int stepsTaken = 0;
 	private int timesCaught = 0;
 	private int direction = 3;
@@ -43,18 +38,18 @@ public class Player extends JPanel implements Runnable {
 	}
 
 	public void setImages(){
-		ImageIcon img = new ImageIcon(leftFile + color + ".png");
+		ImageIcon img = new ImageIcon(Constants.FISH_LEFT_IMAGE + color + ".png");
 		leftImage = img.getImage();
-		img = new ImageIcon(downFile + color + ".png");
+		img = new ImageIcon(Constants.FISH_DOWN_IMAGE + color + ".png");
 		downImage = img.getImage();
-		img = new ImageIcon(rightFile + color + ".png");
+		img = new ImageIcon(Constants.FISH_RIGHT_IMAGE + color + ".png");
 		rightImage = img.getImage();
-		img = new ImageIcon(upFile + color + ".png");
+		img = new ImageIcon(Constants.FISH_UP_IMAGE + color + ".png");
 		upImage = img.getImage();
 	}
 	
 	public void setDeadImage(){
-		ImageIcon img = new ImageIcon(deadFile);
+		ImageIcon img = new ImageIcon(Constants.FISH_DEAD_IMAGE);
 		leftImage = img.getImage();
 		downImage = img.getImage();
 		rightImage = img.getImage();
@@ -252,7 +247,6 @@ public class Player extends JPanel implements Runnable {
 	}
 	
 	public void died(){
-		System.out.println("game over!!!");
 		health = 0;
 		caught = false;
 		isDead = true;
@@ -355,7 +349,7 @@ public class Player extends JPanel implements Runnable {
 	}
 
 	public void setColor(String color) {
-		this.color = color.toLowerCase();
+		this.color = color;
 	}
 
 	public int getTimesCaught() {

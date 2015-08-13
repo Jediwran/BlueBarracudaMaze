@@ -28,7 +28,7 @@ public class Board extends JPanel implements ActionListener {
 		this.maze = maze;
 		m = new Map();
 		m.setSize(mapSize);
-		maze.frame.setSize(Maze.width+(32*m.getMapSize()), Maze.height+(32*m.getMapSize()));
+		maze.frame.setSize(Constants.WIDTH_REQUIRED_SPACING+(32*m.getMapSize()), Constants.HEIGHT_REQUIRED_SPACING+(32*m.getMapSize()));
 		f = new Fog();
 		f.setFogMapSize(mapSize);
 		//selectPlayerNumber();
@@ -101,7 +101,7 @@ public class Board extends JPanel implements ActionListener {
 		m.setMapName(r.nextInt(8)+1);
 		m.newMap(mapSize);
 		
-		maze.frame.setSize(Maze.width+(32*m.getMapSize()), Maze.height+(32*m.getMapSize()));
+		maze.frame.setSize(Constants.WIDTH_REQUIRED_SPACING+(32*m.getMapSize()), Constants.HEIGHT_REQUIRED_SPACING+(32*m.getMapSize()));
 		maze.frame.setVisible(true);
 		for(Fisherman fisher:fisherMen)
 		{
@@ -139,7 +139,7 @@ public class Board extends JPanel implements ActionListener {
 				if(fisherman.getCaughtPlayer() < 5 && player.getColor() == "grey"){
 					fisherman.requestStop();
 					fisherman.setImage();
-					fisherman.drawFisherman();
+					//fisherman.drawFisherman();
 				}
 			}
 			if(m.getMap(player.getTileX(), player.getTileY()) == 'f'){
@@ -208,7 +208,7 @@ public class Board extends JPanel implements ActionListener {
 			g.drawImage(barrel.getImage(), barrel.getX(), barrel.getY(), null);}
 		
 		g.setColor(new Color(255,255,255));
-		g.setFont(new Font("default", Font.BOLD, 16));
+		g.setFont(new Font(Constants.FONT_NAME, Font.BOLD, 16));
 		g.drawString("Level: " + level, 0, 24);
 		int i = 0;
 		int j = 0;
