@@ -55,9 +55,8 @@ public class Board extends JPanel implements ActionListener {
 		f.setFishSight(Settings.getSettings().getSight());
 		fogEnabled = Settings.getSettings().getFogEnabled();
 		//selectPlayerNumber();
+		numPlayers = Settings.getSettings().getNumberPlayers();
 		playerList = new Player[numPlayers];
-		
-		
 		
 		for(int i = 0; i < numPlayers; i++){
 			playerList[i] = new Player(m,f);
@@ -70,6 +69,7 @@ public class Board extends JPanel implements ActionListener {
 			new Thread(playerList[i]).start();
 		}
 		setFocusable(true);
+		keyBinding();
 		startLevel();
 	}
 	
@@ -322,5 +322,34 @@ public class Board extends JPanel implements ActionListener {
 	    }
 		JOptionPane.showMessageDialog(new JFrame(), "You have won! \nLevel: " + level + "\nYour Time: " + time + stats);
 		startLevel();
-	}	
+	}
+	
+	private void keyBinding() {
+		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyEventDispatcher() {
+			
+			@Override
+	        public boolean dispatchKeyEvent(KeyEvent ke) {
+	        	int keyID = ke.getID();
+	        	int keyCode = ke.getKeyCode();
+	        	if(keyID == KeyEvent.KEY_PRESSED){
+	                	switch(keyCode){
+	                		case KeyEvent.VK_P:
+	                			try {
+	            		            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+	            		        } catch (Exception ex) {
+	            		            ex.printStackTrace();
+	            		        }
+                				SwingUtilities.invokeLater(new Runnable() {
+                		            @Override
+                		            public void run() {
+                		                new SettingsPage().setVisible(true);
+                		            }
+                				});
+	                			break;
+	                	}
+	            	}
+	        	return false;
+	        	}
+		});
+	}
 }

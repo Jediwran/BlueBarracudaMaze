@@ -40,7 +40,7 @@ public class Settings
 			bw.write(gson.toJson(this));
 			bw.close();
 			synchronized(Board.monitor) {
-				Board.monitor.notify();
+				Board.monitor.notifyAll();
 			}
 		}
 		catch (IOException e1)

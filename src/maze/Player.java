@@ -167,20 +167,6 @@ public class Player extends JPanel implements Runnable {
 	                		case KeyEvent.VK_RIGHT:
 	                			moveRight();
 	                			break;
-	                		case KeyEvent.VK_P:
-	                			try {
-	            		            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-	            		        } catch (Exception ex) {
-	            		            ex.printStackTrace();
-	            		        }
-	            		         
-	                				SwingUtilities.invokeLater(new Runnable() {
-	            		            @Override
-	            		            public void run() {
-	            		                new SettingsPage().setVisible(true);
-	            		            }
-	            		        });
-	                			break;
 	                	}
 	            	}else if(keyID == KeyEvent.KEY_PRESSED && number == 1){
 	    				switch(keyCode){
