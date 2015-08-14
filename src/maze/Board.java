@@ -43,6 +43,9 @@ public class Board extends JPanel implements ActionListener {
 				System.out.println("whoops!");
 				e.printStackTrace();
 			}
+			finally {
+				Thread.interrupted();
+			}
         }
 		
 		//resume and build with user settings
@@ -66,7 +69,7 @@ public class Board extends JPanel implements ActionListener {
 			playerList[i].setColor(Settings.getSettings().getPlayerColors().get(i));
 			
 			playerList[i].setImages();
-			new Thread(playerList[i]).start();
+			//new Thread(playerList[i]).start();
 		}
 		setFocusable(true);
 		keyBinding();
@@ -122,7 +125,7 @@ public class Board extends JPanel implements ActionListener {
 	
 	public void startLevel(){
 		level += 1;
-		m.setMapName(r.nextInt(8)+1);
+		//m.setMapName(r.nextInt(8)+1);
 		m.newMap(mapSize);
 		
 		maze.frame.setSize(Constants.WIDTH_REQUIRED_SPACING+(32*m.getMapSize()), Constants.HEIGHT_REQUIRED_SPACING+(32*m.getMapSize()));
@@ -195,14 +198,13 @@ public class Board extends JPanel implements ActionListener {
 	
 	public void paint(Graphics g) {
 		super.paint(g);
-		
 		for(int y = 0; y < m.getMapSize(); y++) {
 			for(int x = 0; x < m.getMapSize(); x++) {
 				if(m.getMap(x, y) == 'g'){
 					g.drawImage(m.getGround(), x * 32, y * 32, null);
 				}
 				if(m.getMap(x, y) == 'b'){
-					g.drawImage(m.getWall(), x * 32, y * 32, null);
+					g.drawImage(m.getBlock(), x * 32, y * 32, null);
 				}
 				if(m.getMap(x, y) == 'w'){
 					g.drawImage(m.getWall(), x * 32, y * 32, null);
@@ -339,12 +341,23 @@ public class Board extends JPanel implements ActionListener {
 	            		        } catch (Exception ex) {
 	            		            ex.printStackTrace();
 	            		        }
-                				SwingUtilities.invokeLater(new Runnable() {
-                		            @Override
-                		            public void run() {
-                		                new SettingsPage().setVisible(true);
-                		            }
-                				});
+	                			synchronized(monitor) {
+	                				SwingUtilities.invokeLater(new Runnable() {
+	                		            @Override
+	                		            public void run() {
+		                		                new SettingsPage().setVisible(true);
+		                		                try {
+		    	                					monitor.wait();
+		    	                				} catch (InterruptedException e) {
+		    	                					System.out.println("whoops!");
+		    	                					e.printStackTrace();
+		    	                				}
+		    	                				finally {
+		    	                					Thread.interrupted();
+		    	                				}
+	        	                	        }
+	                				});
+            		            }
 	                			break;
 	                	}
 	            	}

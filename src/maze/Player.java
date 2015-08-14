@@ -6,14 +6,9 @@ import java.awt.KeyboardFocusManager;
 import java.awt.event.KeyEvent;
 import java.util.Timer;
 import java.util.TimerTask;
-
 import javax.swing.ImageIcon;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
 
-@SuppressWarnings("serial")
-public class Player extends JPanel implements Runnable {
+public class Player{
 
 	private int x, y, tileX, tileY, number, deathOnLevel;
 	private Image leftImage, downImage, rightImage, upImage;
@@ -45,6 +40,17 @@ public class Player extends JPanel implements Runnable {
 		img = new ImageIcon(Constants.FISH_RIGHT_IMAGE + color + ".png");
 		rightImage = img.getImage();
 		img = new ImageIcon(Constants.FISH_UP_IMAGE + color + ".png");
+		upImage = img.getImage();
+	}
+	
+	public void setCaughtImage(){
+		ImageIcon img = new ImageIcon(Constants.FISH_CAUGHT_LEFT_IMAGE);
+		leftImage = img.getImage();
+		img = new ImageIcon(Constants.FISH_CAUGHT_DOWN_IMAGE);
+		downImage = img.getImage();
+		img = new ImageIcon(Constants.FISH_CAUGHT_RIGHT_IMAGE);
+		rightImage = img.getImage();
+		img = new ImageIcon(Constants.FISH_CAUGHT_UP_IMAGE);
 		upImage = img.getImage();
 	}
 	
@@ -137,13 +143,6 @@ public class Player extends JPanel implements Runnable {
 			f.iAmHereFog(tileX, tileY);
 		}
 	}
-
-	@Override
-	public void run() {
-		while(true){
-			
-		}
-	}
 		
 	public void keyBindings() {
 		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyEventDispatcher() {
@@ -230,6 +229,10 @@ public class Player extends JPanel implements Runnable {
 	public void getTimer(int time){
 		invincibleTime = new Timer();
 		invincibleTime.schedule(new NotInvincible(), time);
+	}
+	
+	public void stopThread(){
+		Thread.interrupted();
 	}
 	
 	public void died(){

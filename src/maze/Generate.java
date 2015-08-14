@@ -58,10 +58,10 @@ public class Generate {
 		for (int i = 0; i < sizeY; i++) {
 			for (int j = 0; j < sizeX; j++) {
 				maze[i][j] = WALL;
-				maze[1][j] = EDGE;
-				maze[sizeY-2][j] = EDGE;
+				maze[2][j] = EDGE;
+				maze[sizeY-1][j] = EDGE;
 				maze[0][j] = BORDER;
-				maze[sizeY-1][j] = BORDER;
+				maze[1][j] = BORDER;
 			}
 			
 			maze[i][0] = EDGE;
@@ -69,8 +69,6 @@ public class Generate {
 //			maze[i][0] = BORDER;
 //			maze[i][sizeX-1] = BORDER;
 		}
-		maze[sizeY-1][0] = BORDER;
-		maze[sizeY-1][sizeX-1] = BORDER;
 		int[] start = new int[2];
 		
 		start[0] = randy.nextInt(sizeY-2) + 1;
