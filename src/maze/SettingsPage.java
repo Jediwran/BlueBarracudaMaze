@@ -137,22 +137,22 @@ public class SettingsPage extends JFrame
         	@Override
         	public void actionPerformed(ActionEvent event)
         	{
-        		settings.setFogEnabled(((JRadioButton)getSelectedButton(fog)).getName().compareTo("YES") == 0?true:false);
+        		settings.setFogEnabled(((JRadioButton)getSelectedButton(fog)).getName().equalsIgnoreCase("YES") ?true:false);
         		settings.setSight((int)sightField.getValue());
 
-        		if(((JRadioButton)getSelectedButton(playerNumberGroup)).getName().compareTo("ONE") == 0)
+        		if(((JRadioButton)getSelectedButton(playerNumberGroup)).getName().equalsIgnoreCase("ONE"))
         		{
         			settings.setNumberPlayers(1);
         		}
-        		else if(((JRadioButton)getSelectedButton(playerNumberGroup)).getName().compareTo("TWO") == 0)
+        		else if(((JRadioButton)getSelectedButton(playerNumberGroup)).getName().equalsIgnoreCase("TWO"))
         		{
         			settings.setNumberPlayers(2);
         		}
-        		else if(((JRadioButton)getSelectedButton(playerNumberGroup)).getName().compareTo("THREE") == 0)
+        		else if(((JRadioButton)getSelectedButton(playerNumberGroup)).getName().equalsIgnoreCase("THREE"))
         		{
         			settings.setNumberPlayers(3);
         		}
-        		else if(((JRadioButton)getSelectedButton(playerNumberGroup)).getName().compareTo("FOUR") == 0)
+        		else if(((JRadioButton)getSelectedButton(playerNumberGroup)).getName().equalsIgnoreCase("FOUR"))
         		{
         			settings.setNumberPlayers(4);
         		}
@@ -303,19 +303,19 @@ public class SettingsPage extends JFrame
         bg.add(greenButton);
         bg.add(purpleButton);
         
-        if(color.compareTo(Constants.BLUE) == 0)
+        if(color.equalsIgnoreCase(Constants.BLUE))
         {
         	blueButton.setSelected(true);
         }
-        else if(color.compareTo(Constants.ORANGE) == 0)
+        else if(color.equalsIgnoreCase(Constants.ORANGE))
         {
         	orangeButton.setSelected(true);
         }
-        else if(color.compareTo(Constants.GREEN) == 0)
+        else if(color.equalsIgnoreCase(Constants.GREEN))
         {
         	greenButton.setSelected(true);
         }
-        else if(color.compareTo(Constants.PURPLE) == 0)
+        else if(color.equalsIgnoreCase(Constants.PURPLE))
 	    {
 	    	purpleButton.setSelected(true);
 	    }

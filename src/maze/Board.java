@@ -27,7 +27,7 @@ public class Board extends JPanel implements ActionListener {
 	private String colorRestore;
 	private int playerNum;
 	private boolean pause = false;
-	public static boolean run = true, first = true;
+	public static boolean run = true, first = true, refresh = false;
 	public static Object monitor = new Object();
 	
 	public Board(Maze maze) {
@@ -155,6 +155,27 @@ public class Board extends JPanel implements ActionListener {
 		timer.start();
 	}
 	
+	public void restartLevel()
+	{
+		f.setFishSight(Settings.getSettings().getSight());
+		fogEnabled = Settings.getSettings().getFogEnabled();
+		numPlayers = Settings.getSettings().getNumberPlayers();
+		playerList = new Player[numPlayers];
+		
+		for(int i = 0; i < numPlayers; i++){
+			playerList[i] = new Player(m,f);
+			playerList[i].setNumber(i);
+
+			//selectPlayerColor(playerList[i]);
+			playerList[i].setColor(Settings.getSettings().getPlayerColors().get(i));
+			
+			playerList[i].setImages();
+			//new Thread(playerList[i]).start();
+		}
+		level = 0;
+		startLevel();
+	}
+	
 	public void actionPerformed(ActionEvent e) {
 		if (pause)
 		{
@@ -168,6 +189,11 @@ public class Board extends JPanel implements ActionListener {
 			return;
 		}
 		
+		if (refresh)
+		{
+			restartLevel();
+			refresh = false;
+		}
 		repaint();
 		for(Player player : playerList){
 			for(Fisherman fisherman: fisherMen){

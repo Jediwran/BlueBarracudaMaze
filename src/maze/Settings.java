@@ -45,6 +45,10 @@ public class Settings
 			{
 				Board.first = false;
 			}
+			else if (!Board.refresh)
+			{
+				Board.refresh = true;
+			}
 		}
 		catch (IOException e1)
 		{
@@ -162,7 +166,7 @@ public class Settings
 		}
 		for(String color:colors)
 		{
-			if(color.compareTo(Constants.BLUE) == 0 || color.compareTo(Constants.ORANGE) == 0 ||color.compareTo(Constants.GREEN) == 0 ||color.compareTo(Constants.PURPLE) == 0)
+			if(color.equalsIgnoreCase(Constants.BLUE) || color.equalsIgnoreCase(Constants.ORANGE) ||color.equalsIgnoreCase(Constants.GREEN) ||color.equalsIgnoreCase(Constants.PURPLE))
 			{
 				continue;
 			}
