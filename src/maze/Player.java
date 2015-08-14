@@ -66,6 +66,10 @@ public class Player extends JPanel implements Runnable {
 	}
 	
 	private void move(int dx, int dy, int tx, int ty) {
+		if (!Board.run)
+		{
+			return;
+		}
 		x += dx;
 		y += dy;
 		

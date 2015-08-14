@@ -5,6 +5,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -42,9 +43,7 @@ public class SettingsPage extends JFrame
     ButtonGroup fish2 = new ButtonGroup();
     ButtonGroup fish3 = new ButtonGroup();
     ButtonGroup fish4 = new ButtonGroup();
-
-
-    
+ 
     String blueFish = Constants.FISH_LEFT_BLUE_IMAGE;
     String orangeFish = Constants.FISH_LEFT_ORANGE_IMAGE;
     String greenFish = Constants.FISH_LEFT_GREEN_IMAGE;
@@ -52,7 +51,8 @@ public class SettingsPage extends JFrame
     JPanel mainPanel = new JPanel(new GridBagLayout());
 
     Settings settings = null;
-    public SettingsPage() 
+
+	public SettingsPage() 
     {
     	
         super("Game Settings");
@@ -169,9 +169,6 @@ public class SettingsPage extends JFrame
         	}
         });
         mainPanel.add(buttonSave, constraints);
-         
-        
-        
         
         // set border for the panel
         mainPanel.setBorder(BorderFactory.createTitledBorder(
@@ -186,8 +183,9 @@ public class SettingsPage extends JFrame
   
     public void exit()
     {
-    	this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-    	this.dispose();
+    	//this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+    	this.setVisible(false);
+    	this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
     }
     public void setupSightField(int sightRange)
     {

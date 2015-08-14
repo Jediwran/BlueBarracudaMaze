@@ -35,6 +35,11 @@ public class Fisherman extends Thread {
 		stopRequested = true;
 	}
 	
+	public void resetStop()
+	{
+		stopRequested = false;
+	}
+	
 	public void setStartLocation(int dx, int dy) {
 		x = dx * 32;
 		y = dy * 32;
@@ -44,6 +49,10 @@ public class Fisherman extends Thread {
 	}
 	
 	public void move(){
+		if (!Board.run)
+		{
+			return;
+		}
 		int tx = 0;
 		int ty = 0;
 		boolean fishermanMoved = false;

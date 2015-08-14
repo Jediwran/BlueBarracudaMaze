@@ -32,9 +32,15 @@ public class Barrel extends Thread{
 		}
 		//System.out.println("Barrel stopping");
 	}
+	
 	public void requestStop()
 	{
 		stopRequested = true;
+	}
+	
+	public void resetStop()
+	{
+		stopRequested = false;
 	}
 	public Image getBarrel() {
 		return barrel;
@@ -50,6 +56,10 @@ public class Barrel extends Thread{
 	
 	//public void move(int dx, int dy, int tx, int ty){
 	public void move(){
+		if (!Board.run)
+		{
+			return;
+		}
 		int tx = 0;
 		int ty = 0;
 		boolean barrelMoved = false;

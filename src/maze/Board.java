@@ -2,6 +2,7 @@ package maze;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Random;
 
 import javax.swing.*;
@@ -25,26 +26,21 @@ public class Board extends JPanel implements ActionListener {
 	private Barrel barrel;
 	private String colorRestore;
 	private int playerNum;
-	
+	private boolean pause = false;
+	public static boolean run = true, first = true;
 	public static Object monitor = new Object();
 	
 	public Board(Maze maze) {
 		//pause until user inputs desired settings
-		synchronized(monitor) {
-			SwingUtilities.invokeLater(new Runnable() {
-	            @Override
-	            public void run() {
-	                new SettingsPage().setVisible(true);
-	            }
-			});
+		launchSettings();
+		
+		synchronized (monitor) {
 			try {
 				monitor.wait();
 			} catch (InterruptedException e) {
-				System.out.println("whoops!");
 				e.printStackTrace();
 			}
-        }
-		
+		}
 		//resume and build with user settings
 		this.maze = maze;
 		m = new Map();
@@ -160,6 +156,18 @@ public class Board extends JPanel implements ActionListener {
 	}
 	
 	public void actionPerformed(ActionEvent e) {
+		if (pause)
+		{
+			launchSettings();
+			pause = false;
+			return;
+		}
+		
+		if (!run)
+		{
+			return;
+		}
+		
 		repaint();
 		for(Player player : playerList){
 			for(Fisherman fisherman: fisherMen){
@@ -326,30 +334,35 @@ public class Board extends JPanel implements ActionListener {
 	
 	private void keyBinding() {
 		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyEventDispatcher() {
-			
 			@Override
 	        public boolean dispatchKeyEvent(KeyEvent ke) {
 	        	int keyID = ke.getID();
 	        	int keyCode = ke.getKeyCode();
 	        	if(keyID == KeyEvent.KEY_PRESSED){
-	                	switch(keyCode){
-	                		case KeyEvent.VK_P:
-	                			try {
-	            		            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-	            		        } catch (Exception ex) {
-	            		            ex.printStackTrace();
-	            		        }
-                				SwingUtilities.invokeLater(new Runnable() {
-                		            @Override
-                		            public void run() {
-                		                new SettingsPage().setVisible(true);
-                		            }
-                				});
-	                			break;
-	                	}
-	            	}
+                	switch(keyCode){
+                		case KeyEvent.VK_P:
+                			pause = true;
+                			break;
+                	}	
+            	}
 	        	return false;
-	        	}
+	        }
+		});
+	}
+	
+	private void launchSettings()
+	{
+		run = false;
+		try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+		SwingUtilities.invokeLater(new Runnable() {
+		    @Override
+		    public void run() {
+		        new SettingsPage().setVisible(true);
+		    }
 		});
 	}
 }

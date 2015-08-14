@@ -22,14 +22,12 @@ public class Settings
 	private List<String> playerColors;
 	private int id;
 	private static int id_counter = 0;
+	
 	private Settings()
 	{
-		id = ++id_counter;
-		
-		
-		
-		
+		id = ++id_counter;			
 	}
+	
 	public void saveSettings()
 	{
 		Gson gson = new GsonBuilder().create();
@@ -41,6 +39,11 @@ public class Settings
 			bw.close();
 			synchronized(Board.monitor) {
 				Board.monitor.notifyAll();
+			}
+			Board.run = true;
+			if (Board.first)
+			{
+				Board.first = false;
 			}
 		}
 		catch (IOException e1)
