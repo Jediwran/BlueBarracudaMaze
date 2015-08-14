@@ -379,6 +379,7 @@ public class Player{
 
 	public void setCaughtRecent(boolean caughtRecent) {
 		this.caughtRecent = caughtRecent;
+		setCaughtImage();
 	}
 	
 	private class NotInvincible extends TimerTask {
@@ -386,6 +387,7 @@ public class Player{
 			caught = false;
 			caughtRecent = false;
 			invincibleTime.cancel();
+			setImages();
 		}
 		
 	}
