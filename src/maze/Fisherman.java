@@ -56,7 +56,7 @@ public class Fisherman extends Thread {
 		int tx = 0;
 		int ty = 0;
 		boolean fishermanMoved = false;
-		while (!fishermanMoved){
+		while (!fishermanMoved && !dead){
 			int direction = new Random().nextInt(8);
 			switch(direction){
 				case 0 : {

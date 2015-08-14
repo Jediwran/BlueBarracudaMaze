@@ -304,7 +304,7 @@ public class Board extends JPanel implements ActionListener {
 			if(player.getCaught() && !player.isCaughtRecent()){
 				player.setCaught(false);
 				if(player.getHealth() > 5){
-					JOptionPane.showMessageDialog(new JFrame(), "Player " + (player.getNumber() + 1) + " You have been caught! \nFisherman released you back into the water.");
+					//JOptionPane.showMessageDialog(new JFrame(), "Player " + (player.getNumber() + 1) + " You have been caught! \nFisherman released you back into the water.");
 					player.decreaseHealth();
 					player.setCaughtRecent(true);
 					player.getTimer(2000);
