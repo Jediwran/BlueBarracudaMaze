@@ -11,15 +11,11 @@ public class Map {
 	private int arraySize;
 	private int startX = 0;
 	private int startY = 0;
-	private String Map[];
 	private Image ground, wall, start, finish, block;
 	private String mapName;
-	
-	
 	private char[][] map;
 	
 	public Map() {
-		//arraySize = 14;
 		ImageIcon img = new ImageIcon(Constants.WATER_IMAGE);
 		ground = img.getImage();
 		img = new ImageIcon(Constants.WALL_IMAGE);
@@ -38,11 +34,7 @@ public class Map {
 		setStartLocation();
 	}
 	
-	public void setupMap(){
-		openFile();
-		readFile();
-		closeFile();
-		
+	public void setupMap(){		
 		setStartLocation();
 	}
 	
@@ -68,11 +60,11 @@ public class Map {
 	
 	public void setSize(int size){
 		arraySize = size;
-		Map = new String[arraySize];
+		map = new char[arraySize][arraySize];
 	}
 	
 	public int getMapSize() {
-		return Map.length;
+		return map.length;
 	}
 	
 	public char getMap(int x, int y) {
@@ -99,53 +91,7 @@ public class Map {
 		return startY;
 	}
 	
-	public void openFile() {
-		try{
-			m = new Scanner(new File(Constants.MAPS_LOCATION + mapName));
-		} catch(Exception e){
-			System.out.println("Error loading map");
-		}
-	}
-	
-	public void readFile() {
-		while(m.hasNext()) {
-			for(int i = 0; i < arraySize; i++) {
-				Map[i] = m.next();
-			}
-		}
-	}
-	
-	public void closeFile() {
-		m.close();
-	}
-	
 	public String getMapName(){
 		return mapName;
-	}
-	
-	public StringBuilder printMap(){
-		StringBuilder allText = new StringBuilder();
-		allText.append(this.getMapName()
-				+ "\n==============");
-		
-		for (int i = 0; i < arraySize; i++){
-			allText.append(Map[i] + "\n");
-		}
-		
-		return allText;
-	}
-	public void setMapName(int mapNum){
-		mapName = "Map"+ mapNum +".txt";
-	}
-	
-	/**
-	 * For when you need to open a file not in the map's folder.
-	 */
-	public void openCustomFile(String path){
-		try {
-			m = new Scanner (new File(path));
-		} catch (Exception e){
-			System.out.println("Failed to load file from given path: " + path);
-		}
 	}
 }

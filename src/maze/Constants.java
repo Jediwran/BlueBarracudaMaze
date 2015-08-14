@@ -16,9 +16,13 @@ public class Constants {
 	public static final String FISH_LEFT_ORANGE_IMAGE = "src/resources/images/player/fish_left_orange.png";
 	public static final String FISH_LEFT_GREEN_IMAGE = "src/resources/images/player/fish_left_green.png";
 	public static final String FISH_LEFT_PURPLE_IMAGE = "src/resources/images/player/fish_left_purple.png";
+	public static final String FISH_CAUGHT_LEFT_IMAGE = "src/resources/images/player/fish_left_white.png";
 	public static final String FISH_DOWN_IMAGE = "src/resources/images/player/fish_down_";
+	public static final String FISH_CAUGHT_DOWN_IMAGE = "src/resources/images/player/fish_down_white.png";
 	public static final String FISH_RIGHT_IMAGE = "src/resources/images/player/fish_right_";
+	public static final String FISH_CAUGHT_RIGHT_IMAGE = "src/resources/images/player/fish_right_white.png";
 	public static final String FISH_UP_IMAGE = "src/resources/images/player/fish_up_";
+	public static final String FISH_CAUGHT_UP_IMAGE = "src/resources/images/player/fish_up_white.png";
 	public static final String FISH_DEAD_IMAGE = "src/resources/images/player/deadfish.png";
 	public static final String WATER_IMAGE = "src/resources/water.png";
 	public static final String WALL_IMAGE = "src/resources/wall.png";

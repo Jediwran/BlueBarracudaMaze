@@ -12,10 +12,10 @@ public class TestMap {
 	public void testGetMap(){
 		Map m = new Map();
 		m.setSize(14);
-		m.setMapName(1);
-		m.openCustomFile("src/resources/maps/Map1.txt");
-		m.readFile();
-		m.closeFile();
+		//m.setMapName(1);
+		//m.openCustomFile("src/resources/maps/Map1.txt");
+		//m.readFile();
+		//m.closeFile();
 		
 		assertTrue(m.getMapName().contains(".txt"));
 
@@ -26,7 +26,7 @@ public class TestMap {
 	public void testMapCanLoadRegardlessOfWhereItsInvoked() {
 		Map m = new Map();
 		m.setSize(14);
-		m.setMapName(1);
+		//m.setMapName(1);
 		m.setupMap();
 		
 		assertEquals(14, m.getMapSize());

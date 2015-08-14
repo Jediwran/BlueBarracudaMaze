@@ -303,19 +303,19 @@ public class SettingsPage extends JFrame
         bg.add(greenButton);
         bg.add(purpleButton);
         
-        if(color.compareTo("BLUE") == 0)
+        if(color.compareTo(Constants.BLUE) == 0)
         {
         	blueButton.setSelected(true);
         }
-        else if(color.compareTo("ORANGE") == 0)
+        else if(color.compareTo(Constants.ORANGE) == 0)
         {
         	orangeButton.setSelected(true);
         }
-        else if(color.compareTo("GREEN") == 0)
+        else if(color.compareTo(Constants.GREEN) == 0)
         {
         	greenButton.setSelected(true);
         }
-        else if(color.compareTo("PURPLE") == 0)
+        else if(color.compareTo(Constants.PURPLE) == 0)
 	    {
 	    	purpleButton.setSelected(true);
 	    }
