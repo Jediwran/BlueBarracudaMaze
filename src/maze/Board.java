@@ -254,9 +254,10 @@ public class Board extends JPanel implements ActionListener {
 			if(player.getColor().equals(Constants.GREY)){
 				//g.setColor(new Color(255,0,0));
 				AttributedString attrString = new AttributedString("SHARK TIME! " + player.getTimer());
-				attrString.addAttribute(TextAttribute.FOREGROUND, Color.MAGENTA, 0 , 12);
+				attrString.addAttribute(TextAttribute.FONT, new Font("Arial", Font.BOLD & Font.ITALIC, 18));
+				attrString.addAttribute(TextAttribute.FOREGROUND, Color.YELLOW, 0 , 14);
 				//g.drawString("SHARK TIME! " + player.getTimer(), 180, 80);
-				g.drawString(attrString.getIterator(), 180, 80);
+				g.drawString(attrString.getIterator(), 180, 60);
 			}
 		}
 	}
@@ -300,10 +301,10 @@ public class Board extends JPanel implements ActionListener {
 	}
 	
 	public void isFinished(){
-		for(Player p : playerList){
-			p.setFinished(false);
-			p.setColor(p.getPrevColor());
-			p.stopTimer();
+		for(Player player : playerList){
+			player.setFinished(false);
+			player.setColor(player.getPrevColor());
+			if(player.getShark())player.stopSharkTimer();
 		}
 		
 		timer.stop();
