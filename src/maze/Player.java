@@ -1,9 +1,6 @@
 package maze;
 
 import java.awt.Image;
-import java.awt.KeyEventDispatcher;
-import java.awt.KeyboardFocusManager;
-import java.awt.event.KeyEvent;
 import java.util.Timer;
 import java.util.TimerTask;
 import javax.swing.ImageIcon;
@@ -17,19 +14,18 @@ public class Player{
 	private int direction = 3;
 	private int health = 50;
 	private int maxHealth = 50;
-	private String color;
+	private String color, prevColor;
 	private Map m;
 	private Fog f;
 	private boolean isDead = false;
 	private boolean caught = false;
 	private boolean finish = false;
 	private boolean caughtRecent = false;
-	private Timer invincibleTime;
+	private Timer playerTimer;
 		
 	public Player(Map m, Fog f) {
 		this.m = m;
 		this.f = f;
-		keyBindings();
 	}
 
 	public void setImages(){
@@ -59,6 +55,18 @@ public class Player{
 		leftImage = img.getImage();
 		downImage = img.getImage();
 		rightImage = img.getImage();
+		upImage = img.getImage();
+	}
+	
+	public void setNotSharkImages(){
+		color = prevColor;
+		ImageIcon img = new ImageIcon(Constants.FISH_LEFT_IMAGE + color + ".png");
+		leftImage = img.getImage();
+		img = new ImageIcon(Constants.FISH_DOWN_IMAGE + color + ".png");
+		downImage = img.getImage();
+		img = new ImageIcon(Constants.FISH_RIGHT_IMAGE + color + ".png");
+		rightImage = img.getImage();
+		img = new ImageIcon(Constants.FISH_UP_IMAGE + color + ".png");
 		upImage = img.getImage();
 	}
 	
@@ -147,82 +155,6 @@ public class Player{
 			f.iAmHereFog(tileX, tileY);
 		}
 	}
-		
-	public void keyBindings() {
-		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyEventDispatcher() {
-			
-			@Override
-            public boolean dispatchKeyEvent(KeyEvent ke) {
-            	int keyID = ke.getID();
-            	int keyCode = ke.getKeyCode();
-            	if(!isDead){
-	            	if(keyID == KeyEvent.KEY_PRESSED && number == 0){
-	                	switch(keyCode){
-	                		case KeyEvent.VK_UP:
-	                			moveUp();
-	                			break;
-	                		case KeyEvent.VK_LEFT:
-	                			moveLeft();
-	                			break;
-	                		case KeyEvent.VK_DOWN:
-	                			moveDown();
-	                			break;
-	                		case KeyEvent.VK_RIGHT:
-	                			moveRight();
-	                			break;
-	                	}
-	            	}else if(keyID == KeyEvent.KEY_PRESSED && number == 1){
-	    				switch(keyCode){
-						case KeyEvent.VK_W:
-								moveUp();
-							break;
-						case KeyEvent.VK_A:
-								moveLeft();
-							break;
-						case KeyEvent.VK_S:
-								moveDown();
-							break;
-						case KeyEvent.VK_D:
-								moveRight();
-							break;
-						}
-	    			}else if(keyID == KeyEvent.KEY_PRESSED && number == 2){
-	    				switch(keyCode) {
-	    					case KeyEvent.VK_I:
-	    							moveUp();
-	    						break;
-	    					case KeyEvent.VK_J:
-	    							moveLeft();
-	    						break;
-	    					case KeyEvent.VK_K:
-	    							moveDown();
-	    						break;
-	    					case KeyEvent.VK_L:
-	    							moveRight();
-	    						break;
-	    				}
-	    			}else if(keyID == KeyEvent.KEY_PRESSED && number == 3){
-	    				switch(keyCode){
-	    					case KeyEvent.VK_NUMPAD8:
-	    							moveUp();
-	    						break;
-	    					case KeyEvent.VK_NUMPAD4:
-	    							moveLeft();
-	    						break;
-	    					case KeyEvent.VK_NUMPAD2:
-	    							moveDown();
-	    						break;
-	    					case KeyEvent.VK_NUMPAD6:
-	    							moveRight();
-	    						break;
-	    				}
-	                }
-            	}
-				return false;
-            }
-		});
-		
-	}
 	
 	public void isAtFinish(){
 		if(m.getMap(tileX, tileY) == 'f'){
@@ -231,8 +163,13 @@ public class Player{
 	}
 	
 	public void getTimer(int time){
-		invincibleTime = new Timer();
-		invincibleTime.schedule(new NotInvincible(), time);
+		playerTimer = new Timer();
+		if(time == 2000){
+			playerTimer.schedule(new NotInvincible(), time);
+		}
+		if(time == 10000){
+			playerTimer.schedule(new NotSharkTime(), time);
+		}
 	}
 	
 	public void stopThread(){
@@ -255,6 +192,28 @@ public class Player{
 	
 	public void decreaseHealth(){
 		health = health - 5;
+	}
+
+	public void setCaughtRecent(boolean caughtRecent) {
+		this.caughtRecent = caughtRecent;
+		setCaughtImage();
+	}
+	
+	private class NotInvincible extends TimerTask {
+		public void run(){
+			caught = false;
+			caughtRecent = false;
+			playerTimer.cancel();
+			setImages();
+		}	
+	}
+	
+	private class NotSharkTime extends TimerTask {
+		public void run() {
+			playerTimer.cancel();
+			setNotSharkImages();
+			setImages();
+		}
 	}
 
 	public void setHealth(int value){
@@ -344,6 +303,10 @@ public class Player{
 	public void setColor(String color) {
 		this.color = color;
 	}
+	
+	public void setPrevColor() {
+		prevColor = color;
+	}
 
 	public int getTimesCaught() {
 		return timesCaught;
@@ -376,19 +339,8 @@ public class Player{
 	public boolean isCaughtRecent() {
 		return caughtRecent;
 	}
-
-	public void setCaughtRecent(boolean caughtRecent) {
-		this.caughtRecent = caughtRecent;
-		setCaughtImage();
-	}
 	
-	private class NotInvincible extends TimerTask {
-		public void run(){
-			caught = false;
-			caughtRecent = false;
-			invincibleTime.cancel();
-			setImages();
-		}
-		
+	public String getPrevColor() {
+		return prevColor;
 	}
 }

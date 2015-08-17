@@ -60,6 +60,7 @@ public class Board extends JPanel implements ActionListener {
 
 			//selectPlayerColor(playerList[i]);
 			playerList[i].setColor(Settings.getSettings().getPlayerColors().get(i));
+			playerList[i].setPrevColor();
 			
 			playerList[i].setImages();
 			//new Thread(playerList[i]).start();
@@ -218,11 +219,12 @@ public class Board extends JPanel implements ActionListener {
 				
 				if(!player.isDead()){
 					player.setColor("grey");
-					player.setImages();}
-					barrel.resetsharkTime();
-					barrel.hide();
-					barrel.requestStop();
-					
+					player.setImages();
+					player.getTimer(10000);
+				}
+				barrel.resetsharkTime();
+				barrel.hide();
+				barrel.requestStop();
 			}
 		}
 	}
@@ -370,6 +372,78 @@ public class Board extends JPanel implements ActionListener {
                 			break;
                 	}	
             	}
+	        	if(!playerList[0].isDead()){
+	            	if(keyID == KeyEvent.KEY_PRESSED){
+	                	switch(keyCode){
+	                		case KeyEvent.VK_UP:
+	                			playerList[0].moveUp();
+	                			break;
+	                		case KeyEvent.VK_LEFT:
+	                			playerList[0].moveLeft();
+	                			break;
+	                		case KeyEvent.VK_DOWN:
+	                			playerList[0].moveDown();
+	                			break;
+	                		case KeyEvent.VK_RIGHT:
+	                			playerList[0].moveRight();
+	                			break;
+	                	}
+	            	}
+	        	}
+	        	if(playerList.length > 1 && !playerList[1].isDead()){
+	            	if(keyID == KeyEvent.KEY_PRESSED){
+	                	switch(keyCode){
+	                		case KeyEvent.VK_W:
+	                			playerList[1].moveUp();
+	                			break;
+	                		case KeyEvent.VK_A:
+	                			playerList[1].moveLeft();
+	                			break;
+	                		case KeyEvent.VK_S:
+	                			playerList[1].moveDown();
+	                			break;
+	                		case KeyEvent.VK_D:
+	                			playerList[1].moveRight();
+	                			break;
+	                	}
+	            	}
+	        	}
+	        	if(playerList.length > 2 && !playerList[2].isDead()){
+	            	if(keyID == KeyEvent.KEY_PRESSED){
+	                	switch(keyCode){
+	                		case KeyEvent.VK_I:
+	                			playerList[2].moveUp();
+	                			break;
+	                		case KeyEvent.VK_J:
+	                			playerList[2].moveLeft();
+	                			break;
+	                		case KeyEvent.VK_K:
+	                			playerList[2].moveDown();
+	                			break;
+	                		case KeyEvent.VK_L:
+	                			playerList[2].moveRight();
+	                			break;
+	                	}
+	            	}
+	        	}
+	        	if(playerList.length > 3 && !playerList[3].isDead()){
+	            	if(keyID == KeyEvent.KEY_PRESSED){
+	                	switch(keyCode){
+	                		case KeyEvent.VK_NUMPAD8:
+	                			playerList[3].moveUp();
+	                			break;
+	                		case KeyEvent.VK_NUMPAD4:
+	                			playerList[3].moveLeft();
+	                			break;
+	                		case KeyEvent.VK_NUMPAD2:
+	                			playerList[3].moveDown();
+	                			break;
+	                		case KeyEvent.VK_NUMPAD6:
+	                			playerList[3].moveRight();
+	                			break;
+	                	}
+	            	}
+	        	}
 	        	return false;
 	        }
 		});
