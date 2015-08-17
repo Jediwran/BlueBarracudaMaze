@@ -2,8 +2,9 @@ package maze;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.lang.reflect.InvocationTargetException;
-import java.util.Random;
+import java.awt.font.TextAttribute;
+import java.text.AttributedString;
+import java.util.ArrayList;
 
 import javax.swing.*;
 
@@ -12,16 +13,15 @@ public class Board extends JPanel implements ActionListener {
 	private static final long serialVersionUID = 1L;
 	private Timer timer;
 	private long sTime, eTime;
-	private Map m;
+	private Map map;
 	private Maze maze;
-	private Player[] playerList;
-	private Fisherman[] fisherMen = new Fisherman[0];
+	private ArrayList<Player> playerList = new ArrayList<Player>();
+	private ArrayList<Fisherman> fishermen = new ArrayList<Fisherman>();
 	private Fog f;
 	private int mapSize = 16;
 	private int level = 0;
 	private int deadPlayers = 0;
 	private boolean fogEnabled = Settings.getSettings().getFogEnabled();
-	private Random r = new Random();
 	private int numPlayers = Settings.getSettings().getNumberPlayers();
 	private Barrel barrel;
 	private String colorRestore;
@@ -43,27 +43,22 @@ public class Board extends JPanel implements ActionListener {
 		}
 		//resume and build with user settings
 		this.maze = maze;
-		m = new Map();
-		m.setSize(mapSize);
-		maze.frame.setSize(Constants.WIDTH_REQUIRED_SPACING+(32*m.getMapSize()), Constants.HEIGHT_REQUIRED_SPACING+(32*m.getMapSize()));
+		map = new Map();
+		map.setSize(mapSize);
+		maze.frame.setSize(Constants.WIDTH_REQUIRED_SPACING+(32*map.getMapSize()), Constants.HEIGHT_REQUIRED_SPACING+(32*map.getMapSize()));
 		f = new Fog();
 		f.setFogMapSize(mapSize);
 		f.setFishSight(Settings.getSettings().getSight());
 		fogEnabled = Settings.getSettings().getFogEnabled();
-		//selectPlayerNumber();
 		numPlayers = Settings.getSettings().getNumberPlayers();
-		playerList = new Player[numPlayers];
-		
+		playerList = new ArrayList<Player>(numPlayers);
 		for(int i = 0; i < numPlayers; i++){
-			playerList[i] = new Player(m,f);
-			playerList[i].setNumber(i);
-
-			//selectPlayerColor(playerList[i]);
-			playerList[i].setColor(Settings.getSettings().getPlayerColors().get(i));
-			playerList[i].setPrevColor();
-			
-			playerList[i].setImages();
-			//new Thread(playerList[i]).start();
+			Player player = new Player(map,f);
+			player.setNumber(i);
+			player.setColor(Settings.getSettings().getPlayerColors().get(i));
+			player.setPrevColor();
+			player.setImages();
+			playerList.add(player);
 		}
 		setFocusable(true);
 		keyBinding();
@@ -79,75 +74,37 @@ public class Board extends JPanel implements ActionListener {
 		startLevel();
 	}
 	
-	public void selectPlayerColor(Player p){
-	Object[] selectMenuOptions={"Blue", "Orange", "Green", "Purple"};
-	int n = JOptionPane.showOptionDialog(null, "Player " + (p.getNumber()+1) + "Select Color of Fish", "Fish Color", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, selectMenuOptions, selectMenuOptions[0]);
-		switch (n) {
-		case 0:
-			p.setColor("blue");
-			break;
-		case 1:
-			p.setColor("orange");
-			break;
-		case 2:
-			p.setColor("green");
-			break;
-		case 3:
-			p.setColor("purple");
-			break;
-		}
-	}
-	
-	public void selectPlayerNumber(){
-		Object[] selectMenuOptions={"1 Player", "2 Players", "3 Players", "4 Players"};
-		int n = JOptionPane.showOptionDialog(null, "Select Number of Players", "Number of Players", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, selectMenuOptions, selectMenuOptions[0]);
-			switch (n) {
-			case 0:
-				numPlayers = 1;
-				break;
-			case 1:
-				numPlayers = 2;
-				break;
-			case 2:
-				numPlayers = 3;
-				break;
-			case 3:
-				numPlayers = 4;
-				break;
-			}
-	}
-	
 	public void startLevel(){
 		level += 1;
-		//m.setMapName(r.nextInt(8)+1);
-		m.newMap(mapSize);
+		map.newMap(mapSize);
 		
-		maze.frame.setSize(Constants.WIDTH_REQUIRED_SPACING+(32*m.getMapSize()), Constants.HEIGHT_REQUIRED_SPACING+(32*m.getMapSize()));
+		maze.frame.setSize(Constants.WIDTH_REQUIRED_SPACING+(32*map.getMapSize()), Constants.HEIGHT_REQUIRED_SPACING+(32*map.getMapSize()));
 		maze.frame.setVisible(true);
-		for(Fisherman fisher:fisherMen)
+		for(Fisherman fisher:fishermen)
 		{
 			fisher.requestStop();
 		}
 		
-		fisherMen = new Fisherman[level];
+		fishermen = new ArrayList<Fisherman>(level);
 		for(int i = 0; i < level; i++){
-			fisherMen[i] = new Fisherman(m);
-			fisherMen[i].randomStart();
-			fisherMen[i].start();
+			Fisherman fisherman = new Fisherman(map);
+			fisherman.randomStart();
+			fisherman.start();
+			fishermen.add(fisherman);
 		}
-		for(Player p: playerList){
-			p.setStepsTaken(0);
-			p.setTimesCaught(0);
-			p.moveToStart(m.getStartX(), m.getStartY());
-			f.createFog(p.getTileX(), p.getTileY());
+		for(Player player: playerList){
+			player.setStepsTaken(0);
+			player.setTimesCaught(0);
+			player.moveToStart(map.getStartX(), map.getStartY());
+			f.createFog(player.getTileX(), player.getTileY());
 		}
 		
 		if(colorRestore != null){
-			playerList[playerNum].setColor(colorRestore);
-			playerList[playerNum].setImages();
+			playerList.get(playerNum).setColor(colorRestore);
+			playerList.get(playerNum).setImages();
 		}
 		
-		barrel = new Barrel(m);
+		barrel = new Barrel(map);
 		barrel.randomStart();
 		barrel.start();
 		
@@ -161,17 +118,13 @@ public class Board extends JPanel implements ActionListener {
 		f.setFishSight(Settings.getSettings().getSight());
 		fogEnabled = Settings.getSettings().getFogEnabled();
 		numPlayers = Settings.getSettings().getNumberPlayers();
-		playerList = new Player[numPlayers];
-		
+		playerList = new ArrayList<Player>(numPlayers);
 		for(int i = 0; i < numPlayers; i++){
-			playerList[i] = new Player(m,f);
-			playerList[i].setNumber(i);
-
-			//selectPlayerColor(playerList[i]);
-			playerList[i].setColor(Settings.getSettings().getPlayerColors().get(i));
-			
-			playerList[i].setImages();
-			//new Thread(playerList[i]).start();
+			Player player = new Player(map, f);
+			player.setNumber(i);
+			player.setColor(Settings.getSettings().getPlayerColors().get(i));
+			player.setImages();
+			playerList.add(player);
 		}
 		level = 0;
 		startLevel();
@@ -196,17 +149,17 @@ public class Board extends JPanel implements ActionListener {
 			refresh = false;
 		}
 		repaint();
+		
 		for(Player player : playerList){
-			for(Fisherman fisherman: fisherMen){
+			for(Fisherman fisherman: fishermen){
 				fisherman.isPlayerNear(player);
-				if(fisherman.getCaughtPlayer() < 5 && player.getColor() != "grey" && !(fisherman.getDead())) playerList[fisherman.getCaughtPlayer()].setCaught(true);
+				if(fisherman.getCaughtPlayer() < 5 && player.getColor() != "grey" && !(fisherman.getDead())) playerList.get(playerList.indexOf(player)).setCaught(true);
 				if(fisherman.getCaughtPlayer() < 5 && player.getColor() == "grey"){
 					fisherman.requestStop();
 					fisherman.setImage();
-					//fisherman.drawFisherman();
 				}
 			}
-			if(m.getMap(player.getTileX(), player.getTileY()) == 'f'){
+			if(map.getMap(player.getTileX(), player.getTileY()) == 'f'){
 				player.setFinished(true);
 				isFinished();
 			}
@@ -231,22 +184,22 @@ public class Board extends JPanel implements ActionListener {
 	
 	public void paint(Graphics g) {
 		super.paint(g);
-		for(int y = 0; y < m.getMapSize(); y++) {
-			for(int x = 0; x < m.getMapSize(); x++) {
-				if(m.getMap(x, y) == 'g'){
-					g.drawImage(m.getGround(), x * 32, y * 32, null);
+		for(int y = 0; y < map.getMapSize(); y++) {
+			for(int x = 0; x < map.getMapSize(); x++) {
+				if(map.getMap(x, y) == 'g'){
+					g.drawImage(map.getGround(), x * 32, y * 32, null);
 				}
-				if(m.getMap(x, y) == 'b'){
-					g.drawImage(m.getBlock(), x * 32, y * 32, null);
+				if(map.getMap(x, y) == 'b'){
+					g.drawImage(map.getBlock(), x * 32, y * 32, null);
 				}
-				if(m.getMap(x, y) == 'w'){
-					g.drawImage(m.getWall(), x * 32, y * 32, null);
+				if(map.getMap(x, y) == 'w'){
+					g.drawImage(map.getWall(), x * 32, y * 32, null);
 				}
-				if(m.getMap(x, y) == 'f'){
-					g.drawImage(m.getFinish(), x * 32, y * 32, null);
+				if(map.getMap(x, y) == 'f'){
+					g.drawImage(map.getFinish(), x * 32, y * 32, null);
 				}
-				if(m.getMap(x, y) == 's'){
-					g.drawImage(m.getStart(), x * 32, y * 32, null);
+				if(map.getMap(x, y) == 's'){
+					g.drawImage(map.getStart(), x * 32, y * 32, null);
 				}
 			}
 		}
@@ -269,7 +222,7 @@ public class Board extends JPanel implements ActionListener {
 				}
 			}
 		}
-		for (Fisherman fisherman : fisherMen) {
+ 		for (Fisherman fisherman : fishermen) {
 			if(fog[fisherman.getTileX()][fisherman.getTileY()] == 0){
 				g.drawImage(fisherman.getImage(), fisherman.getX(), fisherman.getY(), null);
 			}
@@ -298,6 +251,13 @@ public class Board extends JPanel implements ActionListener {
 			if(player.isDead() && level == player.getDeathOnLevel()){
 				g.drawImage(player.draw(), player.getX(), player.getY(), null);
 			}
+			if(player.getColor().equals(Constants.GREY)){
+				//g.setColor(new Color(255,0,0));
+				AttributedString attrString = new AttributedString("SHARK TIME! " + player.getTimer());
+				attrString.addAttribute(TextAttribute.FOREGROUND, Color.MAGENTA, 0 , 12);
+				//g.drawString("SHARK TIME! " + player.getTimer(), 180, 80);
+				g.drawString(attrString.getIterator(), 180, 80);
+			}
 		}
 	}
 	
@@ -310,7 +270,6 @@ public class Board extends JPanel implements ActionListener {
 					player.decreaseHealth();
 					player.setCaughtRecent(true);
 					player.getTimer(2000);
-					//player.moveToStart(m.getStartX(), m.getStartY());
 					
 				}else if(!(player.getHealth() == 0)){
 					player.died();
@@ -335,7 +294,7 @@ public class Board extends JPanel implements ActionListener {
 				}
 			}
 		}
-		for(Fisherman fisherman: fisherMen){
+		for (Fisherman fisherman : fishermen) {
 			fisherman.resetCaughtPlayer();
 		}
 	}
@@ -343,6 +302,8 @@ public class Board extends JPanel implements ActionListener {
 	public void isFinished(){
 		for(Player p : playerList){
 			p.setFinished(false);
+			p.setColor(p.getPrevColor());
+			p.stopTimer();
 		}
 		
 		timer.stop();
@@ -372,74 +333,74 @@ public class Board extends JPanel implements ActionListener {
                 			break;
                 	}	
             	}
-	        	if(!playerList[0].isDead()){
+	        	if(!playerList.get(0).isDead()){
 	            	if(keyID == KeyEvent.KEY_PRESSED){
 	                	switch(keyCode){
 	                		case KeyEvent.VK_UP:
-	                			playerList[0].moveUp();
+	                			playerList.get(0).moveUp();
 	                			break;
 	                		case KeyEvent.VK_LEFT:
-	                			playerList[0].moveLeft();
+	                			playerList.get(0).moveLeft();
 	                			break;
 	                		case KeyEvent.VK_DOWN:
-	                			playerList[0].moveDown();
+	                			playerList.get(0).moveDown();
 	                			break;
 	                		case KeyEvent.VK_RIGHT:
-	                			playerList[0].moveRight();
+	                			playerList.get(0).moveRight();
 	                			break;
 	                	}
 	            	}
 	        	}
-	        	if(playerList.length > 1 && !playerList[1].isDead()){
+	        	if(playerList.size() > 1 && !playerList.get(1).isDead()){
 	            	if(keyID == KeyEvent.KEY_PRESSED){
 	                	switch(keyCode){
 	                		case KeyEvent.VK_W:
-	                			playerList[1].moveUp();
+	                			playerList.get(1).moveUp();
 	                			break;
 	                		case KeyEvent.VK_A:
-	                			playerList[1].moveLeft();
+	                			playerList.get(1).moveLeft();
 	                			break;
 	                		case KeyEvent.VK_S:
-	                			playerList[1].moveDown();
+	                			playerList.get(1).moveDown();
 	                			break;
 	                		case KeyEvent.VK_D:
-	                			playerList[1].moveRight();
+	                			playerList.get(1).moveRight();
 	                			break;
 	                	}
 	            	}
 	        	}
-	        	if(playerList.length > 2 && !playerList[2].isDead()){
+	        	if(playerList.size() > 2 && !playerList.get(2).isDead()){
 	            	if(keyID == KeyEvent.KEY_PRESSED){
 	                	switch(keyCode){
 	                		case KeyEvent.VK_I:
-	                			playerList[2].moveUp();
+	                			playerList.get(2).moveUp();
 	                			break;
 	                		case KeyEvent.VK_J:
-	                			playerList[2].moveLeft();
+	                			playerList.get(2).moveLeft();
 	                			break;
 	                		case KeyEvent.VK_K:
-	                			playerList[2].moveDown();
+	                			playerList.get(2).moveDown();
 	                			break;
 	                		case KeyEvent.VK_L:
-	                			playerList[2].moveRight();
+	                			playerList.get(2).moveRight();
 	                			break;
 	                	}
 	            	}
 	        	}
-	        	if(playerList.length > 3 && !playerList[3].isDead()){
+	        	if(playerList.size() > 3 && !playerList.get(3).isDead()){
 	            	if(keyID == KeyEvent.KEY_PRESSED){
 	                	switch(keyCode){
 	                		case KeyEvent.VK_NUMPAD8:
-	                			playerList[3].moveUp();
+	                			playerList.get(3).moveUp();
 	                			break;
 	                		case KeyEvent.VK_NUMPAD4:
-	                			playerList[3].moveLeft();
+	                			playerList.get(3).moveLeft();
 	                			break;
 	                		case KeyEvent.VK_NUMPAD2:
-	                			playerList[3].moveDown();
+	                			playerList.get(3).moveDown();
 	                			break;
 	                		case KeyEvent.VK_NUMPAD6:
-	                			playerList[3].moveRight();
+	                			playerList.get(3).moveRight();
 	                			break;
 	                	}
 	            	}

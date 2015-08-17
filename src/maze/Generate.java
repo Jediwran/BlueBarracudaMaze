@@ -71,7 +71,7 @@ public class Generate {
 		}
 		int[] start = new int[2];
 		
-		start[0] = randy.nextInt(sizeY-2) + 1;
+		start[0] = randy.nextInt(sizeY-4) + 3;
 		start[1] = randy.nextInt(sizeX-2) + 1;
 		
 		

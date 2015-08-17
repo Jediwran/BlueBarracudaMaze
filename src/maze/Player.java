@@ -1,8 +1,10 @@
 package maze;
 
 import java.awt.Image;
+import java.awt.event.ActionEvent;
 import java.util.Timer;
 import java.util.TimerTask;
+
 import javax.swing.ImageIcon;
 
 public class Player{
@@ -20,8 +22,10 @@ public class Player{
 	private boolean isDead = false;
 	private boolean caught = false;
 	private boolean finish = false;
+	private boolean shark = false;
 	private boolean caughtRecent = false;
 	private Timer playerTimer;
+	private long sharkTime;
 		
 	public Player(Map m, Fog f) {
 		this.m = m;
@@ -168,8 +172,16 @@ public class Player{
 			playerTimer.schedule(new NotInvincible(), time);
 		}
 		if(time == 10000){
+			sharkTime = 10;
+			shark = true;
+			Thread thread = new Thread(new SharkTimerCountDown());
+			thread.start();
 			playerTimer.schedule(new NotSharkTime(), time);
 		}
+	}
+	
+	public String getTimer(){
+		return " :" + sharkTime;
 	}
 	
 	public void stopThread(){
@@ -208,11 +220,32 @@ public class Player{
 		}	
 	}
 	
+	private class SharkTimerCountDown implements Runnable{
+
+		@Override
+		public void run() {
+			while(sharkTime >= 0){
+				try {
+					Thread.sleep(1000);
+					sharkTime -= 1;
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+	
+	public void stopTimer(){
+		shark = false;
+	}
+	
 	private class NotSharkTime extends TimerTask {
 		public void run() {
 			playerTimer.cancel();
 			setNotSharkImages();
 			setImages();
+			shark = false;
+			System.out.println(sharkTime);
 		}
 	}
 
