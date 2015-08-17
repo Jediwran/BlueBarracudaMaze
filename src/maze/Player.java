@@ -64,14 +64,7 @@ public class Player{
 	
 	public void setNotSharkImages(){
 		color = prevColor;
-		ImageIcon img = new ImageIcon(Constants.FISH_LEFT_IMAGE + color + ".png");
-		leftImage = img.getImage();
-		img = new ImageIcon(Constants.FISH_DOWN_IMAGE + color + ".png");
-		downImage = img.getImage();
-		img = new ImageIcon(Constants.FISH_RIGHT_IMAGE + color + ".png");
-		rightImage = img.getImage();
-		img = new ImageIcon(Constants.FISH_UP_IMAGE + color + ".png");
-		upImage = img.getImage();
+		setImages();
 	}
 	
 	public void moveToStart(int tX, int tY) {
