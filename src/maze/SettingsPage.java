@@ -44,10 +44,10 @@ public class SettingsPage extends JFrame
     ButtonGroup fish3 = new ButtonGroup();
     ButtonGroup fish4 = new ButtonGroup();
  
-    String blueFish = Constants.FISH_LEFT_BLUE_IMAGE;
-    String orangeFish = Constants.FISH_LEFT_ORANGE_IMAGE;
-    String greenFish = Constants.FISH_LEFT_GREEN_IMAGE;
-    String purpleFish = Constants.FISH_LEFT_PURPLE_IMAGE;
+    String blueFish = Constants.SETTINGS_BLUE_FISH_IMAGE;
+    String orangeFish = Constants.SETTINGS_ORANGE_FISH_IMAGE;
+    String greenFish = Constants.SETTINGS_GREEN_FISH_IMAGE;
+    String purpleFish = Constants.SETTINGS_PURPLE_FISH_IMAGE;
     JPanel mainPanel = new JPanel(new GridBagLayout());
 
     Settings settings = null;

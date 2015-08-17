@@ -22,6 +22,7 @@ public class Player{
 	private boolean caught = false;
 	private boolean finish = false;
 	private boolean shark = false;
+	private boolean ghostMode = false;
 	private Thread sharkTimeThread;
 	private boolean caughtRecent = false;
 	private Timer playerTimer;
@@ -43,7 +44,7 @@ public class Player{
 		upImage = img.getImage();
 	}
 	
-	public void setCaughtImage(){
+	public void setCaughtImages(){
 		ImageIcon img = new ImageIcon(Constants.FISH_CAUGHT_LEFT_IMAGE);
 		leftImage = img.getImage();
 		img = new ImageIcon(Constants.FISH_CAUGHT_DOWN_IMAGE);
@@ -60,6 +61,17 @@ public class Player{
 		downImage = img.getImage();
 		rightImage = img.getImage();
 		upImage = img.getImage();
+	}
+	
+	private void setGhostImages(){
+		ImageIcon img = new ImageIcon(Constants.FISH_GHOST_LEFT_IMAGE + color + ".png");
+		leftImage = img.getImage();
+		img = new ImageIcon(Constants.FISH_GHOST_DOWN_IMAGE + color + ".png");
+		downImage = img.getImage();
+		img = new ImageIcon(Constants.FISH_GHOST_RIGHT_IMAGE + color + ".png");
+		rightImage = img.getImage();
+		img = new ImageIcon(Constants.FISH_GHOST_UP_IMAGE + color + ".png");
+		upImage = img.getImage();		
 	}
 	
 	public void setNotSharkImages(){
@@ -201,7 +213,7 @@ public class Player{
 
 	public void setCaughtRecent(boolean caughtRecent) {
 		this.caughtRecent = caughtRecent;
-		setCaughtImage();
+		setCaughtImages();
 	}
 	
 	private class NotInvincible extends TimerTask {
@@ -232,6 +244,10 @@ public class Player{
 				Thread.currentThread().interrupt();
 			}
 		}
+	}
+	
+	public void setGhostMode(){
+		ghostMode = true;
 	}
 	
 	public boolean getShark(){
