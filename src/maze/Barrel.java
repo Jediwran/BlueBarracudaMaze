@@ -166,7 +166,9 @@ public class Barrel extends Thread{
 	
 	public void isPlayerNear(Player player){
 		if(player.getTileX() == tileX && player.getTileY() == tileY){
-			sharkTime = true;
+			if(!player.isDead() && !player.isGhostMode()){
+				sharkTime = true;
+			}
 		}
 	}
 	

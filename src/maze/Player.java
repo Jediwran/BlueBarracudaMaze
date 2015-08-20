@@ -1,6 +1,8 @@
 package maze;
 
 import java.awt.Image;
+import java.util.ArrayList;
+import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -16,21 +18,21 @@ public class Player{
 	private int health = 50;
 	private int maxHealth = 50;
 	private String color, prevColor;
-	private Map m;
-	private Fog f;
+	private Map map;
+	private Fog fog;
 	private boolean isDead = false;
 	private boolean caught = false;
 	private boolean finish = false;
 	private boolean shark = false;
 	private boolean ghostMode = false;
 	private Thread sharkTimeThread;
-	private boolean caughtRecent = false;
+	private boolean HitRecently = false;
 	private Timer playerTimer;
 	private long sharkTime;
 		
-	public Player(Map m, Fog f) {
-		this.m = m;
-		this.f = f;
+	public Player(Map map, Fog fog) {
+		this.map = map;
+		this.fog = fog;
 	}
 
 	public void setImages(){
@@ -44,7 +46,7 @@ public class Player{
 		upImage = img.getImage();
 	}
 	
-	public void setCaughtImages(){
+	public void setHitImages(){
 		ImageIcon img = new ImageIcon(Constants.FISH_CAUGHT_LEFT_IMAGE);
 		leftImage = img.getImage();
 		img = new ImageIcon(Constants.FISH_CAUGHT_DOWN_IMAGE);
@@ -72,6 +74,51 @@ public class Player{
 		rightImage = img.getImage();
 		img = new ImageIcon(Constants.FISH_GHOST_UP_IMAGE + color + ".png");
 		upImage = img.getImage();		
+	}
+	
+	public void ghostModeEnabled(){
+		isDead = false;
+		ghostMode = true;
+		setGhostImages();
+	}
+	
+	public void isGhostNearPlayer(ArrayList<Player> playerList, int level){
+		for(Player player: playerList){
+			if(player.getTileX() == tileX && player.getTileY() == tileY && !player.isGhostMode()){
+				if(player.getHealth() > 2){
+					player.decreaseHealth(2);
+					player.setHitRecently(true);
+					player.getTimer(2000);
+					randomStartGhost();
+				} else{
+					player.died();
+					player.setDeathOnLevel(level);
+				}
+			}
+		}
+	}
+	
+	public void randomStartGhost(){
+		Random rand = new Random();
+		int randX;
+		int randY;
+		do{
+			do{
+			randX = rand.nextInt(13);
+			}while(Math.abs(map.getStartX()-randX) < 3);
+			
+			do{
+			randY = rand.nextInt(13);
+			}while(Math.abs(map.getStartY()-randY) < 3);
+			
+		//test that the location generated falls on a Ground 'g' space	
+		}while(map.getMap(randX, randY) != 'g');
+			//setStartLocation(randX, randY);
+			x = randX * 32;
+			y = randY * 32;
+			
+			tileX = randX;
+			tileY = randY;
 	}
 	
 	public void setNotSharkImages(){
@@ -124,49 +171,49 @@ public class Player{
 	}
 	
 	public void moveUp(){
-		if(m.getMap(tileX, tileY - 1) != 'w') {
-			f.reFog(tileX, tileY, "U");
+		if(map.getMap(tileX, tileY - 1) != 'w') {
+			fog.reFog(tileX, tileY, "U");
 			move(0, -32, 0, -1);
 			setDirection(0);
 			setStepsTaken(getStepsTaken() + 1);
 			
-			f.iAmHereFog(tileX, tileY);
+			fog.iAmHereFog(tileX, tileY);
 		}
 	}
 	
 	public void moveDown(){
-		if(m.getMap(tileX, tileY + 1) != 'w' && m.getMap(tileX, tileY + 1) != 'b' ) {
-			f.reFog(tileX, tileY, "D");
+		if(map.getMap(tileX, tileY + 1) != 'w' && map.getMap(tileX, tileY + 1) != 'b' ) {
+			fog.reFog(tileX, tileY, "D");
 
 			move(0, 32, 0, 1);
 			setDirection(2);
 			setStepsTaken(getStepsTaken() + 1);
-			f.iAmHereFog(tileX, tileY);
+			fog.iAmHereFog(tileX, tileY);
 		}
 	}
 	
 	public void moveLeft(){
-		if(m.getMap(tileX - 1, tileY) != 'w' && m.getMap(tileX, tileY + 1) != 'b' ) {
-			f.reFog(tileX, tileY, "L");
+		if(map.getMap(tileX - 1, tileY) != 'w' && map.getMap(tileX, tileY + 1) != 'b' ) {
+			fog.reFog(tileX, tileY, "L");
 			move(-32, 0, -1, 0);
 			setDirection(3);
 			setStepsTaken(getStepsTaken() + 1);
-			f.iAmHereFog(tileX, tileY);
+			fog.iAmHereFog(tileX, tileY);
 		}
 	}
 	
 	public void moveRight(){
-		if(m.getMap(getTileX() + 1, getTileY()) != 'w' && m.getMap(tileX, tileY + 1) != 'b' ) {
-			f.reFog(tileX, tileY, "R");
+		if(map.getMap(getTileX() + 1, getTileY()) != 'w' && map.getMap(tileX, tileY + 1) != 'b' ) {
+			fog.reFog(tileX, tileY, "R");
 			move(32, 0, 1, 0);
 			setDirection(1);
 			setStepsTaken(getStepsTaken() + 1);
-			f.iAmHereFog(tileX, tileY);
+			fog.iAmHereFog(tileX, tileY);
 		}
 	}
 	
 	public void isAtFinish(){
-		if(m.getMap(tileX, tileY) == 'f'){
+		if(map.getMap(tileX, tileY) == 'f'){
 			finish = true;
 		}
 	}
@@ -207,19 +254,19 @@ public class Player{
 		setImages();
 	}
 	
-	public void decreaseHealth(){
-		health = health - 5;
+	public void decreaseHealth(int value){
+		health = health - value;
 	}
 
-	public void setCaughtRecent(boolean caughtRecent) {
-		this.caughtRecent = caughtRecent;
-		setCaughtImages();
+	public void setHitRecently(boolean HitRecently) {
+		this.HitRecently = HitRecently;
+		setHitImages();
 	}
 	
 	private class NotInvincible extends TimerTask {
 		public void run(){
 			caught = false;
-			caughtRecent = false;
+			HitRecently = false;
 			playerTimer.cancel();
 			setImages();
 		}	
@@ -380,6 +427,10 @@ public class Player{
 		return isDead;
 	}
 
+	public void setDead(boolean value){
+		isDead = value;
+	}
+	
 	public int getDeathOnLevel() {
 		return deathOnLevel;
 	}
@@ -389,10 +440,18 @@ public class Player{
 	}
 
 	public boolean isCaughtRecent() {
-		return caughtRecent;
+		return HitRecently;
 	}
 	
 	public String getPrevColor() {
 		return prevColor;
+	}
+
+	public boolean isGhostMode() {
+		return ghostMode;
+	}
+
+	public void setGhostMode(boolean ghostMode) {
+		this.ghostMode = ghostMode;
 	}
 }

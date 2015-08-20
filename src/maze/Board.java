@@ -95,8 +95,17 @@ public class Board extends JPanel implements ActionListener {
 		for(Player player: playerList){
 			player.setStepsTaken(0);
 			player.setTimesCaught(0);
-			player.moveToStart(map.getStartX(), map.getStartY());
-			f.createFog(player.getTileX(), player.getTileY());
+			if(player.isDead() && player.getDeathOnLevel() < level){
+				player.ghostModeEnabled();
+			}
+			if(!player.isGhostMode()){
+				player.moveToStart(map.getStartX(), map.getStartY());
+				f.createFog(player.getTileX(), player.getTileY());
+			}
+			else{
+				player.randomStartGhost();
+				f.createFog(player.getTileX(), player.getTileY());
+			}
 		}
 		
 		if(colorRestore != null){
@@ -159,22 +168,26 @@ public class Board extends JPanel implements ActionListener {
 					fisherman.setImage();
 				}
 			}
-			if(map.getMap(player.getTileX(), player.getTileY()) == 'f'){
+			if(map.getMap(player.getTileX(), player.getTileY()) == 'f' && !player.isGhostMode()){
 				player.setFinished(true);
 				isFinished();
 			}
 			isPlayerCaught();
+			
+			if(player.isGhostMode()){
+				player.isGhostNearPlayer(playerList, level);
+			}
 			
 			barrel.isPlayerNear(player);
 			if(barrel.getSharkTime()){
 				colorRestore = player.getColor();
 				playerNum = player.getNumber();
 				
-				if(!player.isDead()){
+				//if(!player.isDead() || !player.isGhostMode()){
 					player.setColor("grey");
 					player.setImages();
 					player.getTimer(10000);
-				}
+				//}
 				barrel.resetsharkTime();
 				barrel.hide();
 				barrel.requestStop();
@@ -251,6 +264,9 @@ public class Board extends JPanel implements ActionListener {
 			if(player.isDead() && level == player.getDeathOnLevel()){
 				g.drawImage(player.draw(), player.getX(), player.getY(), null);
 			}
+			if(player.isGhostMode()){
+				g.drawImage(player.draw(), player.getX(), player.getY(), null);
+			}
 			if(player.getColor().equals(Constants.GREY)){
 				//g.setColor(new Color(255,0,0));
 				AttributedString attrString = new AttributedString("SHARK TIME! " + player.getTimer());
@@ -268,8 +284,8 @@ public class Board extends JPanel implements ActionListener {
 				player.setCaught(false);
 				if(player.getHealth() > 5){
 					//JOptionPane.showMessageDialog(new JFrame(), "Player " + (player.getNumber() + 1) + " You have been caught! \nFisherman released you back into the water.");
-					player.decreaseHealth();
-					player.setCaughtRecent(true);
+					player.decreaseHealth(5);
+					player.setHitRecently(true);
 					player.getTimer(2000);
 					
 				}else if(!(player.getHealth() == 0)){

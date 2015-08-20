@@ -159,14 +159,16 @@ public class Fisherman extends Thread {
 	}
 	
 	public int isPlayerNear(Player player){
-		if(player.getTileX() == tileX + 1 && player.getTileY() == tileY){
-			caughtPlayer = player.getNumber();
-		}else if(player.getTileX() == tileX - 1 && player.getTileY() == tileY){
-			caughtPlayer = player.getNumber();
-		}else if(player.getTileX() == tileX && player.getTileY() == tileY + 1){
-			caughtPlayer = player.getNumber();
-		}else if(player.getTileX() == tileX && player.getTileY() == tileY - 1){
-			caughtPlayer = player.getNumber();
+		if(!player.isGhostMode() && !player.isDead()){
+			if(player.getTileX() == tileX + 1 && player.getTileY() == tileY){
+				caughtPlayer = player.getNumber();
+			}else if(player.getTileX() == tileX - 1 && player.getTileY() == tileY){
+				caughtPlayer = player.getNumber();
+			}else if(player.getTileX() == tileX && player.getTileY() == tileY + 1){
+				caughtPlayer = player.getNumber();
+			}else if(player.getTileX() == tileX && player.getTileY() == tileY - 1){
+				caughtPlayer = player.getNumber();
+			}
 		}
 		return caughtPlayer;
 	}
