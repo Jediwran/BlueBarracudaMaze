@@ -281,7 +281,7 @@ public class Player{
 					Thread.sleep(1000);
 					sharkTime -= 1;
 				} catch (InterruptedException e) {
-					System.out.println("no thread to sleep");
+					//System.out.println("no thread to sleep");
 				}
 			}
 			if(sharkTime == 0) {

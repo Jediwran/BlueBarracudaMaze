@@ -69,6 +69,8 @@ public class Board extends JPanel implements ActionListener {
 		for(Player player: playerList){
 			if(player.isDead()){
 				player.undead();
+			}else if(player.isGhostMode()){
+				player.setGhostMode(false);
 			}
 		}
 		startLevel();
@@ -292,7 +294,7 @@ public class Board extends JPanel implements ActionListener {
 					player.died();
 					player.setDeathOnLevel(level);
 					deadPlayers += 1;
-					if(deadPlayers == numPlayers){
+					if(deadPlayers >= numPlayers){
 						Object[] selectMenuOptions={"New Game", "Exit"};
 						int n = JOptionPane.showOptionDialog(null, "Select an option", "Game Over", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, selectMenuOptions, selectMenuOptions[0]);
 						switch (n) {
