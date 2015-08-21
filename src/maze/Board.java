@@ -87,7 +87,7 @@ public class Board extends JPanel implements ActionListener {
 		
 		fishermen = new ArrayList<Fisherman>(level);
 		for(int i = 0; i < level; i++){
-			Fisherman fisherman = new Fisherman(map);
+			Fisherman fisherman = new Fisherman(map, playerList);
 			fisherman.randomStart();
 			fisherman.start();
 			fishermen.add(fisherman);
