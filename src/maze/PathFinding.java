@@ -65,7 +65,7 @@ public class PathFinding {
 				}
 				
 			}
-			if (!path.isEmpty()) {
+			if (!path.isEmpty()  && path != null) {
 				checkedMap[path.peek()[0]][path.peek()[1]] = true;
 				path.pop();
 			}
@@ -209,10 +209,13 @@ public class PathFinding {
 		if (pos2Check[0] <= map.getMapSize() - 1 && pos2Check[0] >= 0 &&
 				pos2Check[1] <= map.getMapSize() - 1 && pos2Check[1] >= 0 &&
 				map.getMap(pos2Check[0], pos2Check[1]) == moveable &&
-				!inPath(path, pos2Check) &&
-				!checkedMap[pos2Check[0]][pos2Check[1]]) {
-			return true;
+				!inPath(path, pos2Check)) {
+			if (!checkedMap[pos2Check[0]][pos2Check[1]]) {
+				return true;
+			}
+			
 		}
+			
 		
 		return false;
 	}
