@@ -1,7 +1,8 @@
 package maze;
 
 import java.awt.Image;
-import java.awt.event.ActionEvent;
+import java.util.ArrayList;
+import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -9,27 +10,22 @@ import javax.swing.ImageIcon;
 
 public class Player{
 
-	private int x, y, tileX, tileY, number, deathOnLevel;
+	private int x, y, tileX, tileY, number, deathOnLevel, stepsTaken = 0, timesCaught = 0, direction = 3, health = 50, maxHealth = 50;
 	private Image leftImage, downImage, rightImage, upImage;
-	private int stepsTaken = 0;
-	private int timesCaught = 0;
-	private int direction = 3;
-	private int health = 50;
-	private int maxHealth = 50;
 	private String color, prevColor;
-	private Map m;
-	private Fog f;
-	private boolean isDead = false;
-	private boolean caught = false;
-	private boolean finish = false;
-	private boolean shark = false;
-	private boolean caughtRecent = false;
+	private Map map;
+	private Fog fog;
+	private boolean isDead = false, caught = false, finish = false, shark = false, ghostMode = false, HitRecently = false;
+	private Thread sharkTimeThread;
 	private Timer playerTimer;
 	private long sharkTime;
 		
-	public Player(Map m, Fog f) {
-		this.m = m;
-		this.f = f;
+	public Player() {
+	}
+	
+	public void setMapFog(Map map, Fog fog){
+		this.map = map;
+		this.fog = fog;
 	}
 
 	public void setImages(){
@@ -43,7 +39,7 @@ public class Player{
 		upImage = img.getImage();
 	}
 	
-	public void setCaughtImage(){
+	public void setHitImages(){
 		ImageIcon img = new ImageIcon(Constants.FISH_CAUGHT_LEFT_IMAGE);
 		leftImage = img.getImage();
 		img = new ImageIcon(Constants.FISH_CAUGHT_DOWN_IMAGE);
@@ -62,16 +58,65 @@ public class Player{
 		upImage = img.getImage();
 	}
 	
+	private void setGhostImages(){
+		ImageIcon img = new ImageIcon(Constants.FISH_GHOST_LEFT_IMAGE + color + ".png");
+		leftImage = img.getImage();
+		img = new ImageIcon(Constants.FISH_GHOST_DOWN_IMAGE + color + ".png");
+		downImage = img.getImage();
+		img = new ImageIcon(Constants.FISH_GHOST_RIGHT_IMAGE + color + ".png");
+		rightImage = img.getImage();
+		img = new ImageIcon(Constants.FISH_GHOST_UP_IMAGE + color + ".png");
+		upImage = img.getImage();		
+	}
+	
+	public void ghostModeEnabled(){
+		isDead = false;
+		ghostMode = true;
+		setGhostImages();
+	}
+	
+	public void isGhostNearPlayer(ArrayList<Player> playerList, int level){
+		for(Player player: playerList){
+			if(player.getTileX() == tileX && player.getTileY() == tileY && !player.isGhostMode()){
+				if(player.getHealth() > 2){
+					player.decreaseHealth(2);
+					player.setHitRecently(true);
+					player.getTimer(2000);
+					randomStartGhost();
+				} else{
+					player.died();
+					player.setDeathOnLevel(level);
+				}
+			}
+		}
+	}
+	
+	public void randomStartGhost(){
+		Random rand = new Random();
+		int randX;
+		int randY;
+		do{
+			do{
+			randX = rand.nextInt(13);
+			}while(Math.abs(map.getStartX()-randX) < 3);
+			
+			do{
+			randY = rand.nextInt(13);
+			}while(Math.abs(map.getStartY()-randY) < 3);
+			
+		//test that the location generated falls on a Ground 'g' space	
+		}while(map.getMap(randX, randY) != 'g');
+			//setStartLocation(randX, randY);
+			x = randX * 32;
+			y = randY * 32;
+			
+			tileX = randX;
+			tileY = randY;
+	}
+	
 	public void setNotSharkImages(){
 		color = prevColor;
-		ImageIcon img = new ImageIcon(Constants.FISH_LEFT_IMAGE + color + ".png");
-		leftImage = img.getImage();
-		img = new ImageIcon(Constants.FISH_DOWN_IMAGE + color + ".png");
-		downImage = img.getImage();
-		img = new ImageIcon(Constants.FISH_RIGHT_IMAGE + color + ".png");
-		rightImage = img.getImage();
-		img = new ImageIcon(Constants.FISH_UP_IMAGE + color + ".png");
-		upImage = img.getImage();
+		setImages();
 	}
 	
 	public void moveToStart(int tX, int tY) {
@@ -119,49 +164,49 @@ public class Player{
 	}
 	
 	public void moveUp(){
-		if(m.getMap(tileX, tileY - 1) != 'w') {
-			f.reFog(tileX, tileY, "U");
+		if(map.getMap(tileX, tileY - 1) != 'w') {
+			fog.reFog(tileX, tileY, "U");
 			move(0, -32, 0, -1);
 			setDirection(0);
 			setStepsTaken(getStepsTaken() + 1);
 			
-			f.iAmHereFog(tileX, tileY);
+			fog.iAmHereFog(tileX, tileY);
 		}
 	}
 	
 	public void moveDown(){
-		if(m.getMap(tileX, tileY + 1) != 'w' && m.getMap(tileX, tileY + 1) != 'b' ) {
-			f.reFog(tileX, tileY, "D");
+		if(map.getMap(tileX, tileY + 1) != 'w' && map.getMap(tileX, tileY + 1) != 'b' ) {
+			fog.reFog(tileX, tileY, "D");
 
 			move(0, 32, 0, 1);
 			setDirection(2);
 			setStepsTaken(getStepsTaken() + 1);
-			f.iAmHereFog(tileX, tileY);
+			fog.iAmHereFog(tileX, tileY);
 		}
 	}
 	
 	public void moveLeft(){
-		if(m.getMap(tileX - 1, tileY) != 'w' && m.getMap(tileX, tileY + 1) != 'b' ) {
-			f.reFog(tileX, tileY, "L");
+		if(map.getMap(tileX - 1, tileY) != 'w' && map.getMap(tileX, tileY + 1) != 'b' ) {
+			fog.reFog(tileX, tileY, "L");
 			move(-32, 0, -1, 0);
 			setDirection(3);
 			setStepsTaken(getStepsTaken() + 1);
-			f.iAmHereFog(tileX, tileY);
+			fog.iAmHereFog(tileX, tileY);
 		}
 	}
 	
 	public void moveRight(){
-		if(m.getMap(getTileX() + 1, getTileY()) != 'w' && m.getMap(tileX, tileY + 1) != 'b' ) {
-			f.reFog(tileX, tileY, "R");
+		if(map.getMap(getTileX() + 1, getTileY()) != 'w' && map.getMap(tileX, tileY + 1) != 'b' ) {
+			fog.reFog(tileX, tileY, "R");
 			move(32, 0, 1, 0);
 			setDirection(1);
 			setStepsTaken(getStepsTaken() + 1);
-			f.iAmHereFog(tileX, tileY);
+			fog.iAmHereFog(tileX, tileY);
 		}
 	}
 	
 	public void isAtFinish(){
-		if(m.getMap(tileX, tileY) == 'f'){
+		if(map.getMap(tileX, tileY) == 'f'){
 			finish = true;
 		}
 	}
@@ -174,8 +219,8 @@ public class Player{
 		if(time == 10000){
 			sharkTime = 10;
 			shark = true;
-			Thread thread = new Thread(new SharkTimerCountDown());
-			thread.start();
+			sharkTimeThread = new Thread(new SharkTimerCountDown());
+			sharkTimeThread.start();
 			playerTimer.schedule(new NotSharkTime(), time);
 		}
 	}
@@ -202,19 +247,19 @@ public class Player{
 		setImages();
 	}
 	
-	public void decreaseHealth(){
-		health = health - 5;
+	public void decreaseHealth(int value){
+		health = health - value;
 	}
 
-	public void setCaughtRecent(boolean caughtRecent) {
-		this.caughtRecent = caughtRecent;
-		setCaughtImage();
+	public void setHitRecently(boolean HitRecently) {
+		this.HitRecently = HitRecently;
+		setHitImages();
 	}
 	
 	private class NotInvincible extends TimerTask {
 		public void run(){
 			caught = false;
-			caughtRecent = false;
+			HitRecently = false;
 			playerTimer.cancel();
 			setImages();
 		}	
@@ -224,19 +269,34 @@ public class Player{
 
 		@Override
 		public void run() {
-			while(sharkTime >= 0){
+			while(sharkTime > 0){
 				try {
 					Thread.sleep(1000);
 					sharkTime -= 1;
 				} catch (InterruptedException e) {
-					e.printStackTrace();
+					//System.out.println("no thread to sleep");
 				}
+			}
+			if(sharkTime == 0) {
+				shark = false;
+				setNotSharkImages();
+				setImages();
+				Thread.currentThread().interrupt();
 			}
 		}
 	}
 	
-	public void stopTimer(){
+	public void setGhostMode(){
+		ghostMode = true;
+	}
+	
+	public boolean getShark(){
+		return shark;
+	}
+	
+	public void stopSharkTimer(){
 		shark = false;
+		sharkTimeThread.interrupt();
 	}
 	
 	private class NotSharkTime extends TimerTask {
@@ -245,7 +305,6 @@ public class Player{
 			setNotSharkImages();
 			setImages();
 			shark = false;
-			System.out.println(sharkTime);
 		}
 	}
 
@@ -361,6 +420,10 @@ public class Player{
 		return isDead;
 	}
 
+	public void setDead(boolean value){
+		isDead = value;
+	}
+	
 	public int getDeathOnLevel() {
 		return deathOnLevel;
 	}
@@ -370,10 +433,18 @@ public class Player{
 	}
 
 	public boolean isCaughtRecent() {
-		return caughtRecent;
+		return HitRecently;
 	}
 	
 	public String getPrevColor() {
 		return prevColor;
+	}
+
+	public boolean isGhostMode() {
+		return ghostMode;
+	}
+
+	public void setGhostMode(boolean ghostMode) {
+		this.ghostMode = ghostMode;
 	}
 }

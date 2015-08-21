@@ -2,7 +2,6 @@ package maze;
 
 import java.awt.Image;
 import java.util.Random;
-
 import javax.swing.ImageIcon;
 
 public class Barrel extends Thread{
@@ -10,8 +9,7 @@ public class Barrel extends Thread{
 	private Image barrel;
 	private Map map;
 	private int x, y, tileX, tileY;
-	private boolean stopRequested = false; 
-	private boolean sharkTime = false;
+	private boolean stopRequested = false, sharkTime = false;
 	
 	public Barrel(Map m) {
 		ImageIcon img = new ImageIcon(Constants.BARREL_IMAGE);
@@ -23,7 +21,6 @@ public class Barrel extends Thread{
 		while(!stopRequested){
 			try {
 				sleep(1500);
-				//System.out.println("move fisherman");
 				move();
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
@@ -42,6 +39,7 @@ public class Barrel extends Thread{
 	{
 		stopRequested = false;
 	}
+	
 	public Image getBarrel() {
 		return barrel;
 	}
@@ -54,7 +52,6 @@ public class Barrel extends Thread{
 		tileY = dy;
 	}
 	
-	//public void move(int dx, int dy, int tx, int ty){
 	public void move(){
 		if (!Board.run)
 		{
@@ -69,7 +66,6 @@ public class Barrel extends Thread{
 				case 0 : {
 					if(!(getTileY() - 1 < 0) && map.getMap(getTileX(), getTileY() - 1) == 'g') {
 						barrelMoved = true;
-						//fm.move(0, -32, 0, -1);
 						tx = 0;
 						ty = -1;
 						break;
@@ -79,7 +75,6 @@ public class Barrel extends Thread{
 
 				case 2 : {
 						if(!(getTileX() + 1 > map.getMapSize() - 1) && map.getMap(getTileX() + 1, getTileY()) == 'g') {
-							//fm.move(32, 0, 1, 0);
 							tx = 1;
 							ty = 0;
 							barrelMoved = true;
@@ -90,7 +85,6 @@ public class Barrel extends Thread{
 
 				case 4 : {
 						if(!(getTileY() + 1 > map.getMapSize() - 1) && map.getMap(getTileX(), getTileY() + 1) == 'g') {
-							//fm.move(0, 32, 0, 1);
 							tx = 0;
 							ty = 1;
 							barrelMoved = true;
@@ -101,7 +95,6 @@ public class Barrel extends Thread{
 
 				case 6 : {
 						if(!(getTileX() - 1 < 0) && map.getMap(getTileX() - 1, getTileY()) == 'g') {
-							//fm.move(-32, 0, -1, 0);
 							tx = -1;
 							ty = 0;
 							barrelMoved = true;
@@ -136,14 +129,7 @@ public class Barrel extends Thread{
 		}while(map.getMap(randX, randY) != 'g');
 			setStartLocation(randX, randY);
 	}
-	
-	public void isNear(Player p) {
-		//moveFisherman();
-		//if(isFishCaught()){
-			//fishermanCaughtFish(p);
-		//}
-	}
-	
+		
 	public Image getImage() {
 		return barrel;
 	}
@@ -166,7 +152,9 @@ public class Barrel extends Thread{
 	
 	public void isPlayerNear(Player player){
 		if(player.getTileX() == tileX && player.getTileY() == tileY){
-			sharkTime = true;
+			if(!player.isDead() && !player.isGhostMode()){
+				sharkTime = true;
+			}
 		}
 	}
 	
@@ -186,9 +174,6 @@ public class Barrel extends Thread{
 		x = 0;
 		y = 0;
 		tileX = 0;
-		tileY = 0;
-		
+		tileY = 0;		
 	}
-	
-
 }

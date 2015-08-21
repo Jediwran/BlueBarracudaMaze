@@ -1,16 +1,11 @@
 package maze;
 
 import java.awt.*;
-import java.io.*;
-import java.util.*;
 import javax.swing.ImageIcon;
 
 public class Map {
 	
-	private Scanner m;
-	private int arraySize;
-	private int startX = 0;
-	private int startY = 0;
+	private int arraySize, startX = 0, startY = 0;
 	private Image ground, wall, start, finish, block;
 	private String mapName;
 	private char[][] map;

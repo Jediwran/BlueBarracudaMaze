@@ -5,6 +5,7 @@ import java.awt.event.*;
 import java.awt.font.TextAttribute;
 import java.text.AttributedString;
 import java.util.ArrayList;
+import java.util.Random;
 
 import javax.swing.*;
 
@@ -18,15 +19,11 @@ public class Board extends JPanel implements ActionListener {
 	private ArrayList<Player> playerList = new ArrayList<Player>();
 	private ArrayList<Fisherman> fishermen = new ArrayList<Fisherman>();
 	private Fog f;
-	private int mapSize = 16;
-	private int level = 0;
-	private int deadPlayers = 0;
-	private boolean fogEnabled = Settings.getSettings().getFogEnabled();
-	private int numPlayers = Settings.getSettings().getNumberPlayers();
+	private int mapSize = 16, level = 0, deadPlayers = 0, numPlayers, playerNum;
+	private Random rand = new Random();
+	private boolean fogEnabled, pause = false;
 	private Barrel barrel;
 	private String colorRestore;
-	private int playerNum;
-	private boolean pause = false;
 	public static boolean run = true, first = true, refresh = false;
 	public static Object monitor = new Object();
 	
@@ -44,16 +41,13 @@ public class Board extends JPanel implements ActionListener {
 		//resume and build with user settings
 		this.maze = maze;
 		map = new Map();
+		mapSize = rand.nextInt(14) + 16;
 		map.setSize(mapSize);
 		maze.frame.setSize(Constants.WIDTH_REQUIRED_SPACING+(32*map.getMapSize()), Constants.HEIGHT_REQUIRED_SPACING+(32*map.getMapSize()));
-		f = new Fog();
-		f.setFogMapSize(mapSize);
-		f.setFishSight(Settings.getSettings().getSight());
-		fogEnabled = Settings.getSettings().getFogEnabled();
 		numPlayers = Settings.getSettings().getNumberPlayers();
 		playerList = new ArrayList<Player>(numPlayers);
 		for(int i = 0; i < numPlayers; i++){
-			Player player = new Player(map,f);
+			Player player = new Player();
 			player.setNumber(i);
 			player.setColor(Settings.getSettings().getPlayerColors().get(i));
 			player.setPrevColor();
@@ -69,6 +63,8 @@ public class Board extends JPanel implements ActionListener {
 		for(Player player: playerList){
 			if(player.isDead()){
 				player.undead();
+			}else if(player.isGhostMode()){
+				player.setGhostMode(false);
 			}
 		}
 		startLevel();
@@ -76,8 +72,13 @@ public class Board extends JPanel implements ActionListener {
 	
 	public void startLevel(){
 		level += 1;
+		mapSize = rand.nextInt(14) + 16;
+		map.setSize(mapSize);
 		map.newMap(mapSize);
-		
+		f = new Fog(mapSize);
+		f.setFogMapSize(mapSize);
+		f.setFishSight(Settings.getSettings().getSight());
+		fogEnabled = Settings.getSettings().getFogEnabled();
 		maze.frame.setSize(Constants.WIDTH_REQUIRED_SPACING+(32*map.getMapSize()), Constants.HEIGHT_REQUIRED_SPACING+(32*map.getMapSize()));
 		maze.frame.setVisible(true);
 		for(Fisherman fisher:fishermen)
@@ -93,10 +94,20 @@ public class Board extends JPanel implements ActionListener {
 			fishermen.add(fisherman);
 		}
 		for(Player player: playerList){
+			player.setMapFog(map, f);
 			player.setStepsTaken(0);
 			player.setTimesCaught(0);
-			player.moveToStart(map.getStartX(), map.getStartY());
-			f.createFog(player.getTileX(), player.getTileY());
+			if(player.isDead() && player.getDeathOnLevel() < level){
+				player.ghostModeEnabled();
+			}
+			if(!player.isGhostMode()){
+				player.moveToStart(map.getStartX(), map.getStartY());
+				f.createFog(player.getTileX(), player.getTileY());
+			}
+			else{
+				player.randomStartGhost();
+				f.createFog(player.getTileX(), player.getTileY());
+			}
 		}
 		
 		if(colorRestore != null){
@@ -120,7 +131,7 @@ public class Board extends JPanel implements ActionListener {
 		numPlayers = Settings.getSettings().getNumberPlayers();
 		playerList = new ArrayList<Player>(numPlayers);
 		for(int i = 0; i < numPlayers; i++){
-			Player player = new Player(map, f);
+			Player player = new Player();
 			player.setNumber(i);
 			player.setColor(Settings.getSettings().getPlayerColors().get(i));
 			player.setImages();
@@ -159,22 +170,26 @@ public class Board extends JPanel implements ActionListener {
 					fisherman.setImage();
 				}
 			}
-			if(map.getMap(player.getTileX(), player.getTileY()) == 'f'){
+			if(map.getMap(player.getTileX(), player.getTileY()) == 'f' && !player.isGhostMode()){
 				player.setFinished(true);
 				isFinished();
 			}
 			isPlayerCaught();
+			
+			if(player.isGhostMode()){
+				player.isGhostNearPlayer(playerList, level);
+			}
 			
 			barrel.isPlayerNear(player);
 			if(barrel.getSharkTime()){
 				colorRestore = player.getColor();
 				playerNum = player.getNumber();
 				
-				if(!player.isDead()){
+				//if(!player.isDead() || !player.isGhostMode()){
 					player.setColor("grey");
 					player.setImages();
 					player.getTimer(10000);
-				}
+				//}
 				barrel.resetsharkTime();
 				barrel.hide();
 				barrel.requestStop();
@@ -251,12 +266,16 @@ public class Board extends JPanel implements ActionListener {
 			if(player.isDead() && level == player.getDeathOnLevel()){
 				g.drawImage(player.draw(), player.getX(), player.getY(), null);
 			}
+			if(player.isGhostMode()){
+				g.drawImage(player.draw(), player.getX(), player.getY(), null);
+			}
 			if(player.getColor().equals(Constants.GREY)){
 				//g.setColor(new Color(255,0,0));
 				AttributedString attrString = new AttributedString("SHARK TIME! " + player.getTimer());
-				attrString.addAttribute(TextAttribute.FOREGROUND, Color.MAGENTA, 0 , 12);
+				attrString.addAttribute(TextAttribute.FONT, new Font("Arial", Font.BOLD & Font.ITALIC, 18));
+				attrString.addAttribute(TextAttribute.FOREGROUND, Color.YELLOW, 0 , 14);
 				//g.drawString("SHARK TIME! " + player.getTimer(), 180, 80);
-				g.drawString(attrString.getIterator(), 180, 80);
+				g.drawString(attrString.getIterator(), 180, 60);
 			}
 		}
 	}
@@ -267,15 +286,15 @@ public class Board extends JPanel implements ActionListener {
 				player.setCaught(false);
 				if(player.getHealth() > 5){
 					//JOptionPane.showMessageDialog(new JFrame(), "Player " + (player.getNumber() + 1) + " You have been caught! \nFisherman released you back into the water.");
-					player.decreaseHealth();
-					player.setCaughtRecent(true);
+					player.decreaseHealth(5);
+					player.setHitRecently(true);
 					player.getTimer(2000);
 					
 				}else if(!(player.getHealth() == 0)){
 					player.died();
 					player.setDeathOnLevel(level);
 					deadPlayers += 1;
-					if(deadPlayers == numPlayers){
+					if(deadPlayers >= numPlayers){
 						Object[] selectMenuOptions={"New Game", "Exit"};
 						int n = JOptionPane.showOptionDialog(null, "Select an option", "Game Over", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, selectMenuOptions, selectMenuOptions[0]);
 						switch (n) {
@@ -300,10 +319,10 @@ public class Board extends JPanel implements ActionListener {
 	}
 	
 	public void isFinished(){
-		for(Player p : playerList){
-			p.setFinished(false);
-			p.setColor(p.getPrevColor());
-			p.stopTimer();
+		for(Player player : playerList){
+			player.setFinished(false);
+			player.setColor(player.getPrevColor());
+			if(player.getShark())player.stopSharkTimer();
 		}
 		
 		timer.stop();
