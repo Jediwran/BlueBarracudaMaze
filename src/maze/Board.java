@@ -44,10 +44,6 @@ public class Board extends JPanel implements ActionListener {
 		mapSize = rand.nextInt(14) + 16;
 		map.setSize(mapSize);
 		maze.frame.setSize(Constants.WIDTH_REQUIRED_SPACING+(32*map.getMapSize()), Constants.HEIGHT_REQUIRED_SPACING+(32*map.getMapSize()));
-		f = new Fog(mapSize);
-		f.setFogMapSize(mapSize);
-		f.setFishSight(Settings.getSettings().getSight());
-		fogEnabled = Settings.getSettings().getFogEnabled();
 		numPlayers = Settings.getSettings().getNumberPlayers();
 		playerList = new ArrayList<Player>(numPlayers);
 		for(int i = 0; i < numPlayers; i++){
@@ -79,7 +75,10 @@ public class Board extends JPanel implements ActionListener {
 		mapSize = rand.nextInt(14) + 16;
 		map.setSize(mapSize);
 		map.newMap(mapSize);
-		
+		f = new Fog(mapSize);
+		f.setFogMapSize(mapSize);
+		f.setFishSight(Settings.getSettings().getSight());
+		fogEnabled = Settings.getSettings().getFogEnabled();
 		maze.frame.setSize(Constants.WIDTH_REQUIRED_SPACING+(32*map.getMapSize()), Constants.HEIGHT_REQUIRED_SPACING+(32*map.getMapSize()));
 		maze.frame.setVisible(true);
 		for(Fisherman fisher:fishermen)
