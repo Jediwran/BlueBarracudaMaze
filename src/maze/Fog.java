@@ -11,9 +11,11 @@ public class Fog {
 	private int fish_sight = Settings.getSettings().getSight();
 
 
-	private int[][] fogMap = new int[fogMapSize][fogMapSize];
+	private int[][] fogMap;
 	
-	public Fog(){
+	public Fog(int size){
+		fogMapSize = size;
+		fogMap = new int[fogMapSize][fogMapSize];
 		ImageIcon img = new ImageIcon(Constants.FOG_IMAGE);
 		fog = img.getImage();
 		img = new ImageIcon(Constants.FOG_OPAQUE_IMAGE);

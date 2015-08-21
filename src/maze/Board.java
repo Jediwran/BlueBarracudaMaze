@@ -5,6 +5,7 @@ import java.awt.event.*;
 import java.awt.font.TextAttribute;
 import java.text.AttributedString;
 import java.util.ArrayList;
+import java.util.Random;
 
 import javax.swing.*;
 
@@ -19,6 +20,7 @@ public class Board extends JPanel implements ActionListener {
 	private ArrayList<Fisherman> fishermen = new ArrayList<Fisherman>();
 	private Fog f;
 	private int mapSize = 16;
+	private Random rand = new Random();
 	private int level = 0;
 	private int deadPlayers = 0;
 	private boolean fogEnabled = Settings.getSettings().getFogEnabled();
@@ -44,16 +46,17 @@ public class Board extends JPanel implements ActionListener {
 		//resume and build with user settings
 		this.maze = maze;
 		map = new Map();
+		mapSize = rand.nextInt(14) + 16;
 		map.setSize(mapSize);
 		maze.frame.setSize(Constants.WIDTH_REQUIRED_SPACING+(32*map.getMapSize()), Constants.HEIGHT_REQUIRED_SPACING+(32*map.getMapSize()));
-		f = new Fog();
+		f = new Fog(mapSize);
 		f.setFogMapSize(mapSize);
 		f.setFishSight(Settings.getSettings().getSight());
 		fogEnabled = Settings.getSettings().getFogEnabled();
 		numPlayers = Settings.getSettings().getNumberPlayers();
 		playerList = new ArrayList<Player>(numPlayers);
 		for(int i = 0; i < numPlayers; i++){
-			Player player = new Player(map,f);
+			Player player = new Player();
 			player.setNumber(i);
 			player.setColor(Settings.getSettings().getPlayerColors().get(i));
 			player.setPrevColor();
@@ -78,6 +81,9 @@ public class Board extends JPanel implements ActionListener {
 	
 	public void startLevel(){
 		level += 1;
+		mapSize = rand.nextInt(14) + 16;
+		System.out.println(mapSize);
+		map.setSize(mapSize);
 		map.newMap(mapSize);
 		
 		maze.frame.setSize(Constants.WIDTH_REQUIRED_SPACING+(32*map.getMapSize()), Constants.HEIGHT_REQUIRED_SPACING+(32*map.getMapSize()));
@@ -95,6 +101,7 @@ public class Board extends JPanel implements ActionListener {
 			fishermen.add(fisherman);
 		}
 		for(Player player: playerList){
+			player.setMapFog(map, f);
 			player.setStepsTaken(0);
 			player.setTimesCaught(0);
 			if(player.isDead() && player.getDeathOnLevel() < level){
@@ -131,7 +138,7 @@ public class Board extends JPanel implements ActionListener {
 		numPlayers = Settings.getSettings().getNumberPlayers();
 		playerList = new ArrayList<Player>(numPlayers);
 		for(int i = 0; i < numPlayers; i++){
-			Player player = new Player(map, f);
+			Player player = new Player();
 			player.setNumber(i);
 			player.setColor(Settings.getSettings().getPlayerColors().get(i));
 			player.setImages();

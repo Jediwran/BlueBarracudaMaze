@@ -30,7 +30,10 @@ public class Player{
 	private Timer playerTimer;
 	private long sharkTime;
 		
-	public Player(Map map, Fog fog) {
+	public Player() {
+	}
+	
+	public void setMapFog(Map map, Fog fog){
 		this.map = map;
 		this.fog = fog;
 	}
