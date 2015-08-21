@@ -72,6 +72,10 @@ public class Board extends JPanel implements ActionListener {
 	
 	public void startLevel(){
 		level += 1;
+		for(Fisherman fisher:fishermen)
+		{
+			fisher.requestStop();
+		}
 		mapSize = rand.nextInt(14) + 16;
 		map.setSize(mapSize);
 		map.newMap(mapSize);
@@ -81,10 +85,6 @@ public class Board extends JPanel implements ActionListener {
 		fogEnabled = Settings.getSettings().getFogEnabled();
 		maze.frame.setSize(Constants.WIDTH_REQUIRED_SPACING+(32*map.getMapSize()), Constants.HEIGHT_REQUIRED_SPACING+(32*map.getMapSize()));
 		maze.frame.setVisible(true);
-		for(Fisherman fisher:fishermen)
-		{
-			fisher.requestStop();
-		}
 		
 		fishermen = new ArrayList<Fisherman>(level);
 		for(int i = 0; i < level; i++){
