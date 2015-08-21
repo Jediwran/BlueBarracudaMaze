@@ -82,7 +82,6 @@ public class Board extends JPanel implements ActionListener {
 	public void startLevel(){
 		level += 1;
 		mapSize = rand.nextInt(14) + 16;
-		System.out.println(mapSize);
 		map.setSize(mapSize);
 		map.newMap(mapSize);
 		
