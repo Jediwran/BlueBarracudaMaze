@@ -1,16 +1,12 @@
 package maze;
 
 import java.awt.Image;
-
 import javax.swing.ImageIcon;
 
 public class Fog {
 	
 	private Image fog, fogOpaque;
-	private int fogMapSize = 14;
-	private int fish_sight = Settings.getSettings().getSight();
-
-
+	private int fogMapSize = 14, fish_sight = Settings.getSettings().getSight();
 	private int[][] fogMap;
 	
 	public Fog(int size){
@@ -30,6 +26,7 @@ public class Fog {
 	public void iAmHereFog(int x, int y){
 		fog(x,y,0);
 	}
+	
 	private void fog(int x, int y, int set_type)
 	{
 		for(int i = x - fish_sight; i <= x + fish_sight;i++)
@@ -43,13 +40,11 @@ public class Fog {
 						if(Math.abs(i -x) +  Math.abs(j -y) <= fish_sight )
 						{
 							fogMap[i][j] = set_type;			
-						}
-								
+						}								
 					}
 				}
 			}
 		}
-
 	}
 	
 	

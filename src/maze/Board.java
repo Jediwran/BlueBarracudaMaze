@@ -19,16 +19,11 @@ public class Board extends JPanel implements ActionListener {
 	private ArrayList<Player> playerList = new ArrayList<Player>();
 	private ArrayList<Fisherman> fishermen = new ArrayList<Fisherman>();
 	private Fog f;
-	private int mapSize = 16;
+	private int mapSize = 16, level = 0, deadPlayers = 0, numPlayers, playerNum;
 	private Random rand = new Random();
-	private int level = 0;
-	private int deadPlayers = 0;
-	private boolean fogEnabled = Settings.getSettings().getFogEnabled();
-	private int numPlayers = Settings.getSettings().getNumberPlayers();
+	private boolean fogEnabled, pause = false;
 	private Barrel barrel;
 	private String colorRestore;
-	private int playerNum;
-	private boolean pause = false;
 	public static boolean run = true, first = true, refresh = false;
 	public static Object monitor = new Object();
 	
