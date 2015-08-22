@@ -19,11 +19,11 @@ public class Board extends JPanel implements ActionListener {
 	private ArrayList<Player> playerList = new ArrayList<Player>();
 	private ArrayList<Fisherman> fishermen = new ArrayList<Fisherman>();
 	private Fog f;
-	private int mapSize = 16, level = 0, deadPlayers = 0, numPlayers, playerNum;
+	private int mapSize = 16, level = 0, deadPlayers = 0, numPlayers, playerWithShark;
 	private Random rand = new Random();
 	private boolean fogEnabled, pause = false;
 	private Barrel barrel;
-	private String colorRestore;
+	private String sharkColorRestore;
 	public static boolean run = true, first = true, refresh = false;
 	public static Object monitor = new Object();
 	
@@ -114,9 +114,9 @@ public class Board extends JPanel implements ActionListener {
 			}
 		}
 		
-		if(colorRestore != null){
-			playerList.get(playerNum).setColor(colorRestore);
-			playerList.get(playerNum).setImages();
+		if(sharkColorRestore != null){
+			playerList.get(playerWithShark).setColor(sharkColorRestore);
+			playerList.get(playerWithShark).setImages();
 		}
 		
 		barrel.randomStart();
@@ -185,14 +185,11 @@ public class Board extends JPanel implements ActionListener {
 			
 			barrel.isPlayerNear(player);
 			if(barrel.getSharkTime()){
-				colorRestore = player.getColor();
-				playerNum = player.getNumber();
-				
-				//if(!player.isDead() || !player.isGhostMode()){
-					player.setColor("grey");
-					player.setImages();
-					player.getTimer(10000);
-				//}
+				sharkColorRestore = player.getColor();
+				playerWithShark = player.getNumber();
+				player.setColor("grey");
+				player.setImages();
+				player.getTimer(10000);
 				barrel.resetsharkTime();
 				barrel.hide();
 				barrel.requestStop();
@@ -273,11 +270,9 @@ public class Board extends JPanel implements ActionListener {
 				g.drawImage(player.draw(), player.getX(), player.getY(), null);
 			}
 			if(player.getColor().equals(Constants.GREY)){
-				//g.setColor(new Color(255,0,0));
 				AttributedString attrString = new AttributedString("SHARK TIME! " + player.getTimer());
 				attrString.addAttribute(TextAttribute.FONT, new Font("Arial", Font.BOLD & Font.ITALIC, 18));
 				attrString.addAttribute(TextAttribute.FOREGROUND, Color.YELLOW, 0 , 14);
-				//g.drawString("SHARK TIME! " + player.getTimer(), 180, 80);
 				g.drawString(attrString.getIterator(), 180, 60);
 			}
 		}
