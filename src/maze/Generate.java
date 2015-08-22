@@ -23,11 +23,13 @@ public class Generate {
 	private static int sizeY;
 	private static Random randy;
 	private static boolean straighter = true;
+	private static int numOfHoles;
 	
 	
-	public static char[][] newMaze(int size, boolean...bs) {
+	public static char[][] newMaze(int size, int holes, boolean...bs) {
 		sizeX = size;
 		sizeY = size;
+		numOfHoles = holes;
 		if (bs.length > 0) {
 			straighter = bs[0];
 		}
@@ -37,9 +39,10 @@ public class Generate {
 		return maze;
 	}
 	
-	public static char[][] newMaze(int x, int y, boolean...bs) {
+	public static char[][] newMaze(int x, int y, int holes, boolean...bs) {
 		sizeX = x;
 		sizeY = y;
+		numOfHoles = holes;
 		if (bs.length > 0) {
 			straighter = bs[0];
 		}
@@ -224,7 +227,7 @@ public class Generate {
 	
 	private static void addRandomHoles() {
 		boolean flag;
-		for (int holes = 0; holes < 3; holes++) {
+		for (int holes = 0; holes < numOfHoles; holes++) {
 			flag = true;
 			while (flag) {
 			

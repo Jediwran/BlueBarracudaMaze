@@ -24,7 +24,9 @@ public class Map {
 	}
 	
 	public void newMap(int size) {
-		map = Generate.newMaze(size);
+		int numOfHoles = (int) Math.pow(size / 4, 2);
+		
+		map = Generate.newMaze(size, numOfHoles);
 		
 		setStartLocation();
 	}

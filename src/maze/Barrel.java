@@ -18,6 +18,7 @@ public class Barrel extends Thread{
 	}
 	
 	public void run() {
+		stopRequested = false;
 		while(!stopRequested){
 			try {
 				sleep(1500);
@@ -118,7 +119,7 @@ public class Barrel extends Thread{
 		int randY;
 		do{
 			do{
-			randX = rand.nextInt(13);
+			randX = rand.nextInt(map.getMapSize());
 			}while(Math.abs(map.getStartX()-randX) < 3);
 			
 			do{

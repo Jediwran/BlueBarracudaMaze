@@ -17,11 +17,13 @@ public class Fisherman extends Thread {
 	private boolean dead = false;
 
 	private ArrayList<Player> players;
+	private PathFinding pf;
 
 	public Fisherman(Map m, ArrayList<Player> players) {
 		drawFisherman();
 		map = m;
 		this.players = players;
+		pf = new PathFinding(map, 'w', !stopRequested);
 	}
 
 	public void run() {
@@ -38,6 +40,8 @@ public class Fisherman extends Thread {
 	public void requestStop()
 	{
 		stopRequested = true;
+		pf.kill();
+		
 	}
 
 	public void resetStop()
@@ -68,11 +72,14 @@ public class Fisherman extends Thread {
 		while (!fishermanMoved && !dead){
 			
 			
-			
-			
-			
-			
 			int direction = findPath();
+			if (direction == -1) {
+				direction = new Random().nextInt(8);
+			}
+			
+			if (stopRequested) {
+				return;
+			}
 
 			
 //			int direction = new Random().nextInt(8);
@@ -161,14 +168,15 @@ public class Fisherman extends Thread {
 	
 	private int findPath() {
 		
-		PathFinding pf = new PathFinding(map, 'w');
-		
 		Stack<int[]> closestWalls = findClosestWalls(findClosestPlayer(), 8);
 		
+		if (stopRequested) {
+			return -1;
+		}
 		
 		Stack<int[]> path = new Stack<>();
 		
-		while (!closestWalls.isEmpty()) {
+		while (!closestWalls.isEmpty() && !stopRequested) {
 			int[] closestWall = closestWalls.pop();
 			path = pf.findPath(new int[] {tileX, tileY}, new int[] {closestWall[0], closestWall[1]});
 			
@@ -188,6 +196,9 @@ public class Fisherman extends Thread {
 		int closestPlayer = 0;
 		double distance2Player = Double.MAX_VALUE;
 		for (int i = 0; i < players.size(); i++) {
+			if (stopRequested) {
+				return null;
+			}
 			double tempDist = Math.sqrt(Math.pow(tileX - players.get(i).getTileX(),2) + Math.pow(tileY - players.get(i).getTileY(),2));
 			if (tempDist < distance2Player) {
 				distance2Player = tempDist;
@@ -199,7 +210,11 @@ public class Fisherman extends Thread {
 	
 	private Stack<int[]> findClosestWalls(int[] playerLocation, int n) {
 		ArrayList<int[]> closestWalls = new ArrayList<>();
-
+		
+		if (stopRequested) {
+			return null;
+		}
+		
 		int[] closestWall = new int[2];
 		double distance2Wall = Double.MAX_VALUE;
 		int count = 0;
@@ -209,12 +224,14 @@ public class Fisherman extends Thread {
 			distance2Wall = Double.MAX_VALUE;
 			for (int i = 0; i < map.getMapSize(); i++) {
 				for (int j = 0; j < map.getMapSize(); j++) {
-					if (map.getMap(i, j) == 'w') {
-						double tempDist = Math.sqrt(Math.pow(i - playerLocation[0],2) + Math.pow(j - playerLocation[1],2));
-						if (tempDist < distance2Wall && !inClosestWallList(closestWalls, new int[] {i, j})) {
-							distance2Wall = tempDist;
-							closestWall[0] = i;
-							closestWall[1] = j;
+					if (!stopRequested) {
+						if (map.getMap(i, j) == 'w') {
+							double tempDist = Math.sqrt(Math.pow(i - playerLocation[0],2) + Math.pow(j - playerLocation[1],2));
+							if (tempDist < distance2Wall && !inClosestWallList(closestWalls, new int[] {i, j})) {
+								distance2Wall = tempDist;
+								closestWall[0] = i;
+								closestWall[1] = j;
+							}
 						}
 					}
 				}
@@ -293,7 +310,7 @@ public class Fisherman extends Thread {
 		int randY;
 		do{
 			do{
-				randX = rand.nextInt(13);
+				randX = rand.nextInt(map.getMapSize());
 			}while(Math.abs(map.getStartX()-randX) < 3);
 
 			do{
@@ -354,6 +371,7 @@ public class Fisherman extends Thread {
 
 	public void isDead(){
 		dead = true;
+		requestStop();
 	}
 
 	public void drawFisherman(){

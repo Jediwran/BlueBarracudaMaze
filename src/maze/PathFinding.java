@@ -9,12 +9,13 @@ public class PathFinding {
 	private int[] start;
 	private int[] end;
 	private char moveable;
-	
+	private boolean isAlive;
 	private boolean[][] checkedMap;
 	
-	public PathFinding(Map map, char moveableSpace) {
+	public PathFinding(Map map, char moveableSpace, boolean isAlive) {
 		this.map = map;
 		this.moveable = moveableSpace;
+		this.isAlive = isAlive;
 		checkedMap = new boolean[map.getMapSize()][map.getMapSize()];
 	}
 	
@@ -38,9 +39,9 @@ public class PathFinding {
 		
 		
 		boolean flag = true;
-		while (flag) {
+		while (flag && isAlive) {
 			
-			while (!possibleMoves.isEmpty()) {
+			while (!possibleMoves.isEmpty() && isAlive) {
 				
 				path.push(possibleMoves.pop());
 				previousPossibleMoves.push(possibleMoves);
@@ -70,6 +71,10 @@ public class PathFinding {
 				path.pop();
 			}
 			
+			if (!isAlive) {
+				break;
+			}
+			
 			if (previousPossibleMoves.isEmpty()) {
 				flag = false;
 			} else {
@@ -77,13 +82,19 @@ public class PathFinding {
 			}
 		}
 		
-		
+		if (!isAlive) {
+			return null;
+		}
 		
 		return findOptimalPath(finishedPaths);
 	}
 	
 	
 	private Stack<int[]> findOptimalPath(Stack<Stack<int[]>> paths) {
+		if (!isAlive) {
+			return null;
+		}
+		
 		if (paths.isEmpty()) {
 			// TODO
 //			System.out.println("paths is empty");
@@ -110,6 +121,9 @@ public class PathFinding {
 	public int calculateCost(Stack<int[]> path) {
 		int cost = 0;
 		for (int[] p : path) {
+			if (!isAlive) {
+				return 0;
+			}
 			cost = cost + p[2];
 		}
 		return cost;
@@ -155,6 +169,10 @@ public class PathFinding {
 	
 	private boolean inPath(Stack<int[]> path, int[] toCheck) {
 		
+		if (!isAlive) {
+			return false;
+		}
+		
 		for (int[] p : path) {
 			if (p[0] == toCheck[0] && p[1] == toCheck[1]) {
 				return true;
@@ -170,16 +188,18 @@ public class PathFinding {
 		
 		for (int i = -1; i <= 1; i++) {
 			for (int j = -1; j <= 1; j++) {
-				if (checkMap(path, new int[] {pos[0] + i, pos[1] + j})) {
-					if (i != 0 && j != 0) {
-						unorderedPossibleLocations.add(new int[] {pos[0]+i, pos[1]+j, 1});
-//						possibleLocations.push(new int[] {pos[0]+i, pos[1]+j, 1});
-					} else if (i == 0 && j == 0) {
-						continue;
-					} else {
-						unorderedPossibleLocations.add(new int[] {pos[0]+i, pos[1]+j, 2});
-//						possibleLocations.push(new int[] {pos[0]+i, pos[1]+j, 2});
+				if (isAlive) {
+					if (checkMap(path, new int[] {pos[0] + i, pos[1] + j})) {
+						if (i != 0 && j != 0) {
+							unorderedPossibleLocations.add(new int[] {pos[0]+i, pos[1]+j, 1});
+						} else if (i == 0 && j == 0) {
+							continue;
+						} else {
+							unorderedPossibleLocations.add(new int[] {pos[0]+i, pos[1]+j, 2});
+						}
 					}
+				} else {
+					return null;
 				}
 			}
 		}
@@ -187,11 +207,13 @@ public class PathFinding {
 		for (int i = 0; i < unorderedPossibleLocations.size() - 1; i++) {
 			double distance2End = Math.sqrt(Math.pow(unorderedPossibleLocations.get(i)[0] - end[0],2) + Math.pow(unorderedPossibleLocations.get(i)[1] - end[1],2));
 			for (int j = i + 1; j < unorderedPossibleLocations.size(); j++) {
-				double tempDist = Math.sqrt(Math.pow(unorderedPossibleLocations.get(j)[0] - end[0],2) + Math.pow(unorderedPossibleLocations.get(j)[1] - end[1],2));
-				if (tempDist > distance2End) {
-					int[] temp = unorderedPossibleLocations.get(i);
-					unorderedPossibleLocations.set(i, unorderedPossibleLocations.get(j));
-					unorderedPossibleLocations.set(j, temp);
+				if (isAlive) {
+					double tempDist = Math.sqrt(Math.pow(unorderedPossibleLocations.get(j)[0] - end[0],2) + Math.pow(unorderedPossibleLocations.get(j)[1] - end[1],2));
+					if (tempDist > distance2End) {
+						int[] temp = unorderedPossibleLocations.get(i);
+						unorderedPossibleLocations.set(i, unorderedPossibleLocations.get(j));
+						unorderedPossibleLocations.set(j, temp);
+					}
 				}
 			}
 		}
@@ -206,6 +228,10 @@ public class PathFinding {
 	
 	private boolean checkMap(Stack<int[]> path, int[] pos2Check) {
 		
+		if (!isAlive) {
+			return false;
+		}
+		
 		if (pos2Check[0] <= map.getMapSize() - 1 && pos2Check[0] >= 0 &&
 				pos2Check[1] <= map.getMapSize() - 1 && pos2Check[1] >= 0 &&
 				map.getMap(pos2Check[0], pos2Check[1]) == moveable &&
@@ -215,7 +241,6 @@ public class PathFinding {
 			}
 			
 		}
-			
 		
 		return false;
 	}
@@ -247,5 +272,10 @@ public class PathFinding {
 			System.out.println(i[0] + "\t" + i[1]);
 		}
 		System.out.println();
+	}
+	
+	
+	public void kill() {
+		isAlive = false;
 	}
 }

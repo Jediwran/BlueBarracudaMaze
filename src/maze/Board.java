@@ -76,6 +76,10 @@ public class Board extends JPanel implements ActionListener {
 		{
 			fisher.requestStop();
 		}
+
+		barrel = new Barrel(map);
+		barrel.requestStop();
+		
 		mapSize = rand.nextInt(14) + 16;
 		map.setSize(mapSize);
 		map.newMap(mapSize);
@@ -115,7 +119,6 @@ public class Board extends JPanel implements ActionListener {
 			playerList.get(playerNum).setImages();
 		}
 		
-		barrel = new Barrel(map);
 		barrel.randomStart();
 		barrel.start();
 		
