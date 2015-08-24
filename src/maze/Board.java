@@ -137,7 +137,7 @@ public class Board extends JPanel implements ActionListener {
 		{
 			//attempt to get game settings
 			try {
-				iSocket = new Socket("localhost", 7777);
+				iSocket = new Socket("10.38.160.1", 7777);
 				out= new ObjectOutputStream(iSocket.getOutputStream());
 				in =  new ObjectInputStream(iSocket.getInputStream());
 				this.f = (Fog) in.readObject();
