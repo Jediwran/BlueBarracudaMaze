@@ -131,7 +131,6 @@ public class PathFinding {
 	
 	
 	private void printMapPath(Stack<int[]> path, boolean showChecked) {
-		Stack<int[]> temp = (Stack<int[]>) path.clone();
 		
 		for (int i = 0; i < map.getMapSize(); i++) {
 			for (int j = 0; j < map.getMapSize(); j++) {

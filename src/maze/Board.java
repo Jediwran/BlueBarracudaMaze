@@ -220,31 +220,23 @@ public class Board extends JPanel implements ActionListener {
 		}
 		int[][] fog = f.getFogMap();
 		if(fogEnabled){
-			for(int i = 0; i < fog.length; i++){
-				for(int j = 0; j < fog.length; j++){
-					if(fog[i][j] == 1){
-						g.drawImage(f.getFog(),i * 32, j * 32, null);
-					}
-					else if(fog[i][j] == 2){
-						g.drawImage(f.getFogOpaque(), i * 32, j * 32, null);
-					}
+			
+			f.draw(g);
+			for (Fisherman fisherman : fishermen) {
+				if(fog[fisherman.getTileX()][fisherman.getTileY()] == 0){
+					g.drawImage(fisherman.getImage(), fisherman.getX(), fisherman.getY(), null);
 				}
 			}
+			
+			if(fog[barrel.getTileX()][barrel.getTileY()] == 0 && (!barrel.isStopRequested())){
+				g.drawImage(barrel.getImage(), barrel.getX(), barrel.getY(), null);}
 		} else {
-			for(int i = 0; i < fog.length; i++){
-				for(int j = 0; j < fog.length; j++){
-					fog[i][j] = 0;
-				}
-			}
-		}
- 		for (Fisherman fisherman : fishermen) {
-			if(fog[fisherman.getTileX()][fisherman.getTileY()] == 0){
+			for (Fisherman fisherman : fishermen) {
 				g.drawImage(fisherman.getImage(), fisherman.getX(), fisherman.getY(), null);
-			}
+	 		}
+			g.drawImage(barrel.getImage(), barrel.getX(), barrel.getY(), null);
 		}
 		
-		if(fog[barrel.getTileX()][barrel.getTileY()] == 0 && (!barrel.isStopRequested())){
-			g.drawImage(barrel.getImage(), barrel.getX(), barrel.getY(), null);}
 		
 		g.setColor(new Color(255,255,255));
 		g.setFont(new Font(Constants.FONT_NAME, Font.BOLD, 16));

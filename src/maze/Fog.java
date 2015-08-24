@@ -1,6 +1,8 @@
 package maze;
 
+import java.awt.Graphics;
 import java.awt.Image;
+
 import javax.swing.ImageIcon;
 
 public class Fog {
@@ -60,6 +62,19 @@ public class Fog {
 			}
 		}
 		fog(x,y,0);
+	}
+	
+	public void draw(Graphics g) {
+		for(int i = 0; i < fogMap.length; i++){
+			for(int j = 0; j < fogMap.length; j++){
+				if(fogMap[i][j] == 1){
+					g.drawImage(getFog(),i * 32, j * 32, null);
+				}
+				else if(fogMap[i][j] == 2){
+					g.drawImage(getFogOpaque(), i * 32, j * 32, null);
+				}
+			}
+		}
 	}
 	
 	public int getFishSight() {
