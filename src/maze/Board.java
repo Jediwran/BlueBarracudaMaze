@@ -431,9 +431,13 @@ public class Board extends JPanel implements ActionListener {
 				{
 					try {
 						users.get(i).out.writeObject(playerList);
+						users.get(i).out.flush();
 						users.get(i).out.writeObject(fishermen);
+						users.get(i).out.flush();
 						users.get(i).out.writeObject(barrel);
+						users.get(i).out.flush();
 						users.get(i).out.writeBoolean(finished);
+						users.get(i).out.flush();
 					} catch (IOException e1) {
 						e1.printStackTrace();
 					}
