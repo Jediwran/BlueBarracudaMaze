@@ -41,6 +41,8 @@ public class Board extends JPanel implements ActionListener {
 	
 	
 	public Board(Maze maze) {
+		this.maze = maze;
+		
 		Object[] selectMenuOptions={"Host Game", "Join Game"};
 		int n = JOptionPane.showOptionDialog(null, "Select an option", "Network Options", JOptionPane.DEFAULT_OPTION,
 				JOptionPane.QUESTION_MESSAGE, null, selectMenuOptions, selectMenuOptions[0]);
@@ -78,7 +80,7 @@ public class Board extends JPanel implements ActionListener {
 				}
 				
 				//resume and build with host settings
-				this.maze = maze;
+				
 				map = new Map();
 				mapSize = rand.nextInt(14) + 16;
 				map.setSize(mapSize);
@@ -234,7 +236,7 @@ public class Board extends JPanel implements ActionListener {
 			for (int i = 0; i < users.size(); i++)
 			{
 				try {
-					users.get(i).out.writeObject(maze);
+					//users.get(i).out.writeObject(maze);
 					users.get(i).out.writeObject(map);
 					users.get(i).out.writeObject(f);
 					users.get(i).out.writeObject(playerList);
@@ -254,7 +256,7 @@ public class Board extends JPanel implements ActionListener {
 				run = false;
 				//get all the host data to setup the game
 				try {
-					this.maze = (Maze) in.readObject();
+					//this.maze = (Maze) in.readObject();
 					this.map = (Map) in.readObject();
 					this.f = (Fog) in.readObject();
 					this.playerList = (ArrayList<Player>) in.readObject();
