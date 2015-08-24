@@ -57,11 +57,14 @@ public class Board extends JPanel implements ActionListener {
 					e.printStackTrace();
 				}
 			}
+			
+			numPlayers = Settings.getSettings().getNumberPlayers();
+			
 			if (numPlayers > 1)
 			{
 				server = true;
 				users = new ArrayList<User>(numPlayers - 1);
-				for (int i = 0; i < users.size(); i++)
+				for (int i = 0; i < (numPlayers - 1); i++)
 				{
 					try {
 						serverSocket = new ServerSocket(7777);
@@ -84,7 +87,7 @@ public class Board extends JPanel implements ActionListener {
 				f.setFogMapSize(mapSize);
 				f.setFishSight(Settings.getSettings().getSight());
 				fogEnabled = Settings.getSettings().getFogEnabled();
-				numPlayers = Settings.getSettings().getNumberPlayers();
+				
 				playerList = new ArrayList<Player>(numPlayers);
 				for(int i = 0; i < numPlayers; i++){
 					Player player = new Player();
@@ -137,7 +140,7 @@ public class Board extends JPanel implements ActionListener {
 		{
 			//attempt to get game settings
 			try {
-				iSocket = new Socket("10.38.160.1", 7777);
+				iSocket = new Socket("10.38.160.156", 7777);
 				out= new ObjectOutputStream(iSocket.getOutputStream());
 				in =  new ObjectInputStream(iSocket.getInputStream());
 				this.f = (Fog) in.readObject();

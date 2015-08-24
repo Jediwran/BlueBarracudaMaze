@@ -1,9 +1,10 @@
 package maze;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Stack;
 
-public class PathFinding {
+public class PathFinding implements Serializable{
 	
 	private Map map;
 	private int[] start;

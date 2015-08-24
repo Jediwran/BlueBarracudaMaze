@@ -1,15 +1,16 @@
 package maze;
 
 import java.awt.Image;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Stack;
 
 import javax.swing.ImageIcon;
 
-public class Fisherman extends Thread {
+public class Fisherman extends Thread implements Serializable{
 	
-	private Image fisherman;
+	private transient Image fisherman;
 	private Map map;
 	private int x, y, tileX, tileY;
 	private int caughtPlayer = 5;

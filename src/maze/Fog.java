@@ -2,12 +2,13 @@ package maze;
 
 import java.awt.Graphics;
 import java.awt.Image;
+import java.io.Serializable;
 
 import javax.swing.ImageIcon;
 
-public class Fog {
+public class Fog implements Serializable{
 	
-	private Image fog, fogOpaque;
+	private transient Image fog, fogOpaque;
 	private int fogMapSize = 14, fish_sight = Settings.getSettings().getSight();
 	private int[][] fogMap;
 	

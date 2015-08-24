@@ -8,7 +8,7 @@ import javax.swing.ImageIcon;
 public class Map implements Serializable {
 	
 	private int arraySize, startX = 0, startY = 0;
-	private Image ground, wall, start, finish, block;
+	private transient Image ground, wall, start, finish, block;
 	private String mapName;
 	private char[][] map;
 	
