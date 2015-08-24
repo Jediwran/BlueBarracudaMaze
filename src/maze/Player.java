@@ -1,6 +1,7 @@
 package maze;
 
 import java.awt.Image;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Timer;
@@ -8,7 +9,7 @@ import java.util.TimerTask;
 
 import javax.swing.ImageIcon;
 
-public class Player{
+public class Player implements Serializable{
 
 	private int x, y, tileX, tileY, number, deathOnLevel, stepsTaken = 0, timesCaught = 0, direction = 3, health = 50, maxHealth = 50;
 	private Image leftImage, downImage, rightImage, upImage;
