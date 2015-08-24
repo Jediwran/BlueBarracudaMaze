@@ -54,96 +54,95 @@ public class SettingsPage extends JFrame
 
 	public SettingsPage() 
     {
-    	
-        super("Game Settings");
-    	settings = Settings.getSettings();
-    	settings.toString();
-        // create a new panel with GridBagLayout manager
-         
-        GridBagConstraints constraints = new GridBagConstraints();
-        constraints.anchor = GridBagConstraints.WEST;
-        constraints.insets = new Insets(10, 10, 10, 10);
-        int y = 0;
-        // add components to the panel
-        constraints.gridx = 0;
-        constraints.gridy = y;     
-        mainPanel.add(fogLabel, constraints);
- 
-        constraints.gridx = 1;
-        JPanel fogPanel = new JPanel();
-        createFogGroup(fog, fogPanel,settings.getFogEnabled());
-        mainPanel.add(fogPanel, constraints);
-         
-        constraints.gridx = 0;
-        constraints.gridy = ++y;     
-        mainPanel.add(sightLabel, constraints);
-         
-        constraints.gridx = 1;
-        setupSightField(settings.getSight());
-        mainPanel.add(sightField, constraints);
+		super("Game Settings");
+		settings = Settings.getSettings();
+		settings.toString();
         
-        constraints.gridx = 0;
-        constraints.gridy = ++y;     
-        mainPanel.add(numberOfPlayersLabel, constraints);
- 
-        constraints.gridx = 1;
-        JPanel playerNumberPanel = new JPanel();
-        createPlayerNumberGroup(playerNumberGroup, playerNumberPanel,settings.getNumberPlayers());
-        mainPanel.add(playerNumberPanel, constraints);
-        
-        constraints.gridx = 0;
-        constraints.gridy = ++y;     
-        mainPanel.add(colorPlayer1, constraints);
-	        
-        constraints.gridx = 1;
-        JPanel sidePanel = new JPanel(new GridBagLayout());
-	    createPlayerColorGroup(fish1, sidePanel,settings.getPlayerColors().get(0));    
+		// create a new panel with GridBagLayout manager
+		GridBagConstraints constraints = new GridBagConstraints();
+		constraints.anchor = GridBagConstraints.WEST;
+		constraints.insets = new Insets(10, 10, 10, 10);
+		int y = 0;
+		
+		// add components to the panel
+		constraints.gridx = 0;
+		constraints.gridy = y;
+		mainPanel.add(fogLabel, constraints);
+		
+		constraints.gridx = 1;
+		JPanel fogPanel = new JPanel();
+		createFogGroup(fog, fogPanel,settings.getFogEnabled());
+		mainPanel.add(fogPanel, constraints);
+		
+		constraints.gridx = 0;
+		constraints.gridy = ++y;
+		mainPanel.add(sightLabel, constraints);
+		
+		constraints.gridx = 1;
+		setupSightField(settings.getSight());
+		mainPanel.add(sightField, constraints);
+		
+		constraints.gridx = 0;
+		constraints.gridy = ++y;
+		mainPanel.add(numberOfPlayersLabel, constraints);
+		
+		constraints.gridx = 1;
+		JPanel playerNumberPanel = new JPanel();
+		createPlayerNumberGroup(playerNumberGroup, playerNumberPanel,settings.getNumberPlayers());
+		mainPanel.add(playerNumberPanel, constraints);
+		
+		constraints.gridx = 0;
+		constraints.gridy = ++y;
+		mainPanel.add(colorPlayer1, constraints);
+		
+		constraints.gridx = 1;
+		JPanel sidePanel = new JPanel(new GridBagLayout());
+		createPlayerColorGroup(fish1, sidePanel,settings.getPlayerColors().get(0));
+		mainPanel.add(sidePanel,constraints);
+		
+		constraints.gridx = 0;
+		constraints.gridy = ++y;
+		mainPanel.add(colorPlayer2, constraints);
+		
+		constraints.gridx = 1;
+		JPanel sidePanel2 = new JPanel(new GridBagLayout());
+		createPlayerColorGroup(fish2, sidePanel2,settings.getPlayerColors().get(1));
+		mainPanel.add(sidePanel2,constraints);
+		
+		constraints.gridx = 0;
+		constraints.gridy = ++y;
+		mainPanel.add(colorPlayer3, constraints);
+		
+		constraints.gridx = 1;
+		JPanel sidePanel3 = new JPanel(new GridBagLayout());
+		createPlayerColorGroup(fish3, sidePanel3,settings.getPlayerColors().get(2));
+		mainPanel.add(sidePanel3,constraints);
+		
+		constraints.gridx = 0;
+		constraints.gridy = ++y;
+		mainPanel.add(colorPlayer4, constraints);
+		
+		constraints.gridx = 1;
+		JPanel sidePanel4 = new JPanel(new GridBagLayout());
+		createPlayerColorGroup(fish4, sidePanel4,settings.getPlayerColors().get(3));
+		mainPanel.add(sidePanel4,constraints);
+		
+		constraints.gridx = 0;
+		constraints.gridy = ++y;
+		constraints.gridwidth = 2;
+		constraints.anchor = GridBagConstraints.CENTER;
+		
+		buttonSave.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent event)
+			{
+				settings.setFogEnabled(((JRadioButton)getSelectedButton(fog)).getName().equalsIgnoreCase("YES") ?true:false);
+				settings.setSight((int)sightField.getValue());
 
-	    mainPanel.add(sidePanel,constraints);        
-        
-        constraints.gridx = 0;
-        constraints.gridy = ++y;     
-        mainPanel.add(colorPlayer2, constraints);
- 
-        constraints.gridx = 1;
-	    JPanel sidePanel2 = new JPanel(new GridBagLayout());
-        createPlayerColorGroup(fish2, sidePanel2,settings.getPlayerColors().get(1));
-        mainPanel.add(sidePanel2,constraints);
-                
-        constraints.gridx = 0;
-        constraints.gridy = ++y;     
-        mainPanel.add(colorPlayer3, constraints);
- 
-        constraints.gridx = 1;
-	    JPanel sidePanel3 = new JPanel(new GridBagLayout());
-        createPlayerColorGroup(fish3, sidePanel3,settings.getPlayerColors().get(2));
-        mainPanel.add(sidePanel3,constraints);
- 
-        constraints.gridx = 0;
-        constraints.gridy = ++y;     
-        mainPanel.add(colorPlayer4, constraints);
- 
-        constraints.gridx = 1;
-	    JPanel sidePanel4 = new JPanel(new GridBagLayout());
-        createPlayerColorGroup(fish4, sidePanel4,settings.getPlayerColors().get(3));
-        mainPanel.add(sidePanel4,constraints);
-        
-        constraints.gridx = 0;
-        constraints.gridy = ++y;
-        constraints.gridwidth = 2;
-        constraints.anchor = GridBagConstraints.CENTER;
-        
-        buttonSave.addActionListener(new ActionListener(){
-        	@Override
-        	public void actionPerformed(ActionEvent event)
-        	{
-        		settings.setFogEnabled(((JRadioButton)getSelectedButton(fog)).getName().equalsIgnoreCase("YES") ?true:false);
-        		settings.setSight((int)sightField.getValue());
-
-        		if(((JRadioButton)getSelectedButton(playerNumberGroup)).getName().equalsIgnoreCase("ONE"))
-        		{
-        			settings.setNumberPlayers(1);
-        		}
+				if(((JRadioButton)getSelectedButton(playerNumberGroup)).getName().equalsIgnoreCase("ONE"))
+				{
+					settings.setNumberPlayers(1);
+				}
         		else if(((JRadioButton)getSelectedButton(playerNumberGroup)).getName().equalsIgnoreCase("TWO"))
         		{
         			settings.setNumberPlayers(2);
@@ -187,6 +186,7 @@ public class SettingsPage extends JFrame
     	this.setVisible(false);
     	this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
     }
+    
     public void setupSightField(int sightRange)
     {
     	MaskFormatter formatter = null;
@@ -198,8 +198,7 @@ public class SettingsPage extends JFrame
 	    }    
 	    sightField = new JFormattedTextField(formatter);
     	sightField.setValue((int)sightRange);
-    	sightField.setColumns(3);
-    
+    	sightField.setColumns(3);    
     }
     	 
     public void createFogGroup(ButtonGroup bg, JPanel panel,boolean fogEnabled)
@@ -231,6 +230,7 @@ public class SettingsPage extends JFrame
 		
 		panel.add(noButton, constriants);
     }
+    
     public void createPlayerNumberGroup(ButtonGroup bg, JPanel panel,int number)
     {
         JRadioButton oneButton = new JRadioButton("1");
@@ -281,9 +281,9 @@ public class SettingsPage extends JFrame
 		panel.add(threeButton, constriants);
 		constriants.gridx = 3;
 		
-		panel.add(fourButton, constriants);
-        
+		panel.add(fourButton, constriants);    
     }
+    
     public void createPlayerColorGroup(ButtonGroup bg, JPanel panel,String color)
     {
         JRadioButton blueButton = new JRadioButton(new ImageIcon(blueFish));
@@ -323,8 +323,6 @@ public class SettingsPage extends JFrame
         {
         	blueButton.setSelected(true);
         }
-
-        
         
 		GridBagConstraints constriants = new GridBagConstraints();
 		constriants.anchor = GridBagConstraints.WEST;
@@ -340,9 +338,9 @@ public class SettingsPage extends JFrame
 		panel.add(greenButton, constriants);
 		constriants.gridx = 3;
 		
-		panel.add(purpleButton, constriants);
-        
+		panel.add(purpleButton, constriants);        
     }
+    
     public AbstractButton getSelectedButton(ButtonGroup bg)
     {
     	for(Enumeration<AbstractButton> button_list = bg.getElements();button_list.hasMoreElements();)

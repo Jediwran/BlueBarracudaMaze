@@ -15,13 +15,13 @@ public class Constants {
 	public static final String SETTINGS_FILE = "src/resources/setting.config";
 	
 	//Barrel image
-	public static final String BARREL_IMAGE = "src/resources/barrel.png";
+	public static final String BARREL_IMAGE = "src/resources/images/barrel.png";
 	
 	//Fisherman image
-	public static final String FISHERMAN_IMAGE = "src/resources/player.png";
+	public static final String FISHERMAN_IMAGE = "src/resources/images/fisherman.png";
 	
 	//Dead fisherman image
-	public static final String FISHERMAN_DEAD_IMAGE = "src/resources/skull.png";
+	public static final String FISHERMAN_DEAD_IMAGE = "src/resources/images/skull.png";
 	
 	//Settings fish location
 	public static final String SETTINGS_BLUE_FISH_IMAGE = "src/resources/images/player/fish_left_blue.png";
@@ -51,13 +51,16 @@ public class Constants {
 	public static final String FISH_DEAD_IMAGE = "src/resources/images/player/deadfish.png";
 	
 	//Map images
-	public static final String WATER_IMAGE = "src/resources/water.png";
-	public static final String WALL_IMAGE = "src/resources/wall.png";
-	public static final String START_IMAGE = "src/resources/start.png";
-	public static final String FINISH_IMAGE = "src/resources/finish.png";
-	public static final String BLOCK_IMAGE = "src/resources/block.png";
-	public static final String FOG_IMAGE = "src/resources/fog.png";
-	public static final String FOG_OPAQUE_IMAGE = "src/resources/fog-opaque.png";
+	public static final String WATER_IMAGE = "src/resources/images/world/water.png";
+	public static final String WALL_IMAGE = "src/resources/images/world/wall.png";
+	public static final String START_IMAGE = "src/resources/images/world/start.png";
+	public static final String FINISH_IMAGE = "src/resources/images/world/finish.png";
+	public static final String BLOCK_IMAGE = "src/resources/images/world/block.png";
+	public static final String GRASS_IMAGE = "src/resources/images/world/grass.png";
+	
+	//Fog Images
+	public static final String FOG_IMAGE = "src/resources/images/fog.png";
+	public static final String FOG_OPAQUE_IMAGE = "src/resources/images/fog-opaque.png";
 	
 	//Map file locations
 	public static final String MAPS_LOCATION = "src/resources/maps/";

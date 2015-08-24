@@ -7,9 +7,7 @@ import javax.swing.ImageIcon;
 
 public class Map implements Serializable {
 	
-	private int arraySize;
-	private int startX = 0;
-	private int startY = 0;
+	private int arraySize, startX = 0, startY = 0;
 	private Image ground, wall, start, finish, block;
 	private String mapName;
 	private char[][] map;
@@ -28,7 +26,9 @@ public class Map implements Serializable {
 	}
 	
 	public void newMap(int size) {
-		map = Generate.newMaze(size);
+		int numOfHoles = (int) Math.pow(size / 4, 2);
+		
+		map = Generate.newMaze(size, numOfHoles);
 		
 		setStartLocation();
 	}

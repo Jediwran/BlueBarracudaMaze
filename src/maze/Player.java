@@ -10,23 +10,13 @@ import javax.swing.ImageIcon;
 
 public class Player{
 
-	private int x, y, tileX, tileY, number, deathOnLevel;
+	private int x, y, tileX, tileY, number, deathOnLevel, stepsTaken = 0, timesCaught = 0, direction = 3, health = 50, maxHealth = 50;
 	private Image leftImage, downImage, rightImage, upImage;
-	private int stepsTaken = 0;
-	private int timesCaught = 0;
-	private int direction = 3;
-	private int health = 50;
-	private int maxHealth = 50;
 	private String color, prevColor;
 	private Map map;
 	private Fog fog;
-	private boolean isDead = false;
-	private boolean caught = false;
-	private boolean finish = false;
-	private boolean shark = false;
-	private boolean ghostMode = false;
+	private boolean isDead = false, caught = false, finish = false, shark = false, ghostMode = false, HitRecently = false;
 	private Thread sharkTimeThread;
-	private boolean HitRecently = false;
 	private Timer playerTimer;
 	private long sharkTime;
 		

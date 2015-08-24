@@ -21,16 +21,11 @@ public class Board extends JPanel implements ActionListener {
 	private ArrayList<Player> playerList = new ArrayList<Player>();
 	private ArrayList<Fisherman> fishermen = new ArrayList<Fisherman>();
 	private Fog f;
-	private int mapSize = 16;
+	private int mapSize = 16, level = 0, deadPlayers = 0, numPlayers, playerWithShark;
 	private Random rand = new Random();
-	private int level = 0;
-	private int deadPlayers = 0;
-	private boolean fogEnabled = Settings.getSettings().getFogEnabled();
-	private int numPlayers = Settings.getSettings().getNumberPlayers();
+	private boolean fogEnabled, pause = false;
 	private Barrel barrel;
-	private String colorRestore;
-	private int playerNum;
-	private boolean pause = false;
+	private String sharkColorRestore;
 	private boolean server = false, solo = false;
 	private ArrayList<User> users;
 	private int clientID;
@@ -159,6 +154,7 @@ public class Board extends JPanel implements ActionListener {
 			}
 		}
 		
+		barrel = new Barrel(map);
 		setFocusable(true);
 		keyBinding();
 		startLevel();
@@ -177,9 +173,10 @@ public class Board extends JPanel implements ActionListener {
 	
 	public void startLevel(){
 		
-		for(Fisherman fisher:fishermen)
+		barrel.requestStop();
+		for (Fisherman f: fishermen)
 		{
-			fisher.requestStop();
+			f.requestStop();
 		}
 		
 		if (server)
@@ -191,9 +188,15 @@ public class Board extends JPanel implements ActionListener {
 			maze.frame.setSize(Constants.WIDTH_REQUIRED_SPACING+(32*map.getMapSize()), Constants.HEIGHT_REQUIRED_SPACING+(32*map.getMapSize()));
 			maze.frame.setVisible(true);
 			
+			f = new Fog(mapSize);
+			f.setFogMapSize(mapSize);
+			f.setFishSight(Settings.getSettings().getSight());
+			fogEnabled = Settings.getSettings().getFogEnabled();
+			
+			
 			fishermen = new ArrayList<Fisherman>(level);
 			for(int i = 0; i < level; i++){
-				Fisherman fisherman = new Fisherman(map);
+				Fisherman fisherman = new Fisherman(map, playerList);
 				fisherman.randomStart();
 				fisherman.start();
 				fishermen.add(fisherman);
@@ -215,9 +218,9 @@ public class Board extends JPanel implements ActionListener {
 				}
 			}
 			
-			if(colorRestore != null){
-				playerList.get(playerNum).setColor(colorRestore);
-				playerList.get(playerNum).setImages();
+			if(sharkColorRestore != null){
+				playerList.get(playerWithShark).setColor(sharkColorRestore);
+				playerList.get(playerWithShark).setImages();
 			}
 			
 			barrel = new Barrel(map);
@@ -274,7 +277,7 @@ public class Board extends JPanel implements ActionListener {
 				
 				fishermen = new ArrayList<Fisherman>(level);
 				for(int i = 0; i < level; i++){
-					Fisherman fisherman = new Fisherman(map);
+					Fisherman fisherman = new Fisherman(map, playerList);
 					fisherman.randomStart();
 					fisherman.start();
 					fishermen.add(fisherman);
@@ -296,9 +299,9 @@ public class Board extends JPanel implements ActionListener {
 					}
 				}
 				
-				if(colorRestore != null){
-					playerList.get(playerNum).setColor(colorRestore);
-					playerList.get(playerNum).setImages();
+				if(sharkColorRestore != null){
+					playerList.get(playerWithShark).setColor(sharkColorRestore);
+					playerList.get(playerWithShark).setImages();
 				}
 				
 				barrel = new Barrel(map);
@@ -405,17 +408,16 @@ public class Board extends JPanel implements ActionListener {
 				
 				barrel.isPlayerNear(player);
 				if(barrel.getSharkTime()){
-					colorRestore = player.getColor();
-					playerNum = player.getNumber();
-					
-					//if(!player.isDead() || !player.isGhostMode()){
-						player.setColor("grey");
-						player.setImages();
-						player.getTimer(10000);
-					//}
-					barrel.resetsharkTime();
-					barrel.hide();
-					barrel.requestStop();
+					sharkColorRestore = player.getColor();
+					playerWithShark = player.getNumber();
+					sharkColorRestore = player.getColor();
+				    playerWithShark = player.getNumber();
+				    player.setColor("grey");
+				    player.setImages();
+				    player.getTimer(10000);
+				    barrel.resetsharkTime();
+				    barrel.hide();
+				    barrel.requestStop();
 				}
 			}
 			
@@ -475,31 +477,23 @@ public class Board extends JPanel implements ActionListener {
 		}
 		int[][] fog = f.getFogMap();
 		if(fogEnabled){
-			for(int i = 0; i < fog.length; i++){
-				for(int j = 0; j < fog.length; j++){
-					if(fog[i][j] == 1){
-						g.drawImage(f.getFog(),i * 32, j * 32, null);
-					}
-					else if(fog[i][j] == 2){
-						g.drawImage(f.getFogOpaque(), i * 32, j * 32, null);
-					}
+			
+			f.draw(g);
+			for (Fisherman fisherman : fishermen) {
+				if(fog[fisherman.getTileX()][fisherman.getTileY()] == 0){
+					g.drawImage(fisherman.getImage(), fisherman.getX(), fisherman.getY(), null);
 				}
 			}
+			
+			if(fog[barrel.getTileX()][barrel.getTileY()] == 0 && (!barrel.isStopRequested())){
+				g.drawImage(barrel.getImage(), barrel.getX(), barrel.getY(), null);}
 		} else {
-			for(int i = 0; i < fog.length; i++){
-				for(int j = 0; j < fog.length; j++){
-					fog[i][j] = 0;
-				}
-			}
-		}
- 		for (Fisherman fisherman : fishermen) {
-			if(fog[fisherman.getTileX()][fisherman.getTileY()] == 0){
+			for (Fisherman fisherman : fishermen) {
 				g.drawImage(fisherman.getImage(), fisherman.getX(), fisherman.getY(), null);
-			}
+	 		}
+			g.drawImage(barrel.getImage(), barrel.getX(), barrel.getY(), null);
 		}
 		
-		if(fog[barrel.getTileX()][barrel.getTileY()] == 0 && (!barrel.isStopRequested())){
-			g.drawImage(barrel.getImage(), barrel.getX(), barrel.getY(), null);}
 		
 		g.setColor(new Color(255,255,255));
 		g.setFont(new Font(Constants.FONT_NAME, Font.BOLD, 16));
@@ -525,11 +519,9 @@ public class Board extends JPanel implements ActionListener {
 				g.drawImage(player.draw(), player.getX(), player.getY(), null);
 			}
 			if(player.getColor().equals(Constants.GREY)){
-				//g.setColor(new Color(255,0,0));
 				AttributedString attrString = new AttributedString("SHARK TIME! " + player.getTimer());
 				attrString.addAttribute(TextAttribute.FONT, new Font("Arial", Font.BOLD & Font.ITALIC, 18));
 				attrString.addAttribute(TextAttribute.FOREGROUND, Color.YELLOW, 0 , 14);
-				//g.drawString("SHARK TIME! " + player.getTimer(), 180, 80);
 				g.drawString(attrString.getIterator(), 180, 60);
 			}
 		}
