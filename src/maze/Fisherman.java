@@ -18,12 +18,16 @@ public class Fisherman extends Thread {
 
 	private ArrayList<Player> players;
 	private PathFinding pf;
+	private Stack<int[]> path;
+	private int count;
 
 	public Fisherman(Map m, ArrayList<Player> players) {
 		drawFisherman();
 		map = m;
 		this.players = players;
 		pf = new PathFinding(map, 'w', !stopRequested);
+		path = new Stack<>();
+		count = 8;
 	}
 	
 	public void run() {
@@ -71,7 +75,25 @@ public class Fisherman extends Thread {
 		while (!fishermanMoved && !dead){
 			
 			
-			int direction = findPath();
+			
+			int direction = -1;
+			
+			if (count > 4 || path == null || path.size() < 5) {
+				direction = findPath();
+				count = 2;
+			} else {
+				direction = getDirection(path.get(count));
+				count++;
+			}
+			
+			
+			
+			
+			
+//			int direction = findPath();
+			
+			
+			
 			if (direction == -1) {
 				direction = new Random().nextInt(8);
 			}
@@ -173,7 +195,7 @@ public class Fisherman extends Thread {
 			return -1;
 		}
 		
-		Stack<int[]> path = new Stack<>();
+//		Stack<int[]> path = new Stack<>();
 		
 		while (!closestWalls.isEmpty() && !stopRequested) {
 			int[] closestWall = closestWalls.pop();
