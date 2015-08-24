@@ -61,7 +61,7 @@ public class Barrel extends Thread{
 		int tx = 0;
 		int ty = 0;
 		boolean barrelMoved = false;
-		while (!barrelMoved){
+		while (!barrelMoved && !stopRequested){
 			int direction = new Random().nextInt(8);
 			switch(direction){
 				case 0 : {

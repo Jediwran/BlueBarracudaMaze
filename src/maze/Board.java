@@ -54,6 +54,7 @@ public class Board extends JPanel implements ActionListener {
 			player.setImages();
 			playerList.add(player);
 		}
+		barrel = new Barrel(map);
 		setFocusable(true);
 		keyBinding();
 		startLevel();
@@ -77,7 +78,6 @@ public class Board extends JPanel implements ActionListener {
 			fisher.requestStop();
 		}
 
-		barrel = new Barrel(map);
 		barrel.requestStop();
 		
 		mapSize = rand.nextInt(14) + 16;
@@ -89,6 +89,8 @@ public class Board extends JPanel implements ActionListener {
 		fogEnabled = Settings.getSettings().getFogEnabled();
 		maze.frame.setSize(Constants.WIDTH_REQUIRED_SPACING+(32*map.getMapSize()), Constants.HEIGHT_REQUIRED_SPACING+(32*map.getMapSize()));
 		maze.frame.setVisible(true);
+
+		barrel = new Barrel(map);
 		
 		fishermen = new ArrayList<Fisherman>(level);
 		for(int i = 0; i < level; i++){
