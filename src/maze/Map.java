@@ -7,6 +7,7 @@ import javax.swing.ImageIcon;
 
 public class Map implements Serializable {
 	
+	private static final long serialVersionUID = -2742911405456552697L;
 	private int arraySize, startX = 0, startY = 0;
 	private transient Image ground, wall, start, finish, block;
 	private String mapName;

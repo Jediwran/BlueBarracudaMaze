@@ -7,6 +7,7 @@ import javax.swing.ImageIcon;
 
 public class Barrel extends Thread implements Serializable{
 	
+	private static final long serialVersionUID = 1549777205082750334L;
 	private transient Image barrel;
 	private Map map;
 	private int x, y, tileX, tileY;

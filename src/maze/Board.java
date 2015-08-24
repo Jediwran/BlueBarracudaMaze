@@ -13,7 +13,7 @@ import javax.swing.*;
 
 public class Board extends JPanel implements ActionListener {
 	
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1131716051688381675L;
 	private Timer timer;
 	private long sTime, eTime;
 	private Map map;
@@ -366,6 +366,7 @@ public class Board extends JPanel implements ActionListener {
 		startLevel();
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void actionPerformed(ActionEvent e) {
 		if (server || solo)
 		{

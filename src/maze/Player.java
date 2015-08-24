@@ -11,6 +11,7 @@ import javax.swing.ImageIcon;
 
 public class Player implements Serializable{
 
+	private static final long serialVersionUID = -3382304963401787134L;
 	private int x, y, tileX, tileY, number, deathOnLevel, stepsTaken = 0, timesCaught = 0, direction = 3, health = 50, maxHealth = 50;
 	private transient Image leftImage, downImage, rightImage, upImage;
 	private String color, prevColor;

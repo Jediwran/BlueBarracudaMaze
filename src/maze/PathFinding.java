@@ -6,6 +6,7 @@ import java.util.Stack;
 
 public class PathFinding implements Serializable{
 	
+	private static final long serialVersionUID = 2234053880326244184L;
 	private Map map;
 	private int[] start;
 	private int[] end;

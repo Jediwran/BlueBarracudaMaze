@@ -10,6 +10,7 @@ import javax.swing.ImageIcon;
 
 public class Fisherman extends Thread implements Serializable{
 	
+	private static final long serialVersionUID = 176063483383021229L;
 	private transient Image fisherman;
 	private Map map;
 	private int x, y, tileX, tileY;

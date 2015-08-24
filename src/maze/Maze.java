@@ -6,6 +6,7 @@ import javax.swing.*;
 
 public class Maze implements Serializable {
 
+	private static final long serialVersionUID = 192555923253001511L;
 	JFrame frame = new JFrame();
 	
 	
