@@ -449,6 +449,7 @@ public class Board extends JPanel implements ActionListener {
 		}
 		else
 		{
+			repaint();
 			try {
 				this.playerList = (ArrayList<Player>) in.readObject();
 				this.fishermen = (ArrayList<Fisherman>) in.readObject();
