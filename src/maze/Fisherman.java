@@ -10,7 +10,7 @@ import javax.swing.ImageIcon;
 
 public class Fisherman extends Thread implements Serializable{
 	
-	private Image fisherman;
+	private transient Image fisherman;
 	private Map map;
 	private int x, y, tileX, tileY;
 	private int caughtPlayer = 5;

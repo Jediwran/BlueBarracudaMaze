@@ -8,7 +8,7 @@ import javax.swing.ImageIcon;
 
 public class Fog implements Serializable{
 	
-	private Image fog, fogOpaque;
+	private transient Image fog, fogOpaque;
 	private int fogMapSize = 14, fish_sight = Settings.getSettings().getSight();
 	private int[][] fogMap;
 	
