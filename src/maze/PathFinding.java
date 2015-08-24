@@ -24,6 +24,7 @@ public class PathFinding implements Serializable{
 	public Stack<int[]> findPath( int[] start, int[] getToo) {
 		this.start = start;
 		this.end = getToo;
+		checkedMap = new boolean[map.getMapSize()][map.getMapSize()];
 		
 		if (start[0] == end[1] && start[1] == end[1]) {
 			return null;
@@ -43,6 +44,7 @@ public class PathFinding implements Serializable{
 		while (flag && isAlive) {
 			
 			while (!possibleMoves.isEmpty() && isAlive) {
+				
 				
 				path.push(possibleMoves.pop());
 				previousPossibleMoves.push(possibleMoves);
@@ -204,6 +206,7 @@ public class PathFinding implements Serializable{
 			}
 		}
 		
+		
 		for (int i = 0; i < unorderedPossibleLocations.size() - 1; i++) {
 			double distance2End = Math.sqrt(Math.pow(unorderedPossibleLocations.get(i)[0] - end[0],2) + Math.pow(unorderedPossibleLocations.get(i)[1] - end[1],2));
 			for (int j = i + 1; j < unorderedPossibleLocations.size(); j++) {
@@ -235,11 +238,10 @@ public class PathFinding implements Serializable{
 		if (pos2Check[0] <= map.getMapSize() - 1 && pos2Check[0] >= 0 &&
 				pos2Check[1] <= map.getMapSize() - 1 && pos2Check[1] >= 0 &&
 				map.getMap(pos2Check[0], pos2Check[1]) == moveable &&
-				!inPath(path, pos2Check)) {
-			if (!checkedMap[pos2Check[0]][pos2Check[1]]) {
-				return true;
-			}
+				!inPath(path, pos2Check) &&
+				!checkedMap[pos2Check[0]][pos2Check[1]]) {
 			
+			return true;
 		}
 		
 		return false;
