@@ -201,6 +201,14 @@ public class Fisherman extends Thread {
 		return tileY;
 	}
 	
+	public void setTileX(int tileX) {
+		this.tileX = tileX;
+	}
+
+	public void setTileY(int tileY) {
+		this.tileY = tileY;
+	}
+
 	public boolean getDead(){
 		return dead;
 	}

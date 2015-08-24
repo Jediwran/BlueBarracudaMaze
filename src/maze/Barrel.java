@@ -164,6 +164,14 @@ public class Barrel extends Thread{
 		return tileY;
 	}
 	
+	public void setTileX(int tileX) {
+		this.tileX = tileX;
+	}
+
+	public void setTileY(int tileY) {
+		this.tileY = tileY;
+	}
+
 	public void isPlayerNear(Player player){
 		if(player.getTileX() == tileX && player.getTileY() == tileY){
 			if(!player.isDead() && !player.isGhostMode()){

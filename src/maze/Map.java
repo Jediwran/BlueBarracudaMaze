@@ -1,9 +1,11 @@
 package maze;
 
 import java.awt.*;
+import java.io.Serializable;
+
 import javax.swing.ImageIcon;
 
-public class Map {
+public class Map implements Serializable {
 	
 	private int arraySize;
 	private int startX = 0;
@@ -69,6 +71,11 @@ public class Map {
 		return spot;
 	}
 	
+	public void setMap(int x, int y, char c)
+	{
+		map[y][x] = c;
+	}
+	
 	public void setStartLocation() {
 		for(int y = 0; y < arraySize; y++) {
 			for(int x = 0; x < arraySize; x++) {
@@ -84,8 +91,18 @@ public class Map {
 		return startX;
 	}
 	
+	public void setStartX(int x)
+	{
+		startX = x;
+	}
+	
 	public int getStartY() {
 		return startY;
+	}
+	
+	public void setStartY(int y)
+	{
+		startY = y;
 	}
 	
 	public String getMapName(){

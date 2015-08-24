@@ -1,8 +1,10 @@
 package maze;
 
+import java.io.Serializable;
+
 import javax.swing.*;
 
-public class Maze {
+public class Maze implements Serializable {
 
 	JFrame frame = new JFrame();
 	
