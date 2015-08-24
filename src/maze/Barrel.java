@@ -1,12 +1,13 @@
 package maze;
 
 import java.awt.Image;
+import java.io.Serializable;
 import java.util.Random;
 import javax.swing.ImageIcon;
 
-public class Barrel extends Thread{
+public class Barrel extends Thread implements Serializable{
 	
-	private Image barrel;
+	private transient Image barrel;
 	private Map map;
 	private int x, y, tileX, tileY;
 	private boolean stopRequested = false, sharkTime = false;
